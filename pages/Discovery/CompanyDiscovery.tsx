@@ -1,0 +1,147 @@
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { apiService } from '../../services/api';
+
+const CompanyDiscovery: React.FC = () => {
+  const [companyName, setCompanyName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+  const [fetchingHistory, setFetchingHistory] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await apiService.useCases.listCompany();
+        // Backend returns { success: true, data: [...] } or just [...]
+        const items = res.data || res;
+        if (Array.isArray(items)) {
+          setHistory(items);
+        }
+      } catch (err) {
+        console.error("Fetch history error:", err);
+      } finally {
+        setFetchingHistory(false);
+      }
+    };
+    fetchHistory();
+  }, []);
+
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!companyName.trim() || loading) return;
+    
+    setLoading(true);
+    try {
+      // The API expects { "company": "..." } in the body
+      const res = await apiService.useCases.generateCompany(companyName.trim());
+      
+      // Robust ID extraction from common backend patterns
+      const result = res.data || res;
+      const targetId = result._id || result.id;
+
+      if (targetId) {
+        navigate(`/discovery/detail/${targetId}?type=company`);
+      } else {
+        throw new Error("Analysis completed but no document ID was returned. Check history below.");
+      }
+    } catch (err: any) {
+      console.error("AI Generation error:", err);
+      alert(`AI Agent Error: ${err.message || "Failed to initiate agent. Please try again later."}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#fcfdff] p-8 space-y-12">
+      {/* Hero Search Section */}
+      <div className="max-w-4xl mx-auto text-center space-y-8 pt-12">
+        <div className="inline-flex items-center gap-2 bg-purple-50 text-[#9d7bb0] px-5 py-2 rounded-full text-[10px] font-black tracking-widest uppercase">
+          <span className="w-2 h-2 rounded-full bg-[#9d7bb0] animate-pulse"></span>
+          Strategic Company Analyzer
+        </div>
+        <h1 className="text-5xl font-black text-gray-900 tracking-tight leading-tight">
+          Discover High-Impact <span className="text-[#9d7bb0]">AI Use Cases</span> <br />
+          For Your Specific Enterprise
+        </h1>
+        <p className="text-gray-500 font-medium max-w-2xl mx-auto">
+          Enter any global enterprise name. Our Agentic AI will perform a deep sectoral analysis 
+          to identify the most profitable automation opportunities.
+        </p>
+        
+        <form onSubmit={handleGenerate} className="max-w-2xl mx-auto pt-6 group">
+          <div className="flex items-center bg-white rounded-[32px] border-2 border-gray-100 shadow-2xl shadow-purple-100 focus-within:border-[#9d7bb0] transition-all p-2 pr-2">
+            <input 
+              type="text" 
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Enter Company (e.g. Cisco, Microsoft)..."
+              className="flex-1 pl-8 py-4 outline-none font-bold text-lg text-gray-800 placeholder:text-gray-300"
+              required
+            />
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="h-[60px] px-10 bg-[#9d7bb0] text-white rounded-[24px] font-black text-xs uppercase tracking-widest hover:bg-[#8b6aa1] transition-all flex items-center justify-center gap-3 disabled:bg-gray-300 shadow-lg shadow-purple-200 shrink-0"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              )}
+              {loading ? 'Analyzing...' : 'Execute Agent'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* History Grid */}
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">Historical Analysis Portfolio</h3>
+          <span className="text-[10px] font-bold text-gray-300">{history.length} Records</span>
+        </div>
+
+        {fetchingHistory ? (
+          <div className="flex justify-center py-20">
+             <div className="w-8 h-8 border-3 border-purple-50 border-t-purple-400 rounded-full animate-spin"></div>
+          </div>
+        ) : history.length === 0 ? (
+          <div className="text-center py-24 bg-white rounded-[48px] border border-dashed border-gray-200">
+             <p className="text-gray-400 font-bold uppercase text-xs tracking-widest">No history found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+            {history.map((item) => (
+              <div 
+                key={item._id || item.id} 
+                onClick={() => navigate(`/discovery/detail/${item._id || item.id}?type=company`)}
+                className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#9d7bb0]/20 transition-all cursor-pointer group"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-[#9d7bb0] flex items-center justify-center text-xl font-bold">🏢</div>
+                  <div className="px-3 py-1 bg-green-50 text-green-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-green-100">
+                    {item.strongROICount || 0} ROI Scenarios
+                  </div>
+                </div>
+                <h4 className="text-xl font-black text-gray-900 group-hover:text-[#9d7bb0] transition-colors truncate">{item.company_name}</h4>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1 truncate">{item.industry}</p>
+                <div className="mt-8 pt-6 border-t border-gray-50 flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-gray-300 uppercase">{new Date(item.createdAt).toLocaleDateString()}</span>
+                  <div className="text-[#9d7bb0] flex items-center gap-1 text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                    View Report
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default CompanyDiscovery;

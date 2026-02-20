@@ -1,74 +1,190 @@
 
 /**
  * API Service for Avagama AI
- * Integrated with local Node.js/Express backend at http://localhost:5000/api
+ * Integrated with Render backend at https://avagama-backend.onrender.com/api
  */
 
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'https://avagama-backend.onrender.com/api';
+
+const getHeaders = (isJson = true) => {
+  const token = localStorage.getItem('token');
+  return {
+    ...(isJson ? { 'Content-Type': 'application/json' } : {}),
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+};
+
+const handleResponse = async (response: Response) => {
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || data.error || `Server Error: ${response.status}`);
+  }
+  return data;
+};
 
 export const apiService = {
-  // Auth endpoints
   auth: {
     login: async (credentials: any) => {
-      try {
-        const response = await fetch(`${BASE_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(credentials),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Login failed');
-        return data;
-      } catch (error: any) {
-        throw error;
-      }
+      const response = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(credentials),
+      });
+      return handleResponse(response);
     },
     register: async (userData: any) => {
-      try {
-        // Updated to /auth/signup to match backend screenshots
-        const response = await fetch(`${BASE_URL}/auth/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userData),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Registration failed');
-        return data;
-      } catch (error: any) {
-        throw error;
-      }
+      const response = await fetch(`${BASE_URL}/auth/signup`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(userData),
+      });
+      return handleResponse(response);
+    },
+    forgotPassword: async (email: string) => {
+      const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ email }),
+      });
+      return handleResponse(response);
+    },
+    resetPassword: async (token: string, password: any) => {
+      const response = await fetch(`${BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ token, password }),
+      });
+      return handleResponse(response);
     }
   },
 
-  // Evaluation endpoints
   evaluations: {
-    list: async () => {
-      const response = await fetch(`${BASE_URL}/evaluations`);
-      return response.json();
-    },
-    create: async (data: any) => {
+    create: async (discoveryData: any) => {
       const response = await fetch(`${BASE_URL}/evaluations`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: getHeaders(),
+        body: JSON.stringify(discoveryData),
       });
-      return response.json();
+      return handleResponse(response);
+    },
+    uploadSOP: async (id: string, file: File) => {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      // Key must be 'file' as per requirement
+      formData.append('file', file);
+      
+      const response = await fetch(`${BASE_URL}/evaluations/${id}/upload`, {
+        method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: formData,
+      });
+      return handleResponse(response);
+    },
+    updateOperations: async (id: string, opsData: any) => {
+      const response = await fetch(`${BASE_URL}/evaluations/${id}/operations`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(opsData),
+      });
+      return handleResponse(response);
+    },
+    updateAIConfig: async (id: string, configData: any) => {
+      const response = await fetch(`${BASE_URL}/evaluations/${id}/ai-config`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(configData),
+      });
+      return handleResponse(response);
+    },
+    runAgent: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/evaluations/${id}/run`, {
+        method: 'POST',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    list: async () => {
+      const response = await fetch(`${BASE_URL}/evaluations`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
     },
     get: async (id: string) => {
-      const response = await fetch(`${BASE_URL}/evaluations/${id}`);
-      return response.json();
+      const response = await fetch(`${BASE_URL}/evaluations/${id}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    getDashboard: async () => {
+      const response = await fetch(`${BASE_URL}/dashboard`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    export: async () => {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BASE_URL}/export/evaluations`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream'
+        },
+      });
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'No response body');
+        try {
+          const errorJson = JSON.parse(errorText);
+          throw new Error(errorJson.message || 'Export failed');
+        } catch (e: any) {
+          throw new Error(`Server error (${response.status})`);
+        }
+      }
+      return response.blob();
     }
   },
 
-  // AI Discovery / Mistral Agent endpoints
-  discovery: {
-    runAgent: async (params: any) => {
-      const response = await fetch(`${BASE_URL}/discovery/mistral`, {
+  useCases: {
+    generateCompany: async (company: string) => {
+      const response = await fetch(`${BASE_URL}/usecases/generate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        headers: getHeaders(),
+        body: JSON.stringify({ company }),
       });
-      return response.json();
+      return handleResponse(response);
+    },
+    listCompany: async () => {
+      const response = await fetch(`${BASE_URL}/usecases`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    getCompany: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/usecases/${id}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    generateDomain: async (payload: { domain: string, user_role: string, objective: string }) => {
+      const response = await fetch(`${BASE_URL}/usecases-domain/generate`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      return handleResponse(response);
+    },
+    listDomain: async () => {
+      const response = await fetch(`${BASE_URL}/usecases-domain`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    getDomain: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/usecases-domain/${id}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
     }
   }
 };
