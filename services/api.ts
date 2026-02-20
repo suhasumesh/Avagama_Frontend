@@ -244,6 +244,13 @@ export const apiService = {
         headers: getHeaders(),
       });
       return handleResponse(response);
+    },
+    deleteUser: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/admin/delete-user/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
     }
   }
 };
