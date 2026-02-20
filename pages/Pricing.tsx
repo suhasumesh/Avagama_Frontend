@@ -1,12 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PricingPlan } from '../types';
 
-const plans: PricingPlan[] = [
+const CONVERSION_RATE = 83;
+
+const plans = [
   {
     name: 'STARTER PACK',
     subtitle: 'Discovery Pilot',
-    price: '₹7,50,000',
+    priceINR: 750000,
     duration: '/ 3m',
     validity: '3 Months Validity',
     runs: '75 Evaluation Runs',
@@ -23,7 +25,7 @@ const plans: PricingPlan[] = [
   {
     name: 'GROWTH PACK',
     subtitle: 'Strategic Expansion',
-    price: '₹13,50,000',
+    priceINR: 1350000,
     duration: '/ 6m',
     validity: '6 Months Validity',
     runs: '150 Evaluation Runs',
@@ -40,7 +42,7 @@ const plans: PricingPlan[] = [
   {
     name: 'SCALE PACK',
     subtitle: 'Enterprise Transformation',
-    price: '₹23,76,000',
+    priceINR: 2376000,
     duration: '/ 12m',
     validity: '12 Months Validity',
     runs: '300 Evaluation Runs',
@@ -56,10 +58,35 @@ const plans: PricingPlan[] = [
   }
 ];
 
+const addons = [
+  { label: '1 Month Ext.', priceINR: 237500, runs: '+25 runs' },
+  { label: '3 Month Ext.', priceINR: 676875, runs: '+75 runs' },
+  { label: '6 Month Ext.', priceINR: 1286063, runs: '+150 runs' }
+];
+
 const Pricing: React.FC = () => {
+  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
+
+  const formatPrice = (priceINR: number) => {
+    if (currency === 'INR') {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+      }).format(priceINR);
+    } else {
+      const priceUSD = priceINR / CONVERSION_RATE;
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(priceUSD);
+    }
+  };
+
   return (
     <div className="bg-white py-24 px-6">
-      <div className="max-w-5xl mx-auto text-center space-y-6 mb-24">
+      <div className="max-w-5xl mx-auto text-center space-y-6 mb-16">
         <div className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
           Pricing Prospectus 2026
@@ -71,6 +98,24 @@ const Pricing: React.FC = () => {
         <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
           Avagama AI provides upper mid and large enterprises with the scientific rigor needed to prioritize automation investments.
         </p>
+      </div>
+
+      {/* Currency Toggle */}
+      <div className="flex justify-center mb-16">
+        <div className="bg-white border border-gray-100 rounded-full p-1.5 shadow-sm flex items-center gap-1">
+          <button 
+            onClick={() => setCurrency('USD')}
+            className={`px-8 py-2.5 rounded-full text-xs font-black tracking-widest transition-all ${currency === 'USD' ? 'bg-[#1a1c2e] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            USD
+          </button>
+          <button 
+            onClick={() => setCurrency('INR')}
+            className={`px-8 py-2.5 rounded-full text-xs font-black tracking-widest transition-all ${currency === 'INR' ? 'bg-[#1a1c2e] text-white shadow-lg' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            INR
+          </button>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -89,7 +134,7 @@ const Pricing: React.FC = () => {
 
             <div className="mb-12">
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-black text-gray-900 tracking-tighter">{plan.price}</span>
+                <span className="text-5xl font-black text-gray-900 tracking-tighter">{formatPrice(plan.priceINR)}</span>
                 <span className="text-gray-400 font-bold text-sm">{plan.duration}</span>
               </div>
             </div>
@@ -140,14 +185,10 @@ const Pricing: React.FC = () => {
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { label: '1 Month Ext.', price: '₹2,37,500', runs: '+25 runs' },
-                { label: '3 Month Ext.', price: '₹6,76,875', runs: '+75 runs' },
-                { label: '6 Month Ext.', price: '₹12,86,063', runs: '+150 runs' }
-              ].map((addon, i) => (
+              {addons.map((addon, i) => (
                 <div key={i} className="bg-white p-8 rounded-3xl border border-gray-200 text-center space-y-4 shadow-sm hover:shadow-lg transition-all">
                    <div className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest">{addon.label}</div>
-                   <div className="text-xl font-black text-gray-900">{addon.price}</div>
+                   <div className="text-xl font-black text-gray-900">{formatPrice(addon.priceINR)}</div>
                    <div className="text-[10px] font-bold text-[#4db6ac] uppercase">{addon.runs}</div>
                    <button className="w-full py-3 rounded-xl bg-gray-50 text-gray-800 text-[10px] font-black uppercase tracking-widest hover:bg-gray-100">Add to Pack</button>
                 </div>

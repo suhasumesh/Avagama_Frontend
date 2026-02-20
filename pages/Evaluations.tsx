@@ -181,7 +181,10 @@ const Evaluations: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <Link to={`/results/${item._id}`} className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate max-w-[280px]">
+                  <Link 
+                    to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
+                    className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate max-w-[280px]"
+                  >
                     {item.discovery?.processName || 'Untitled Process'}
                   </Link>
                 </div>

@@ -137,9 +137,6 @@ const DiscoveryDetail: React.FC = () => {
                    <span className={`w-1.5 h-1.5 rounded-full ${discoveryType === 'domain' ? 'bg-[#4db6ac]' : 'bg-[#9d7bb0]'}`}></span>
                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{data.industry || (discoveryType === 'domain' ? 'Industry Mapping' : 'Company Analysis')}</span>
                 </div>
-                <div className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
-                  Agent: {data.model || 'Agentic Synth 1.0'}
-                </div>
               </div>
            </div>
            

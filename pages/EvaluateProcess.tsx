@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiService } from "../services/api";
 
 const EvaluateProcess: React.FC = () => {
@@ -9,6 +9,8 @@ const EvaluateProcess: React.FC = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [activeDimension, setActiveDimension] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [evaluationId, setEvaluationId] = useState<string | null>(null);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -16,7 +18,7 @@ const EvaluateProcess: React.FC = () => {
     description: "",
     model: "mistral-large-latest",
     agentType: "Process Discovery Agent",
-    volume: "5000",
+    volume: "",
     frequency: "Daily",
     complexity: 5,
     exceptionRate: 20,
@@ -24,6 +26,37 @@ const EvaluateProcess: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const idParam = searchParams.get('id');
+
+  // Prefill if ID exists in URL
+  useEffect(() => {
+    if (idParam) {
+      setEvaluationId(idParam);
+      const fetchDraft = async () => {
+        try {
+          const res = await apiService.evaluations.get(idParam);
+          if (res.success) {
+            const data = res.data;
+            setFormData({
+              processName: data.discovery?.processName || "",
+              description: data.discovery?.strategicContext || "",
+              model: data.aiConfig?.baseModel || "mistral-large-latest",
+              agentType: data.discovery?.targetAgent || "Process Discovery Agent",
+              volume: data.operations?.monthlyVolume?.toString() || "",
+              frequency: data.operations?.frequency || "Daily",
+              complexity: data.operations?.complexityScore || 5,
+              exceptionRate: data.operations?.exceptionRate || 20,
+              riskTolerance: data.operations?.riskTolerance || "Medium",
+            });
+          }
+        } catch (err) {
+          console.error("Error fetching draft:", err);
+        }
+      };
+      fetchDraft();
+    }
+  }, [idParam]);
 
   // Animation effect for the dimension loader
   useEffect(() => {
@@ -54,25 +87,59 @@ const EvaluateProcess: React.FC = () => {
     }
   };
 
+  const handleSaveDraft = async () => {
+    try {
+      setIsSavingDraft(true);
+      const payload: any = {
+        processName: formData.processName,
+        strategicContext: formData.description,
+        targetAgent: formData.agentType,
+      };
+      
+      if (evaluationId) {
+        payload.id = evaluationId;
+      }
+      
+      const res = await apiService.evaluations.create(payload);
+      if (res.success) {
+        const newId = res.data._id || res.data.id;
+        setEvaluationId(newId);
+        navigate("/evaluations");
+      }
+    } catch (error) {
+      console.error("Save draft error:", error);
+      alert("Failed to save draft.");
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
   const handleFinalSubmit = async () => {
     try {
       setShowConfirm(false);
       setIsEvaluating(true);
 
-      const createRes = await apiService.evaluations.create({
+      const payload: any = {
         processName: formData.processName,
         strategicContext: formData.description,
         targetAgent: formData.agentType,
-      });
-
-      if (!createRes.success) throw new Error("Creation failed");
-      const evaluationId = createRes.data._id || createRes.data.id;
-
-      if (selectedFile) {
-        await apiService.evaluations.uploadSOP(evaluationId, selectedFile);
+      };
+      
+      if (evaluationId) {
+        payload.id = evaluationId;
       }
 
-      await apiService.evaluations.updateOperations(evaluationId, {
+      const createRes = await apiService.evaluations.create(payload);
+
+      if (!createRes.success) throw new Error("Creation failed");
+      const currentId = createRes.data._id || createRes.data.id;
+      setEvaluationId(currentId);
+
+      if (selectedFile) {
+        await apiService.evaluations.uploadSOP(currentId, selectedFile);
+      }
+
+      await apiService.evaluations.updateOperations(currentId, {
         monthlyVolume: Number(formData.volume),
         frequency: formData.frequency,
         complexityScore: Number(formData.complexity),
@@ -82,16 +149,16 @@ const EvaluateProcess: React.FC = () => {
         decisionPoints: 3,
       });
 
-      await apiService.evaluations.updateAIConfig(evaluationId, {
+      await apiService.evaluations.updateAIConfig(currentId, {
         baseModel: formData.model,
         riskAppetite: formData.riskTolerance,
       });
 
-      const runRes = await apiService.evaluations.runAgent(evaluationId);
+      const runRes = await apiService.evaluations.runAgent(currentId);
       if (!runRes.success) throw new Error("Inference failed");
 
       localStorage.setItem("latestEvaluationResult", JSON.stringify(runRes.data));
-      navigate(`/results/${evaluationId}`);
+      navigate(`/results/${currentId}`);
     } catch (error) {
       console.error("Evaluation pipeline error:", error);
       setIsEvaluating(false);
@@ -180,8 +247,12 @@ const EvaluateProcess: React.FC = () => {
           </div>
         </div>
         <div className="flex gap-4">
-          <button className="flex items-center gap-2 px-6 py-2 text-sm font-bold border border-gray-200 bg-white rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
-            Save as draft
+          <button 
+            onClick={handleSaveDraft}
+            disabled={isSavingDraft || !formData.processName}
+            className="flex items-center gap-2 px-6 py-2 text-sm font-bold border border-gray-200 bg-white rounded-lg text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {isSavingDraft ? 'Saving...' : 'Save as draft'}
           </button>
           <button
             onClick={() => (step === 5 ? setShowConfirm(true) : handleNext())}
@@ -327,6 +398,7 @@ const EvaluateProcess: React.FC = () => {
                     value={formData.volume}
                     onChange={handleInputChange}
                     type="number"
+                    placeholder="0"
                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium"
                   />
                 </div>
@@ -390,8 +462,8 @@ const EvaluateProcess: React.FC = () => {
                     onChange={handleInputChange}
                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-bold text-[#9d7bb0]"
                   >
-                    <option value="mistral-large-latest">Mistral Large (Advanced Reasoner)</option>
-                    <option value="mistral-small-latest">Mistral Small (Efficiency Engine)</option>
+                    <option value="mistral-large-latest">Advanced Reasoner</option>
+                    <option value="mistral-small-latest">Efficiency Engine</option>
                   </select>
                 </div>
                 <div className="space-y-2">

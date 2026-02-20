@@ -4,7 +4,7 @@
  * Integrated with Render backend at https://avagama-backend.onrender.com/api
  */
 
-const BASE_URL = 'https://avagama-backend.onrender.com/api';
+const BASE_URL = '/api';
 
 const getHeaders = (isJson = true) => {
   const token = localStorage.getItem('token');
