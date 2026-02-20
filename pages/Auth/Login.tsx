@@ -35,8 +35,16 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         if (token) {
           localStorage.setItem("token", token);
           
-          // Store user info if available in the response
-          const userInfo = response.user || response.data?.user || { firstName: email.split('@')[0] };
+          // Capture user data from various possible structures
+          const rawUser = response.user || response.data?.user || {};
+          const role = rawUser.role || response.role || response.data?.role || 'USER_ROLE';
+          
+          const userInfo = {
+            ...rawUser,
+            firstName: rawUser.firstName || email.split('@')[0],
+            role: role
+          };
+          
           localStorage.setItem("user", JSON.stringify(userInfo));
 
           onLogin();

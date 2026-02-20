@@ -4,7 +4,7 @@
  * Integrated with Render backend at https://avagama-backend.onrender.com/api
  */
 
-const BASE_URL = '/api';
+const BASE_URL = 'https://avagama-backend.onrender.com/api';
 
 const getHeaders = (isJson = true) => {
   const token = localStorage.getItem('token');
@@ -182,6 +182,65 @@ export const apiService = {
     },
     getDomain: async (id: string) => {
       const response = await fetch(`${BASE_URL}/usecases-domain/${id}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    }
+  },
+
+  admin: {
+    getUsers: async () => {
+      const response = await fetch(`${BASE_URL}/admin/users`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    approveUser: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/admin/approve/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    grantAdmin: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/admin/grant-admin/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    revokeAdmin: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/admin/revoke-admin/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    toggleStatus: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/admin/toggle-status/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    assignPlan: async (id: string, planData: { plan: string, validityDays: number, credits: number }) => {
+      const response = await fetch(`${BASE_URL}/admin/assign-plan/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(planData),
+      });
+      return handleResponse(response);
+    },
+    adjustCredits: async (id: string, credits: number) => {
+      const response = await fetch(`${BASE_URL}/admin/adjust-credits/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify({ credits }),
+      });
+      return handleResponse(response);
+    },
+    getDashboard: async () => {
+      const response = await fetch(`${BASE_URL}/admin/dashboard`, {
         headers: getHeaders(),
       });
       return handleResponse(response);

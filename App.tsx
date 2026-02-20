@@ -17,6 +17,7 @@ import Pricing from './pages/Pricing';
 import CompanyDiscovery from './pages/Discovery/CompanyDiscovery';
 import DomainDiscovery from './pages/Discovery/DomainDiscovery';
 import DiscoveryDetail from './pages/Discovery/DiscoveryDetail';
+import AdminPanel from './pages/Admin/AdminPanel';
 import Navigation from './components/Navigation';
 
 const App: React.FC = () => {
@@ -49,6 +50,9 @@ const App: React.FC = () => {
             <Route path="/discovery/company" element={<CompanyDiscovery />} />
             <Route path="/discovery/domain" element={<DomainDiscovery />} />
             <Route path="/discovery/detail/:id" element={<DiscoveryDetail />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </main>
         

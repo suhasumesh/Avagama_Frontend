@@ -11,29 +11,45 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
   const location = useLocation();
   const navigate = useNavigate();
   const [initial, setInitial] = useState('U');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showDiscoveryMenu, setShowDiscoveryMenu] = useState(false);
   const dropdownTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          const user = JSON.parse(storedUser);
-          if (user.firstName) {
-            setInitial(user.firstName.charAt(0).toUpperCase());
+    const checkUser = () => {
+      if (isAuthenticated) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            if (user.firstName) {
+              setInitial(user.firstName.charAt(0).toUpperCase());
+            }
+            // Flexible check for admin role
+            const userRole = (user.role || '').toString().trim().toUpperCase();
+            setIsAdmin(userRole === 'ADMIN_ROLE' || userRole === 'ADMIN' || user.isAdmin === true);
+          } catch (e) {
+            console.error("Failed to parse user data");
           }
-        } catch (e) {
-          console.error("Failed to parse user data");
         }
+      } else {
+        setIsAdmin(false);
+        setInitial('U');
       }
-    }
+    };
+
+    checkUser();
+    
+    // Also listen for storage events in case of multi-tab or manual updates
+    window.addEventListener('storage', checkUser);
+    
     return () => {
+      window.removeEventListener('storage', checkUser);
       if (dropdownTimeoutRef.current) {
         window.clearTimeout(dropdownTimeoutRef.current);
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location.pathname]); // Added location.pathname to re-check on navigation just in case
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -125,6 +141,10 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
             </div>
 
             <Link to="/evaluations" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/evaluations' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>MY EVALUATIONS</Link>
+            
+            {isAdmin && (
+              <Link to="/admin" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/admin' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>ADMIN</Link>
+            )}
           </div>
         )}
       </div>
