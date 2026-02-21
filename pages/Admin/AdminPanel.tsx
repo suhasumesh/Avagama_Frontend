@@ -11,6 +11,9 @@ const AdminPanel: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [adminError, setAdminError] = useState<string | null>(null);
   
   // Form states
   const [planForm, setPlanForm] = useState({ plan: 'BASIC', validityDays: 30, credits: 1000 });
@@ -53,8 +56,8 @@ const AdminPanel: React.FC = () => {
     try {
       const res = await apiService.admin.approveUser(id);
       if (res.success) fetchData();
-    } catch (err) {
-      alert("Failed to approve user");
+    } catch (err: any) {
+      setAdminError(err.message || "Failed to approve user");
     }
   };
 
@@ -64,8 +67,8 @@ const AdminPanel: React.FC = () => {
         ? await apiService.admin.revokeAdmin(user._id)
         : await apiService.admin.grantAdmin(user._id);
       if (res.success) fetchData();
-    } catch (err) {
-      alert("Failed to update admin role");
+    } catch (err: any) {
+      setAdminError(err.message || "Failed to update admin role");
     }
   };
 
@@ -73,8 +76,8 @@ const AdminPanel: React.FC = () => {
     try {
       const res = await apiService.admin.toggleStatus(id);
       if (res.success) fetchData();
-    } catch (err) {
-      alert("Failed to toggle status");
+    } catch (err: any) {
+      setAdminError(err.message || "Failed to toggle status");
     }
   };
 
@@ -86,8 +89,8 @@ const AdminPanel: React.FC = () => {
         fetchData();
         setShowPlanModal(false);
       }
-    } catch (err) {
-      alert("Failed to assign plan");
+    } catch (err: any) {
+      setAdminError(err.message || "Failed to assign plan");
     }
   };
 
@@ -99,20 +102,28 @@ const AdminPanel: React.FC = () => {
         fetchData();
         setShowCreditModal(false);
       }
-    } catch (err) {
-      alert("Failed to adjust credits");
+    } catch (err: any) {
+      setAdminError(err.message || "Failed to adjust credits");
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
     try {
-      await apiService.admin.deleteUser(id);
+      await apiService.admin.deleteUser(userToDelete._id);
       fetchData();
+      setShowDeleteModal(false);
+      setUserToDelete(null);
     } catch (err: any) {
       console.error("Delete user error:", err);
-      alert(`Failed to delete user: ${err.message || 'Unknown error'}`);
+      setAdminError(`Failed to delete user: ${err.message || 'Unknown error'}`);
+      setShowDeleteModal(false);
     }
+  };
+
+  const handleDeleteUser = (user: any) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
   };
 
   const handleOnboardSubmit = async (e: React.FormEvent) => {
@@ -396,7 +407,7 @@ const AdminPanel: React.FC = () => {
                               )}
                             </button>
                             <button 
-                              onClick={() => handleDeleteUser(user._id)}
+                              onClick={() => handleDeleteUser(user)}
                               className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
                               title="Delete User"
                             >
@@ -610,6 +621,67 @@ const AdminPanel: React.FC = () => {
               <button onClick={() => setShowCreditModal(false)} className="flex-1 py-4 border-2 border-gray-100 rounded-2xl font-black text-gray-400 hover:bg-gray-50 transition-colors uppercase text-[10px] tracking-widest">Cancel</button>
               <button onClick={handleAdjustCredits} className="flex-1 py-4 bg-[#a26da8] text-white rounded-2xl font-black hover:bg-[#8b6aa1] shadow-xl shadow-purple-100 transition-all uppercase text-[10px] tracking-widest">Update Credits</button>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] flex items-center justify-center p-6">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-[40px] p-12 max-w-md w-full shadow-2xl space-y-8"
+          >
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-3xl mx-auto">
+                ⚠️
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-black text-gray-900">Confirm Deletion</h3>
+                <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                  Are you sure you want to delete <span className="font-bold text-gray-900">{userToDelete?.email}</span>? 
+                  This action is permanent and cannot be undone.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4 pt-4">
+              <button 
+                onClick={() => { setShowDeleteModal(false); setUserToDelete(null); }} 
+                className="flex-1 py-4 border-2 border-gray-100 rounded-2xl font-black text-gray-400 hover:bg-gray-50 transition-colors uppercase text-[10px] tracking-widest"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete} 
+                className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black hover:bg-red-600 shadow-xl shadow-red-100 transition-all uppercase text-[10px] tracking-widest"
+              >
+                Delete User
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Error Toast */}
+      {adminError && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[150]">
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-gray-900 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10"
+          >
+            <span className="text-red-400 font-black">ERROR</span>
+            <span className="text-sm font-medium">{adminError}</span>
+            <button 
+              onClick={() => setAdminError(null)}
+              className="ml-4 p-1 hover:bg-white/10 rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </motion.div>
         </div>
       )}
