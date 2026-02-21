@@ -37,6 +37,11 @@ const Evaluations: React.FC = () => {
     navigate(`/compare?ids=${selectedIds.join(',')}`);
   };
 
+  const handlePrism = () => {
+    if (selectedIds.length === 0) return;
+    navigate(`/prism?ids=${selectedIds.join(',')}`);
+  };
+
   const handleExport = async () => {
     if (evaluations.length === 0) {
       alert("No data available to export.");
@@ -110,6 +115,22 @@ const Evaluations: React.FC = () => {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             Compare
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 2 ? 'bg-[#9d7bb0] text-white' : 'bg-gray-200 text-white'}`}>
+              {selectedIds.length}
+            </span>
+          </button>
+
+          <button 
+            onClick={handlePrism}
+            disabled={selectedIds.length === 0}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border transition-all ${
+              selectedIds.length >= 1 
+                ? 'bg-white border-[#4db6ac] text-[#4db6ac] hover:bg-teal-50 shadow-sm' 
+                : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Plot to Gartner Prism
+            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 1 ? 'bg-[#4db6ac] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
             </span>
           </button>

@@ -11,6 +11,7 @@ import Evaluations from './pages/Evaluations';
 import EvaluateProcess from './pages/EvaluateProcess';
 import Results from './pages/Results';
 import Compare from './pages/Compare';
+import Prism from './pages/Prism';
 import About from './pages/About';
 import CEO from './pages/CEO';
 import Pricing from './pages/Pricing';
@@ -45,6 +46,7 @@ const App: React.FC = () => {
             <Route path="/evaluate" element={<EvaluateProcess />} />
             <Route path="/results/:id" element={<Results />} />
             <Route path="/compare" element={<Compare />} />
+            <Route path="/prism" element={<Prism />} />
             
             {/* New Discovery Routes */}
             <Route path="/discovery/company" element={<CompanyDiscovery />} />
