@@ -17,7 +17,9 @@ const getHeaders = (isJson = true) => {
 const handleResponse = async (response: Response) => {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.message || data.error || `Server Error: ${response.status}`);
+    const error: any = new Error(data.message || data.error || `Server Error: ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
   return data;
 };

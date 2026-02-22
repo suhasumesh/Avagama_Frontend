@@ -91,8 +91,11 @@ const CortexChatModal: React.FC = () => {
       if (res.success) {
         setMessages(prev => [...prev, { role: 'assistant', content: res.answer }]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to send message", err);
+      if (err.status === 404) {
+        alert("the usecase id was not found");
+      }
       setMessages(prev => [...prev, { role: 'assistant', content: "I'm sorry, I encountered an error processing your request. Please try again." }]);
     } finally {
       setLoading(false);
