@@ -38,11 +38,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           // Capture user data from various possible structures
           const rawUser = response.user || response.data?.user || {};
           const role = rawUser.role || response.role || response.data?.role || 'USER_ROLE';
+          const credits = rawUser.credits !== undefined ? rawUser.credits : (response.credits !== undefined ? response.credits : 0);
+          const licenseExpiry = rawUser.licenseExpiry || response.licenseExpiry || null;
+          const plan = rawUser.plan || response.plan || 'Free';
           
           const userInfo = {
             ...rawUser,
             firstName: rawUser.firstName || email.split('@')[0],
-            role: role
+            role: role,
+            credits: credits,
+            licenseExpiry: licenseExpiry,
+            plan: plan
           };
           
           localStorage.setItem("user", JSON.stringify(userInfo));

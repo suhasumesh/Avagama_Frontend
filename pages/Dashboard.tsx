@@ -90,6 +90,15 @@ const Dashboard: React.FC = () => {
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Command Center v2.4</p>
         </div>
         <div className="flex items-center gap-3">
+          {user?.credits !== undefined && (
+            <div className={`px-4 py-2 rounded-xl border shadow-sm flex items-center gap-3 transition-all ${user.credits <= 5 ? 'bg-red-50 border-red-100 animate-pulse' : 'bg-white border-gray-100'}`}>
+              <span className={`w-2 h-2 rounded-full ${user.credits <= 5 ? 'bg-red-500' : 'bg-[#9d7bb0]'}`}></span>
+              <span className={`text-xs font-black uppercase tracking-wider ${user.credits <= 5 ? 'text-red-600' : 'text-gray-600'}`}>
+                AI Credits: {user.credits}
+              </span>
+              {user.credits <= 5 && <span className="text-[8px] font-black text-red-400 uppercase">(Low)</span>}
+            </div>
+          )}
           <div className="px-4 py-2 bg-white rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
              <span className="text-xs font-black text-gray-600 uppercase tracking-wider">Live Metrics</span>

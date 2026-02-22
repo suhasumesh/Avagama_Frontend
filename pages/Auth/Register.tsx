@@ -35,11 +35,16 @@ const Register: React.FC = () => {
     setSuccess('');
     
     try {
+      const licenseAssignedAt = new Date().toISOString();
+      const licenseExpiry = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(); // 2 days from now
+
       const response = await apiService.auth.register({
         companyName: formData.companyName,
         email: formData.email,
         password: formData.password,
-        reenterPassword: formData.reenterPassword
+        reenterPassword: formData.reenterPassword,
+        licenseAssignedAt,
+        licenseExpiry
       });
       
       setSuccess(response.message || 'Signup successful. Await admin approval.');

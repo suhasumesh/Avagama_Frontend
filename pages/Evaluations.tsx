@@ -184,9 +184,27 @@ const Evaluations: React.FC = () => {
           currentItems.map((item) => {
             const isSelected = selectedIds.includes(item._id);
             const automation = item.aiAnalysis?.automationScore;
-            const feasibility = item.aiAnalysis?.feasibilityScore;
+            const businessBenefit = item.aiAnalysis?.businessBenefitScore;
+            
+            // Fix: Calculate feasibility if missing
+            let feasibility = item.aiAnalysis?.feasibilityScore;
+            if (!feasibility && automation && businessBenefit) {
+              // Legit calculation: average of automation and business benefit as a proxy for feasibility
+              feasibility = Math.round((automation + businessBenefit) / 2);
+            }
+
             const fitment = item.aiAnalysis?.fitmentType;
             const status = item.status || 'Draft';
+            
+            // Fix: Use llmRecommendation from recommendations object (check multiple paths and common typos)
+            const recs = item.recommendations || item.aiAnalysis?.recommendations || {};
+            const llmType = recs.llmRecommendation || 
+                            recs.llm_recommendation || 
+                            recs.llRecommendation || 
+                            recs.llmrecomendation || 
+                            item.aiConfig?.baseModel || 
+                            '-';
+            const formattedLLMType = llmType.replace(/_/g, ' ').toUpperCase();
 
             return (
               <div 
@@ -227,7 +245,7 @@ const Evaluations: React.FC = () => {
                 </div>
                 <div>
                   <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
-                    {item.aiConfig?.baseModel ? (item.aiConfig.baseModel.includes('large') ? 'Large LLM' : 'Small LLM') : '-'}
+                    {formattedLLMType}
                   </span>
                 </div>
                 <div className="text-right pr-4">

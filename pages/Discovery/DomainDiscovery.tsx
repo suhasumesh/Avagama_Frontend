@@ -10,9 +10,21 @@ const DomainDiscovery: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [fetchingHistory, setFetchingHistory] = useState(true);
+  const [credits, setCredits] = useState<number>(0);
+  const [errorModal, setErrorModal] = useState<{ show: boolean; title: string; message: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.credits !== undefined) setCredits(user.credits);
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
+    }
+
     const fetchHistory = async () => {
       try {
         const res = await apiService.useCases.listDomain();
@@ -53,7 +65,16 @@ const DomainDiscovery: React.FC = () => {
       }
     } catch (err: any) {
       console.error("AI Domain Mapping error:", err);
-      alert(`Agent Error: ${err.message || "Could not complete industry mapping. Please verify your connection."}`);
+      const errorMessage = err.message || "";
+      if (errorMessage.toLowerCase().includes('insufficient credits') || errorMessage.toLowerCase().includes('credit')) {
+        setErrorModal({
+          show: true,
+          title: "Insufficient Credits",
+          message: "You do not have enough AI credits to run this domain capability mapping. Please contact your administrator for assistance."
+        });
+      } else {
+        alert(`Agent Error: ${errorMessage || "Could not complete industry mapping. Please verify your connection."}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -63,9 +84,15 @@ const DomainDiscovery: React.FC = () => {
     <div className="min-h-screen bg-[#fcfdff] p-8 space-y-12">
       {/* Hero Header */}
       <div className="max-w-4xl mx-auto text-center space-y-8 pt-12">
-        <div className="inline-flex items-center gap-2 bg-teal-50 text-[#4db6ac] px-5 py-2 rounded-full text-[10px] font-black tracking-widest uppercase">
-          <span className="w-2 h-2 rounded-full bg-[#4db6ac] animate-pulse"></span>
-          Domain Capability Mapper
+        <div className="flex justify-center items-center gap-4 mb-4">
+          <div className="inline-flex items-center gap-2 bg-teal-50 text-[#4db6ac] px-5 py-2 rounded-full text-[10px] font-black tracking-widest uppercase">
+            <span className="w-2 h-2 rounded-full bg-[#4db6ac] animate-pulse"></span>
+            Domain Capability Mapper
+          </div>
+          <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border flex items-center gap-2 transition-all ${credits <= 5 ? 'bg-red-50 text-red-600 border-red-200 animate-pulse' : 'bg-white text-gray-400 border-gray-100'}`}>
+            AI Credit: {credits}
+            {credits <= 5 && <span className="text-[8px] font-black text-red-400 uppercase">(Low - Contact Admin)</span>}
+          </div>
         </div>
         <h1 className="text-5xl font-black text-gray-900 tracking-tight leading-tight">
           Explore Vertical <span className="text-[#4db6ac]">AI Potential</span> <br />
@@ -175,6 +202,33 @@ const DomainDiscovery: React.FC = () => {
           </div>
         )}
       </div>
+
+      {errorModal?.show && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-6">
+          <div className="bg-white rounded-[50px] p-16 max-w-xl w-full shadow-2xl space-y-8 border border-white/20">
+            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[24px] flex items-center justify-center mx-auto border border-red-100">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="text-center space-y-3">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">{errorModal.title}</h3>
+              <p className="text-gray-500 font-medium leading-relaxed">
+                {errorModal.message}
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                setErrorModal(null);
+                navigate('/dashboard');
+              }} 
+              className="w-full py-5 bg-gray-900 text-white rounded-3xl font-black hover:bg-black transition-all uppercase text-xs tracking-widest shadow-xl shadow-gray-200"
+            >
+              Acknowledge
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

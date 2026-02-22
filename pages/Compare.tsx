@@ -82,7 +82,15 @@ const Compare: React.FC = () => {
                   </div>
                   <div className="p-5 bg-teal-50 rounded-3xl border border-teal-100 text-center">
                     <div className="text-[9px] font-bold text-[#4db6ac] uppercase tracking-tighter mb-1">Feasibility</div>
-                    <div className="text-2xl font-black text-[#4db6ac]">{item.aiAnalysis?.feasibilityScore}%</div>
+                    <div className="text-2xl font-black text-[#4db6ac]">
+                      {(() => {
+                        let f = item.aiAnalysis?.feasibilityScore;
+                        if (!f && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
+                          f = Math.round((item.aiAnalysis.automationScore + item.aiAnalysis.businessBenefitScore) / 2);
+                        }
+                        return f ? `${f}%` : '-';
+                      })()}
+                    </div>
                   </div>
                 </div>
 

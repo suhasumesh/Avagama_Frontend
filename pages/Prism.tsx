@@ -152,7 +152,13 @@ const GartnerPrism: React.FC = () => {
     
     items.forEach((item, idx) => {
       const bv = (item.aiAnalysis?.businessBenefitScore || 0) / 100;
-      const f = (item.aiAnalysis?.feasibilityScore || 0) / 100;
+      
+      // Fix: Fallback feasibility calculation
+      let feasibilityScore = item.aiAnalysis?.feasibilityScore;
+      if (!feasibilityScore && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
+        feasibilityScore = Math.round((item.aiAnalysis.automationScore + item.aiAnalysis.businessBenefitScore) / 2);
+      }
+      const f = (feasibilityScore || 0) / 100;
 
       // Y position based on Value (Higher score = smaller Y)
       // Constrain Y to be within [padding, h - padding]
@@ -329,6 +335,26 @@ const GartnerPrism: React.FC = () => {
                     <div className="space-y-0.5">
                       <span className="text-xs font-black text-gray-900 uppercase block truncate max-w-[200px]">{item.discovery?.processName}</span>
                       <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Process Profile</span>
+                    </div>
+                  </div>
+
+                  {/* Summary Scores */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Value Score</p>
+                      <p className="text-lg font-black text-[#9d7bb0]">{item.aiAnalysis?.businessBenefitScore}%</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Feasibility</p>
+                      <p className="text-lg font-black text-[#4db6ac]">
+                        {(() => {
+                          let f = item.aiAnalysis?.feasibilityScore;
+                          if (!f && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
+                            f = Math.round((item.aiAnalysis.automationScore + item.aiAnalysis.businessBenefitScore) / 2);
+                          }
+                          return f ? `${f}%` : '-';
+                        })()}
+                      </p>
                     </div>
                   </div>
                   

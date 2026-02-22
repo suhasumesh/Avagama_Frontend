@@ -208,7 +208,7 @@ const Results: React.FC = () => {
             
             <div className="p-8 bg-gradient-to-br from-[#9d7bb0]/10 to-[#6fcbbd]/10 rounded-[40px] border border-white space-y-3">
               <h4 className="text-xs font-bold text-gray-800">Need more depth?</h4>
-              <p className="text-[11px] text-gray-500 leading-relaxed">This evaluation used 75 credits. You can re-run with different parameters to explore alternative fitment scenarios.</p>
+              <p className="text-[11px] text-gray-500 leading-relaxed">This evaluation used credits from your balance. You can re-run with different parameters to explore alternative fitment scenarios.</p>
               <button onClick={() => navigate('/evaluate')} className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest hover:underline mt-2">Adjust Parameters</button>
             </div>
           </div>

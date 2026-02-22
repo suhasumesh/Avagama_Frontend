@@ -7,10 +7,12 @@ const EvaluateProcess: React.FC = () => {
   const [step, setStep] = useState(1);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [errorModal, setErrorModal] = useState<{ show: boolean; title: string; message: string } | null>(null);
   const [activeDimension, setActiveDimension] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [evaluationId, setEvaluationId] = useState<string | null>(null);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [credits, setCredits] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -31,6 +33,16 @@ const EvaluateProcess: React.FC = () => {
 
   // Prefill if ID exists in URL
   useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.credits !== undefined) setCredits(user.credits);
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
+    }
+
     if (idParam) {
       setEvaluationId(idParam);
       const fetchDraft = async () => {
@@ -155,14 +167,23 @@ const EvaluateProcess: React.FC = () => {
       });
 
       const runRes = await apiService.evaluations.runAgent(currentId);
-      if (!runRes.success) throw new Error("Inference failed");
-
+      
       localStorage.setItem("latestEvaluationResult", JSON.stringify(runRes.data));
       navigate(`/results/${currentId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Evaluation pipeline error:", error);
       setIsEvaluating(false);
-      alert("Pipeline disruption. Please verify inputs and re-execute.");
+      
+      const errorMessage = error.message || "";
+      if (errorMessage.toLowerCase().includes('insufficient credits') || errorMessage.toLowerCase().includes('credit')) {
+        setErrorModal({
+          show: true,
+          title: "Insufficient Credits",
+          message: "Your AI credit balance is too low to execute this evaluation. Please contact your administrator to allocate additional credits to your workspace."
+        });
+      } else {
+        alert("Pipeline disruption. Please verify inputs and re-execute.");
+      }
     }
   };
 
@@ -242,8 +263,9 @@ const EvaluateProcess: React.FC = () => {
             </svg>
           </button>
           <h1 className="text-2xl font-bold text-gray-900">Evaluate a process</h1>
-          <div className="bg-[#9d7bb0]/10 text-[#9d7bb0] px-3 py-1 rounded-full text-xs font-bold border border-[#9d7bb0]/20 flex items-center gap-1">
-            AI Credit: <span className="text-sm font-black">75 Remaining</span>
+          <div className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1 transition-all ${credits <= 5 ? 'bg-red-50 text-red-600 border-red-200 animate-pulse' : 'bg-[#9d7bb0]/10 text-[#9d7bb0] border-[#9d7bb0]/20'}`}>
+            AI Credit: <span className="text-sm font-black">{credits} Remaining</span>
+            {credits <= 5 && <span className="ml-1 text-[8px] uppercase font-black">(Low - Contact Admin)</span>}
           </div>
         </div>
         <div className="flex gap-4">
@@ -596,6 +618,33 @@ const EvaluateProcess: React.FC = () => {
               <button onClick={() => setShowConfirm(false)} className="flex-1 py-5 border-2 border-gray-100 rounded-3xl font-black text-gray-400 hover:bg-gray-50 transition-colors uppercase text-xs tracking-widest">Hold on</button>
               <button onClick={handleFinalSubmit} className="flex-1 py-5 bg-[#9d7bb0] text-white rounded-3xl font-black hover:bg-[#8b6aa1] shadow-2xl shadow-purple-200 transition-all uppercase text-xs tracking-widest">Execute Agent</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {errorModal?.show && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-6">
+          <div className="bg-white rounded-[50px] p-16 max-w-xl w-full shadow-2xl space-y-8 border border-white/20 animate-scaleUp">
+            <div className="w-20 h-20 bg-red-50 text-red-500 rounded-[24px] flex items-center justify-center mx-auto border border-red-100">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div className="text-center space-y-3">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">{errorModal.title}</h3>
+              <p className="text-gray-500 font-medium leading-relaxed">
+                {errorModal.message}
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                setErrorModal(null);
+                navigate('/dashboard');
+              }} 
+              className="w-full py-5 bg-gray-900 text-white rounded-3xl font-black hover:bg-black transition-all uppercase text-xs tracking-widest shadow-xl shadow-gray-200"
+            >
+              Acknowledge
+            </button>
           </div>
         </div>
       )}
