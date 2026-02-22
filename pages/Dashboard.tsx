@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af', textTransform: 'uppercase'}} 
+                  tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af'}} 
                 />
                 <YAxis 
                   axisLine={false} 
@@ -294,7 +294,7 @@ const Dashboard: React.FC = () => {
                       type="category" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{fontSize: 11, fontWeight: 900, fill: '#4b5563', textTransform: 'uppercase'}} 
+                      tick={{fontSize: 11, fontWeight: 900, fill: '#4b5563'}} 
                       width={140} 
                     />
                     <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)'}} />

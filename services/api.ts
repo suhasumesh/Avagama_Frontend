@@ -188,6 +188,31 @@ export const apiService = {
     }
   },
 
+  ai: {
+    askCortex: async (question: string) => {
+      const response = await fetch(`${BASE_URL}/ai/ask-cortex`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ question }),
+      });
+      return handleResponse(response);
+    },
+    getUsecaseChat: async (collection: string, documentId: string, usecaseId: string) => {
+      const response = await fetch(`${BASE_URL}/ai/usecase-chat/${collection}/${documentId}/${usecaseId}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    askUsecase: async (payload: { question: string, collection: string, documentId: string, usecaseId: string }) => {
+      const response = await fetch(`${BASE_URL}/ai/ask-usecase`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      return handleResponse(response);
+    }
+  },
+
   admin: {
     getUsers: async () => {
       const response = await fetch(`${BASE_URL}/admin/users`, {

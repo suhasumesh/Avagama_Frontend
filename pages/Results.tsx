@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiService } from '../services/api';
+import { useCortex } from '../context/CortexContext';
 
 const Results: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { openChat } = useCortex();
 
   useEffect(() => {
     if (!id) return;
@@ -87,11 +89,22 @@ const Results: React.FC = () => {
           </div>
           
           <div className="flex gap-3">
-             <button className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
-               Print PDF
+             <button 
+               onClick={() => openChat({
+                 collection: 'evaluation',
+                 documentId: id!,
+                 usecaseId: 'global',
+                 title: discovery.processName || 'Evaluation'
+               })}
+               className="px-6 py-3 bg-[#9d7bb0] text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 flex items-center gap-2"
+             >
+               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+               </svg>
+               Ask Cortex
              </button>
-             <button className="px-8 py-3 bg-[#9d7bb0] text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100">
-               Share Report
+             <button onClick={() => window.print()} className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
+               Print PDF
              </button>
           </div>
         </div>

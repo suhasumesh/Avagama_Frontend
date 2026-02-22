@@ -181,6 +181,12 @@ const EvaluateProcess: React.FC = () => {
           title: "Insufficient Credits",
           message: "Your AI credit balance is too low to execute this evaluation. Please contact your administrator to allocate additional credits to your workspace."
         });
+      } else if (errorMessage.toLowerCase().includes('invalid json')) {
+        setErrorModal({
+          show: true,
+          title: "Intelligence Synthesis Error",
+          message: "The AI Agent encountered a formatting anomaly while generating your report. This can happen with highly complex inputs. Please try re-executing or switching the LLM Engine in Step 4."
+        });
       } else {
         alert("Pipeline disruption. Please verify inputs and re-execute.");
       }

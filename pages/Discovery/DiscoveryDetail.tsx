@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { apiService } from '../../services/api';
+import { useCortex } from '../../context/CortexContext';
 
 const DiscoveryDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -9,6 +10,7 @@ const DiscoveryDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { openChat } = useCortex();
 
   // Determine back path from query params
   const searchParams = new URLSearchParams(location.search);
@@ -246,7 +248,27 @@ const DiscoveryDetail: React.FC = () => {
                                 <p className="text-[11px] font-bold text-gray-600">Calculated Strategy Alignment</p>
                              </div>
                           </div>
-                          <span className="text-2xl font-black text-gray-900">{uc.totalWeightedScore || '-'}</span>
+                          <div className="flex items-center gap-6">
+                             <button 
+                               onClick={() => openChat({
+                                 collection: discoveryType as any,
+                                 documentId: data._id || data.id,
+                                 usecaseId: uc._id || uc.id,
+                                 title: uc.title
+                               })}
+                               className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                                 discoveryType === 'domain' 
+                                   ? 'bg-[#4db6ac] text-white hover:bg-[#3d968d]' 
+                                   : 'bg-[#9d7bb0] text-white hover:bg-[#8b6aa1]'
+                               }`}
+                             >
+                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                               </svg>
+                               Ask Avagama Cortex
+                             </button>
+                             <span className="text-2xl font-black text-gray-900">{uc.totalWeightedScore || '-'}</span>
+                          </div>
                        </div>
                     </div>
 

@@ -1,0 +1,70 @@
+
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+interface ChatConfig {
+  collection: 'domain' | 'company' | 'evaluation';
+  documentId: string;
+  usecaseId: string;
+  title?: string;
+}
+
+interface CortexContextType {
+  isChatOpen: boolean;
+  activeChat: ChatConfig | null;
+  openChat: (config: ChatConfig) => void;
+  closeChat: () => void;
+  isGlobalSearchOpen: boolean;
+  openGlobalSearch: () => void;
+  closeGlobalSearch: () => void;
+}
+
+const CortexContext = createContext<CortexContextType | undefined>(undefined);
+
+export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [activeChat, setActiveChat] = useState<ChatConfig | null>(null);
+  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+
+  const openChat = (config: ChatConfig) => {
+    setActiveChat(config);
+    setIsChatOpen(true);
+    setIsGlobalSearchOpen(false);
+  };
+
+  const closeChat = () => {
+    setIsChatOpen(false);
+    setActiveChat(null);
+  };
+
+  const openGlobalSearch = () => {
+    setIsGlobalSearchOpen(true);
+    setIsChatOpen(false);
+    setActiveChat(null);
+  };
+
+  const closeGlobalSearch = () => {
+    setIsGlobalSearchOpen(false);
+  };
+
+  return (
+    <CortexContext.Provider value={{ 
+      isChatOpen, 
+      activeChat, 
+      openChat, 
+      closeChat,
+      isGlobalSearchOpen,
+      openGlobalSearch,
+      closeGlobalSearch
+    }}>
+      {children}
+    </CortexContext.Provider>
+  );
+};
+
+export const useCortex = () => {
+  const context = useContext(CortexContext);
+  if (context === undefined) {
+    throw new Error('useCortex must be used within a CortexProvider');
+  }
+  return context;
+};
