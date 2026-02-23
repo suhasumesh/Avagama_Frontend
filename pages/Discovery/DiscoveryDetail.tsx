@@ -119,11 +119,11 @@ const DiscoveryDetail: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#fcfdff] min-h-screen pb-32">
+    <div className="bg-[#fcfdff] min-h-screen pb-24 md:pb-32">
       {/* Premium Header */}
-      <div className="bg-white border-b border-gray-100 px-8 py-14">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-end gap-10">
-           <div className="space-y-4">
+      <div className="bg-white border-b border-gray-100 px-4 md:px-8 py-6 md:py-14">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 md:gap-10">
+           <div className="space-y-3 md:space-y-4 w-full lg:w-auto">
               <button 
                 onClick={() => navigate(backPath)}
                 className="group flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-[#9d7bb0] transition-colors"
@@ -131,85 +131,85 @@ const DiscoveryDetail: React.FC = () => {
                 <svg className="w-3 h-3 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 Back to Discovery
               </button>
-              <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-none">
-                {data.domain || data.company_name} <span className="text-gray-200">/</span> <span className={discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}>Roadmap</span>
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight md:leading-none break-words">
+                {data.domain || data.company_name} <span className="text-gray-200 hidden md:inline">/</span> <span className={`${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'} block md:inline`}>Roadmap</span>
               </h1>
-              <div className="flex flex-wrap items-center gap-5">
-                <div className="px-4 py-1.5 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3 md:gap-5">
+                <div className="px-3 py-1 md:px-4 md:py-1.5 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-2">
                    <span className={`w-1.5 h-1.5 rounded-full ${discoveryType === 'domain' ? 'bg-[#4db6ac]' : 'bg-[#9d7bb0]'}`}></span>
                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{data.industry || (discoveryType === 'domain' ? 'Industry Mapping' : 'Company Analysis')}</span>
                 </div>
               </div>
            </div>
            
-           <div className="flex gap-4">
-              <div className="p-6 bg-white rounded-3xl border border-gray-100 text-center min-w-[140px] shadow-sm">
-                 <div className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Compute Yield</div>
-                 <div className="text-2xl font-black text-gray-900">{data.usage?.total_tokens?.toLocaleString() || 'N/A'}</div>
+           <div className="flex flex-row gap-3 md:gap-4 w-full lg:w-auto">
+              <div className="flex-1 lg:flex-none p-3 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-gray-100 text-center min-w-[100px] md:min-w-[140px] shadow-sm">
+                 <div className="text-[8px] md:text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Compute Yield</div>
+                 <div className="text-lg md:text-2xl font-black text-gray-900">{data.usage?.total_tokens?.toLocaleString() || 'N/A'}</div>
               </div>
-              <div className="p-6 bg-gray-900 rounded-3xl shadow-2xl text-center min-w-[140px]">
-                 <div className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Total Scenarios</div>
-                 <div className="text-2xl font-black text-white">{data.totalUseCases || data.use_cases?.length || 0}</div>
+              <div className="flex-1 lg:flex-none p-3 md:p-6 bg-gray-900 rounded-2xl md:rounded-3xl shadow-2xl text-center min-w-[100px] md:min-w-[140px]">
+                 <div className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Total Scenarios</div>
+                 <div className="text-lg md:text-2xl font-black text-white">{data.totalUseCases || data.use_cases?.length || 0}</div>
               </div>
            </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8 mt-16 space-y-16">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-8 md:mt-16 space-y-12 md:space-y-16">
         {/* Statistics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
            {[
              { label: 'Avg ROI Index', value: `${Math.round(data.avgBusinessBenefitScore || 0)}%`, color: 'text-gray-900' },
-             { label: 'Strong ROI Scenarios', value: data.strongROICount || 0, color: 'text-emerald-500' },
-             { label: 'Moderate ROI Scenarios', value: data.moderateROICount || 0, color: 'text-blue-500' },
-             { label: 'Peak Benefit Yield', value: `${data.maxBusinessBenefitScore || 0}%`, color: discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]' }
+             { label: 'Strong ROI', value: data.strongROICount || 0, color: 'text-emerald-500' },
+             { label: 'Moderate ROI', value: data.moderateROICount || 0, color: 'text-blue-500' },
+             { label: 'Peak Benefit', value: `${data.maxBusinessBenefitScore || 0}%`, color: discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]' }
            ].map((stat, i) => (
-             <div key={i} className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                <div className={`text-4xl font-black ${stat.color}`}>{stat.value}</div>
+             <div key={i} className="bg-white p-4 md:p-8 rounded-[24px] md:rounded-[40px] border border-gray-100 shadow-sm">
+                <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                <div className={`text-xl md:text-4xl font-black ${stat.color}`}>{stat.value}</div>
              </div>
            ))}
         </div>
 
         {/* Use Case Catalog */}
-        <div className="space-y-10">
+        <div className="space-y-8 md:space-y-10">
            <div className="flex justify-between items-center border-b border-gray-100 pb-6">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.4em] flex items-center gap-4">
-                 <span className="w-10 h-px bg-gray-200"></span>
+              <h3 className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.4em] flex items-center gap-2 md:gap-4">
+                 <span className="w-6 md:w-10 h-px bg-gray-200"></span>
                  Opportunity Catalog
               </h3>
-              <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Diagnostic Detail</span>
+              <span className="text-[9px] md:text-[10px] font-black text-gray-300 uppercase tracking-widest">Diagnostic Detail</span>
            </div>
            
-           <div className="grid grid-cols-1 gap-12">
+           <div className="grid grid-cols-1 gap-8 md:gap-12">
               {data.use_cases?.map((uc: any, idx: number) => (
-                <div key={idx} className={`bg-white rounded-[56px] border border-gray-100 shadow-sm overflow-hidden group transition-all ${discoveryType === 'domain' ? 'hover:border-[#4db6ac]/20' : 'hover:border-[#9d7bb0]/20'}`}>
+                <div key={idx} className={`bg-white rounded-[32px] md:rounded-[56px] border border-gray-100 shadow-sm overflow-hidden group transition-all ${discoveryType === 'domain' ? 'hover:border-[#4db6ac]/20' : 'hover:border-[#9d7bb0]/20'}`}>
                   <div className="grid grid-cols-1 lg:grid-cols-12">
                     
                     {/* Left Diagnostic Panel */}
-                    <div className="lg:col-span-5 p-12 lg:p-14 bg-gray-50/50 border-r border-gray-100 flex flex-col justify-between">
-                       <div className="space-y-8">
+                    <div className="lg:col-span-5 p-6 md:p-12 lg:p-14 bg-gray-50/50 border-b lg:border-b-0 lg:border-r border-gray-100 flex flex-col justify-between">
+                       <div className="space-y-6 md:space-y-8">
                           <div className="flex justify-between items-start">
-                             <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                             <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-lg md:text-2xl shadow-sm group-hover:scale-110 transition-transform">
                                 {idx % 2 === 0 ? '🦾' : '🧠'}
                              </div>
-                             <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-sm ${getInterpretationColor(uc.business_benefit_score?.interpretation || 'In Review')}`}>
+                             <div className={`px-2 py-0.5 md:px-4 md:py-1.5 rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest border shadow-sm ${getInterpretationColor(uc.business_benefit_score?.interpretation || 'In Review')}`}>
                                 {uc.business_benefit_score?.interpretation || 'In Review'}
                              </div>
                           </div>
-                          <div className="space-y-3">
-                             <h4 className={`text-2xl font-black text-gray-900 leading-tight transition-colors ${discoveryType === 'domain' ? 'group-hover:text-[#4db6ac]' : 'group-hover:text-[#9d7bb0]'}`}>{uc.title}</h4>
-                             <p className="text-sm font-medium text-gray-500 leading-relaxed italic opacity-80">"{uc.description}"</p>
+                          <div className="space-y-2 md:space-y-3">
+                             <h4 className={`text-lg md:text-2xl font-black text-gray-900 leading-tight transition-colors ${discoveryType === 'domain' ? 'group-hover:text-[#4db6ac]' : 'group-hover:text-[#9d7bb0]'}`}>{uc.title}</h4>
+                             <p className="text-[11px] md:text-sm font-medium text-gray-500 leading-relaxed italic opacity-80">"{uc.description}"</p>
                           </div>
                        </div>
                        
-                       <div className="pt-8 border-t border-gray-200 mt-10">
-                          <div className="flex justify-between items-center bg-white p-8 lg:p-10 rounded-[40px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                       <div className="pt-6 md:pt-8 border-t border-gray-200 mt-6 md:mt-10">
+                          <div className="flex justify-between items-center bg-white p-5 md:p-8 lg:p-10 rounded-[24px] md:rounded-[40px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                              <div className="space-y-1">
-                                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">BENEFIT SCORE</p>
-                                <div className="text-4xl font-black text-gray-900 flex items-baseline gap-1">
+                                <p className="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest">BENEFIT SCORE</p>
+                                <div className="text-2xl md:text-4xl font-black text-gray-900 flex items-baseline gap-1">
                                   {uc.business_benefit_score?.score || 0}
-                                  <span className="text-sm text-gray-300 font-bold">/100</span>
+                                  <span className="text-[10px] md:text-sm text-gray-300 font-bold">/100</span>
                                 </div>
                              </div>
                              <BenefitScoreRing score={uc.business_benefit_score?.score || 0} />
@@ -218,19 +218,19 @@ const DiscoveryDetail: React.FC = () => {
                     </div>
 
                     {/* Right Justification Matrix */}
-                    <div className="lg:col-span-7 p-14 space-y-10">
-                       <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI Reasoning Matrix</h5>
-                       <div className="space-y-8">
+                    <div className="lg:col-span-7 p-6 md:p-14 space-y-6 md:space-y-10">
+                       <h5 className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">AI Reasoning Matrix</h5>
+                       <div className="space-y-5 md:space-y-8">
                           {(uc.parameter_scoring || []).map((param: any, pIdx: number) => (
-                            <div key={pIdx} className="space-y-3">
-                               <div className="flex justify-between items-end">
-                                  <div className="space-y-1 pr-12">
-                                     <p className="text-xs font-black text-gray-800 uppercase tracking-tight">{param.parameter}</p>
-                                     <p className="text-[11px] font-medium text-gray-500 leading-snug">{param.justification}</p>
+                            <div key={pIdx} className="space-y-2 md:space-y-3">
+                               <div className="flex justify-between items-end gap-4">
+                                  <div className="space-y-1 flex-1">
+                                     <p className="text-[10px] md:text-xs font-black text-gray-800 uppercase tracking-tight">{param.parameter}</p>
+                                     <p className="text-[9px] md:text-[11px] font-medium text-gray-500 leading-snug">{param.justification}</p>
                                   </div>
                                   <div className="text-right shrink-0">
-                                     <span className="text-lg font-black text-[#4db6ac]">{param.score}</span>
-                                     <span className="text-[10px] font-bold text-gray-300">/10</span>
+                                     <span className="text-sm md:text-lg font-black text-[#4db6ac]">{param.score}</span>
+                                     <span className="text-[8px] md:text-[10px] font-bold text-gray-300">/10</span>
                                   </div>
                                </div>
                                <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
@@ -240,15 +240,15 @@ const DiscoveryDetail: React.FC = () => {
                           ))}
                        </div>
                        
-                       <div className={`p-6 rounded-[32px] border flex items-center justify-between mt-8 ${discoveryType === 'domain' ? 'bg-[#4db6ac]/5 border-[#4db6ac]/10' : 'bg-[#9d7bb0]/5 border-[#9d7bb0]/10'}`}>
+                       <div className={`p-4 md:p-6 rounded-[24px] md:rounded-[32px] border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 md:mt-8 ${discoveryType === 'domain' ? 'bg-[#4db6ac]/5 border-[#4db6ac]/10' : 'bg-[#9d7bb0]/5 border-[#9d7bb0]/10'}`}>
                           <div className="flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-sm">🎯</div>
+                             <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-xs md:text-sm shrink-0">🎯</div>
                              <div>
-                                <p className={`text-[9px] font-black uppercase tracking-widest ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Weighted Readiness</p>
-                                <p className="text-[11px] font-bold text-gray-600">Calculated Strategy Alignment</p>
+                                <p className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Weighted Readiness</p>
+                                <p className="text-[9px] md:text-[11px] font-bold text-gray-600">Calculated Strategy Alignment</p>
                              </div>
                           </div>
-                          <div className="flex items-center gap-6">
+                          <div className="flex items-center justify-between w-full sm:w-auto gap-4 md:gap-6">
                              <button 
                                onClick={() => openChat({
                                  collection: discoveryType as any,
@@ -256,18 +256,18 @@ const DiscoveryDetail: React.FC = () => {
                                  usecaseId: uc._id || uc.id,
                                  title: uc.title
                                })}
-                               className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                               className={`flex-1 sm:flex-none px-4 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
                                  discoveryType === 'domain' 
                                    ? 'bg-[#4db6ac] text-white hover:bg-[#3d968d]' 
                                    : 'bg-[#9d7bb0] text-white hover:bg-[#8b6aa1]'
                                }`}
                              >
-                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                </svg>
-                               Ask Avagama Cortex
+                               Ask Cortex
                              </button>
-                             <span className="text-2xl font-black text-gray-900">{uc.totalWeightedScore || '-'}</span>
+                             <span className="text-xl md:text-2xl font-black text-gray-900">{uc.totalWeightedScore || '-'}</span>
                           </div>
                        </div>
                     </div>

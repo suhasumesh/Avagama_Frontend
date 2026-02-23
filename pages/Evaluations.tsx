@@ -99,21 +99,22 @@ const Evaluations: React.FC = () => {
   const goToLastPage = () => setCurrentPage(totalPages);
 
   return (
-    <div className="p-8 space-y-8 bg-[#fcfdff] min-h-screen">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-black text-gray-900">My Evaluations</h1>
-        <div className="flex items-center gap-4">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8 bg-[#fcfdff] min-h-screen">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <h1 className="text-xl md:text-2xl font-black text-gray-900">My Evaluations</h1>
+        <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full lg:w-auto">
           <button 
             onClick={handleCompare}
             disabled={selectedIds.length < 2}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border transition-all ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs md:text-sm border transition-all ${
               selectedIds.length >= 2 
                 ? 'bg-white border-[#9d7bb0] text-[#9d7bb0] hover:bg-purple-50 shadow-sm' 
                 : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            Compare
+            <span className="hidden sm:inline">Compare</span>
+            <span className="sm:hidden">Comp</span>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 2 ? 'bg-[#9d7bb0] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
             </span>
@@ -122,14 +123,15 @@ const Evaluations: React.FC = () => {
           <button 
             onClick={handlePrism}
             disabled={selectedIds.length === 0}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border transition-all ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs md:text-sm border transition-all ${
               selectedIds.length >= 1 
                 ? 'bg-white border-[#4db6ac] text-[#4db6ac] hover:bg-teal-50 shadow-sm' 
                 : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            Plot to Gartner Prism
+            <span className="hidden sm:inline">Gartner Prism</span>
+            <span className="sm:hidden">Prism</span>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 1 ? 'bg-[#4db6ac] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
             </span>
@@ -138,26 +140,27 @@ const Evaluations: React.FC = () => {
           <button 
             onClick={handleExport}
             disabled={isExporting || evaluations.length === 0}
-            className={`flex items-center gap-2 px-6 py-2.5 bg-white border border-gray-100 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50 transition-all shadow-sm ${isExporting || evaluations.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 bg-white border border-gray-100 rounded-xl font-bold text-xs md:text-sm text-gray-600 hover:bg-gray-50 transition-all shadow-sm ${isExporting || evaluations.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isExporting ? (
               <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
             ) : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             )}
-            {isExporting ? 'Exporting...' : 'Export'}
+            <span className="hidden sm:inline">{isExporting ? 'Exporting...' : 'Export'}</span>
+            <span className="sm:hidden">Exp</span>
           </button>
 
-          <Link to="/evaluate" className="bg-[#9d7bb0] text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 text-sm">
+          <Link to="/evaluate" className="w-full sm:w-auto bg-[#9d7bb0] text-white px-6 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 text-xs md:text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            Evaluate a process
+            New Evaluation
           </Link>
         </div>
       </div>
 
-      <div className="space-y-3">
-        {/* Table Header Styling */}
-        <div className="grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
+      <div className="space-y-4">
+        {/* Table Header Styling - Hidden on Mobile */}
+        <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
           <div className="flex items-center">
              <input type="checkbox" className="w-4 h-4 rounded border-gray-200" disabled />
           </div>
@@ -181,88 +184,152 @@ const Evaluations: React.FC = () => {
              <Link to="/evaluate" className="text-[#9d7bb0] text-sm font-bold mt-2 inline-block hover:underline">Start your first assessment</Link>
           </div>
         ) : (
-          currentItems.map((item) => {
-            const isSelected = selectedIds.includes(item._id);
-            const automation = item.aiAnalysis?.automationScore;
-            const businessBenefit = item.aiAnalysis?.businessBenefitScore;
-            
-            // Fix: Calculate feasibility if missing
-            let feasibility = item.aiAnalysis?.feasibilityScore;
-            if (!feasibility && automation && businessBenefit) {
-              // Legit calculation: average of automation and business benefit as a proxy for feasibility
-              feasibility = Math.round((automation + businessBenefit) / 2);
-            }
+          <div className="space-y-3">
+            {currentItems.map((item) => {
+              const isSelected = selectedIds.includes(item._id);
+              const automation = item.aiAnalysis?.automationScore;
+              const businessBenefit = item.aiAnalysis?.businessBenefitScore;
+              
+              let feasibility = item.aiAnalysis?.feasibilityScore;
+              if (!feasibility && automation && businessBenefit) {
+                feasibility = Math.round((automation + businessBenefit) / 2);
+              }
 
-            const fitment = item.aiAnalysis?.fitmentType;
-            const status = item.status || 'Draft';
-            
-            // Fix: Use llmRecommendation from recommendations object (check multiple paths and common typos)
-            const recs = item.recommendations || item.aiAnalysis?.recommendations || {};
-            const llmType = recs.llmRecommendation || 
-                            recs.llm_recommendation || 
-                            recs.llRecommendation || 
-                            recs.llmrecomendation || 
-                            item.aiConfig?.baseModel || 
-                            '-';
-            const formattedLLMType = llmType.replace(/_/g, ' ').toUpperCase();
+              const fitment = item.aiAnalysis?.fitmentType;
+              const status = item.status || 'Draft';
+              
+              const recs = item.recommendations || item.aiAnalysis?.recommendations || {};
+              const llmType = recs.llmRecommendation || 
+                              recs.llm_recommendation || 
+                              recs.llRecommendation || 
+                              recs.llmrecomendation || 
+                              item.aiConfig?.baseModel || 
+                              '-';
+              const formattedLLMType = llmType.replace(/_/g, ' ').toUpperCase();
 
-            return (
-              <div 
-                key={item._id} 
-                className={`grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-5 bg-white rounded-2xl border transition-all items-center hover:shadow-md ${isSelected ? 'border-[#9d7bb0] shadow-sm' : 'border-gray-100 shadow-sm'}`}
-              >
-                <div className="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    checked={isSelected}
-                    onChange={() => toggleSelect(item._id)}
-                    className="w-4 h-4 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
-                  />
+              return (
+                <div 
+                  key={item._id} 
+                  className={`bg-white rounded-2xl md:rounded-3xl border transition-all hover:shadow-md overflow-hidden ${isSelected ? 'border-[#9d7bb0] shadow-sm' : 'border-gray-100 shadow-sm'}`}
+                >
+                  {/* Desktop View */}
+                  <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-5 items-center">
+                    <div className="flex items-center">
+                      <input 
+                        type="checkbox" 
+                        checked={isSelected}
+                        onChange={() => toggleSelect(item._id)}
+                        className="w-4 h-4 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
+                      />
+                    </div>
+                    <div>
+                      <Link 
+                        to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
+                        className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate max-w-[280px]"
+                      >
+                        {item.discovery?.processName || 'Untitled Process'}
+                      </Link>
+                    </div>
+                    <div className="text-xs font-medium text-gray-500">
+                      {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}, {new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(automation)}`}></div>
+                      <span className="text-sm font-bold text-gray-700">{automation ? `${automation}%` : '-'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(feasibility)}`}></div>
+                      <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
+                    </div>
+                    <div>
+                      <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
+                        {fitment || '-'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
+                        {formattedLLMType}
+                      </span>
+                    </div>
+                    <div className="text-right pr-4">
+                      <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider ${status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
+                        {status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mobile View */}
+                  <div className="lg:hidden p-5 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <input 
+                          type="checkbox" 
+                          checked={isSelected}
+                          onChange={() => toggleSelect(item._id)}
+                          className="w-5 h-5 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
+                        />
+                        <Link 
+                          to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
+                          className="font-black text-[#9d7bb0] text-base hover:underline line-clamp-2"
+                        >
+                          {item.discovery?.processName || 'Untitled Process'}
+                        </Link>
+                      </div>
+                      <span className={`shrink-0 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
+                        {status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Automation</p>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${getScoreColor(automation)}`}></div>
+                          <span className="text-sm font-bold text-gray-700">{automation ? `${automation}%` : '-'}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Feasibility</p>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${getScoreColor(feasibility)}`}></div>
+                          <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <span className="px-2 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-md text-[9px] font-bold uppercase tracking-wide">
+                        {fitment || 'N/A'}
+                      </span>
+                      <span className="px-2 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-md text-[9px] font-bold uppercase tracking-wide">
+                        {formattedLLMType}
+                      </span>
+                    </div>
+
+                    <div className="pt-3 border-t border-gray-50 flex justify-between items-center">
+                      <span className="text-[10px] font-bold text-gray-300 uppercase">
+                        {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </span>
+                      <Link 
+                        to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`}
+                        className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest flex items-center gap-1"
+                      >
+                        View Details
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Link 
-                    to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
-                    className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate max-w-[280px]"
-                  >
-                    {item.discovery?.processName || 'Untitled Process'}
-                  </Link>
-                </div>
-                <div className="text-xs font-medium text-gray-500">
-                  {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}, {new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(automation)}`}></div>
-                  <span className="text-sm font-bold text-gray-700">{automation ? `${automation}%` : '-'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(feasibility)}`}></div>
-                  <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
-                </div>
-                <div>
-                  <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
-                    {fitment || '-'}
-                  </span>
-                </div>
-                <div>
-                  <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
-                    {formattedLLMType}
-                  </span>
-                </div>
-                <div className="text-right pr-4">
-                  <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider ${status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
-                    {status}
-                  </span>
-                </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex justify-between items-center px-4 pt-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-        <div className="flex items-center gap-4">
-           <span>Rows per page</span>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-4 pt-4 text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4">
+           <span className="hidden sm:inline">Rows per page</span>
            <div className="relative">
              <select 
                value={rowsPerPage} 
@@ -278,8 +345,8 @@ const Evaluations: React.FC = () => {
                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
              </div>
            </div>
-           <span className="ml-4">
-             {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, evaluations.length)} of {evaluations.length} Results
+           <span className="md:ml-4">
+             {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, evaluations.length)} of {evaluations.length}
            </span>
         </div>
         
@@ -288,28 +355,28 @@ const Evaluations: React.FC = () => {
              <button 
                onClick={goToFirstPage}
                disabled={currentPage === 1}
-               className="p-2 px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
+               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
              >
                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
              </button>
              <button 
                onClick={goToPrevPage}
                disabled={currentPage === 1}
-               className="p-2 px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
+               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
              >
                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
              </button>
              <button 
                onClick={goToNextPage}
                disabled={currentPage === totalPages}
-               className="p-2 px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
+               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
              >
                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
              </button>
              <button 
                onClick={goToLastPage}
                disabled={currentPage === totalPages}
-               className="p-2 px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30"
+               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30"
              >
                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 5l7 7-7 7m-8-14l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
              </button>

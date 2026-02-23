@@ -82,14 +82,14 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="p-8 space-y-8 bg-[#fcfdff] min-h-screen">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8 bg-[#fcfdff] min-h-screen">
       {/* Top Navigation / Breadcrumb */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Intelligence Dashboard</h1>
+          <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Intelligence Dashboard</h1>
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Command Center v2.4</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {user?.credits !== undefined && (
             <div className={`px-4 py-2 rounded-xl border shadow-sm flex items-center gap-3 transition-all ${user.credits <= 5 ? 'bg-red-50 border-red-100 animate-pulse' : 'bg-white border-gray-100'}`}>
               <span className={`w-2 h-2 rounded-full ${user.credits <= 5 ? 'bg-red-500' : 'bg-[#9d7bb0]'}`}></span>
@@ -107,28 +107,28 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Hero Welcome */}
-      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 p-12 rounded-[48px] shadow-sm relative overflow-hidden">
+      <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 p-6 md:p-12 rounded-[32px] md:rounded-[48px] shadow-sm relative overflow-hidden">
         <div className="relative z-10 space-y-6">
           <div className="space-y-2">
-            <h2 className="text-4xl font-black text-gray-900 leading-tight">
-              Operational Clarity for <br />
+            <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">
+              Operational Clarity for <br className="hidden md:block" />
               <span className="text-[#9d7bb0]">{displayName}</span>
             </h2>
-            <p className="text-gray-500 font-medium max-w-xl text-lg leading-relaxed">
+            <p className="text-gray-500 font-medium max-w-xl text-sm md:text-lg leading-relaxed">
               Your enterprise has identified <span className="text-gray-900 font-bold">{dashboardData.domainUseCases + dashboardData.companyUseCases} AI opportunities</span> across functional domains and organizational structures.
             </p>
           </div>
-          <div className="flex gap-4">
-            <Link to="/evaluate" className="bg-[#9d7bb0] text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-purple-100 hover:scale-105 transition-all">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link to="/evaluate" className="bg-[#9d7bb0] text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-purple-100 hover:scale-105 transition-all text-center">
               Start New Evaluation
             </Link>
-            <Link to="/discovery/company" className="bg-white text-gray-900 border border-gray-100 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:bg-gray-50 transition-all">
+            <Link to="/discovery/company" className="bg-white text-gray-900 border border-gray-100 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:bg-gray-50 transition-all text-center">
               Discover Use Cases
             </Link>
           </div>
         </div>
         {/* Background Decorative Element */}
-        <div className="absolute top-0 right-0 w-[40%] h-full flex items-center justify-center opacity-10 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[60%] md:w-[40%] h-full flex items-center justify-center opacity-10 pointer-events-none">
           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="0.5" strokeDasharray="5 5" />
             <circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="1" />
@@ -138,34 +138,34 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Primary KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
         {[
           { label: 'Processes Evaluated', value: dashboardData.totalCompleted, icon: '📊', color: 'bg-blue-50 text-blue-600' },
           { label: 'Avg. Automation Readiness', value: `${dashboardData.avgAutomationScore}%`, icon: '⚙️', color: 'bg-purple-50 text-purple-600' },
           { label: 'Discovery: By Domain', value: dashboardData.domainUseCases, icon: '🌐', color: 'bg-teal-50 text-[#4db6ac]' },
           { label: 'Discovery: By Company', value: dashboardData.companyUseCases, icon: '🏢', color: 'bg-orange-50 text-orange-600' }
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center text-xl mb-6 shadow-sm`}>
+          <div key={i} className="bg-white p-6 md:p-8 rounded-[32px] md:rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div className={`w-10 h-10 md:w-12 md:h-12 ${stat.color} rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-xl mb-4 md:mb-6 shadow-sm`}>
               {stat.icon}
             </div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-            <div className="text-4xl font-black text-gray-900">{stat.value}</div>
+            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+            <div className="text-3xl md:text-4xl font-black text-gray-900">{stat.value}</div>
           </div>
         ))}
       </div>
 
       {/* Analytics Matrix */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         
         {/* Growth & Discovery Trends */}
-        <div className="lg:col-span-8 bg-white p-10 rounded-[48px] border border-gray-100 shadow-sm space-y-10">
-          <div className="flex justify-between items-center border-b border-gray-50 pb-6">
+        <div className="lg:col-span-8 bg-white p-6 md:p-10 rounded-[32px] md:rounded-[48px] border border-gray-100 shadow-sm space-y-8 md:space-y-10">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-50 pb-6 gap-4">
             <div className="space-y-1">
-               <h3 className="text-xl font-black text-gray-900 tracking-tight">Enterprise Roadmap Growth</h3>
+               <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight">Enterprise Roadmap Growth</h3>
                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tracking Multi-Stream Progress</p>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3 md:gap-4">
                <div className="flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase">
                   <span className="w-2 h-2 rounded-full bg-[#9d7bb0]"></span> Process Evaluations
                </div>
@@ -175,7 +175,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           
-          <div className="h-[400px]">
+          <div className="h-[300px] md:h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={dashboardData.trends}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
@@ -183,42 +183,42 @@ const Dashboard: React.FC = () => {
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af'}} 
+                  tick={{fontSize: 9, fontWeight: 900, fill: '#9ca3af'}} 
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{fontSize: 10, fontWeight: 900, fill: '#9ca3af'}} 
+                  tick={{fontSize: 9, fontWeight: 900, fill: '#9ca3af'}} 
                 />
                 <Tooltip 
-                  contentStyle={{borderRadius: '24px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', fontSize: '12px', fontWeight: 'bold'}}
+                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold'}}
                 />
                 <Line 
                   name="Evaluations" 
                   type="monotone" 
                   dataKey="completed" 
                   stroke="#9d7bb0" 
-                  strokeWidth={4} 
-                  dot={{ r: 5, fill: '#9d7bb0', strokeWidth: 0 }} 
-                  activeDot={{ r: 8, strokeWidth: 0 }} 
+                  strokeWidth={3} 
+                  dot={{ r: 4, fill: '#9d7bb0', strokeWidth: 0 }} 
+                  activeDot={{ r: 6, strokeWidth: 0 }} 
                 />
                 <Line 
                   name="Domain Discovery" 
                   type="monotone" 
                   dataKey="domainDiscovery" 
                   stroke="#4db6ac" 
-                  strokeWidth={3} 
+                  strokeWidth={2} 
                   strokeDasharray="5 5" 
-                  dot={{ r: 4, fill: '#4db6ac', strokeWidth: 0 }} 
+                  dot={{ r: 3, fill: '#4db6ac', strokeWidth: 0 }} 
                 />
                 <Line 
                   name="Company Discovery" 
                   type="monotone" 
                   dataKey="companyDiscovery" 
                   stroke="#f59e0b" 
-                  strokeWidth={3} 
+                  strokeWidth={2} 
                   strokeDasharray="5 5" 
-                  dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }} 
+                  dot={{ r: 3, fill: '#f59e0b', strokeWidth: 0 }} 
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -226,21 +226,21 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Discovery Focus Pie */}
-        <div className="lg:col-span-4 bg-gray-900 p-10 rounded-[48px] shadow-2xl space-y-8 flex flex-col justify-between overflow-hidden relative">
+        <div className="lg:col-span-4 bg-gray-900 p-8 md:p-10 rounded-[32px] md:rounded-[48px] shadow-2xl space-y-6 md:space-y-8 flex flex-col justify-between overflow-hidden relative">
           <div className="relative z-10">
-            <h3 className="text-xl font-black text-white tracking-tight">Strategic Discovery Split</h3>
+            <h3 className="text-lg md:text-xl font-black text-white tracking-tight">Strategic Discovery Split</h3>
             <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Sourcing Methodology Distribution</p>
           </div>
           
-          <div className="h-[250px] relative z-10">
+          <div className="h-[200px] md:h-[250px] relative z-10">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={discoverySourceData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
+                  innerRadius={50}
+                  outerRadius={70}
                   paddingAngle={8}
                   dataKey="value"
                 >
@@ -249,20 +249,20 @@ const Dashboard: React.FC = () => {
                   ))}
                 </Pie>
                 <Tooltip 
-                  contentStyle={{borderRadius: '16px', border: 'none', backgroundColor: '#fff'}}
+                  contentStyle={{borderRadius: '12px', border: 'none', backgroundColor: '#fff', fontSize: '10px'}}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-4 relative z-10">
+          <div className="space-y-3 md:space-y-4 relative z-10">
             {discoverySourceData.map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10">
+              <div key={idx} className="flex justify-between items-center bg-white/5 p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10">
                 <div className="flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: item.color}}></span>
-                  <span className="text-xs font-bold text-white/80 uppercase tracking-wider">{item.name}</span>
+                  <span className="w-2 h-2 rounded-full" style={{backgroundColor: item.color}}></span>
+                  <span className="text-[10px] font-bold text-white/80 uppercase tracking-wider">{item.name}</span>
                 </div>
-                <span className="text-lg font-black text-white">{item.value}</span>
+                <span className="text-base md:text-lg font-black text-white">{item.value}</span>
               </div>
             ))}
           </div>
@@ -272,10 +272,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Technology Distribution */}
-        <div className="lg:col-span-12 bg-white p-12 rounded-[56px] border border-gray-100 shadow-sm space-y-10">
+        <div className="lg:col-span-12 bg-white p-6 md:p-12 rounded-[32px] md:rounded-[56px] border border-gray-100 shadow-sm space-y-8 md:space-y-10">
            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="space-y-1">
-                <h3 className="text-2xl font-black text-gray-900">Current Technology Stack</h3>
+                <h3 className="text-xl md:text-2xl font-black text-gray-900">Current Technology Stack</h3>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recommended fitment profile across all evaluations</p>
               </div>
               <div className="px-5 py-2 bg-gray-50 rounded-xl text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-100">
@@ -283,8 +283,8 @@ const Dashboard: React.FC = () => {
               </div>
            </div>
 
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className="h-[350px]">
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
+              <div className="h-[300px] md:h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={dashboardData.technologyDistribution} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f3f4f6" />
@@ -294,11 +294,11 @@ const Dashboard: React.FC = () => {
                       type="category" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{fontSize: 11, fontWeight: 900, fill: '#4b5563'}} 
-                      width={140} 
+                      tick={{fontSize: 10, fontWeight: 900, fill: '#4b5563'}} 
+                      width={100} 
                     />
-                    <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)'}} />
-                    <Bar dataKey="value" radius={[0, 12, 12, 0]} barSize={32}>
+                    <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', fontSize: '10px'}} />
+                    <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={24}>
                         {dashboardData.technologyDistribution.map((entry: any, index: number) => (
                           <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#9d7bb0' : '#4db6ac'} />
                         ))}
@@ -308,12 +308,12 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                 <div className="p-8 bg-purple-50/50 rounded-[40px] border border-purple-100/50 space-y-4">
+                 <div className="p-6 md:p-8 bg-purple-50/50 rounded-[32px] md:rounded-[40px] border border-purple-100/50 space-y-4">
                     <div className="flex items-center gap-4">
                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">🚀</div>
-                       <h4 className="text-sm font-black text-gray-900 uppercase tracking-wide">Strategic Recommendation</h4>
+                       <h4 className="text-xs md:text-sm font-black text-gray-900 uppercase tracking-wide">Strategic Recommendation</h4>
                     </div>
-                    <p className="text-sm text-gray-600 leading-relaxed font-medium">
+                    <p className="text-xs md:text-sm text-gray-600 leading-relaxed font-medium">
                       Based on your current "Agentic AI" focus ({dashboardData.technologyDistribution.find((t: any) => t.name === 'Agentic AI')?.value || 0}%), 
                       the roadmap suggests prioritizing cross-functional discovery in <span className="text-[#9d7bb0] font-bold">Finance</span> and <span className="text-[#4db6ac] font-bold">Supply Chain</span> domains 
                       for maximum compute yield.
@@ -321,13 +321,13 @@ const Dashboard: React.FC = () => {
                  </div>
                  
                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-1">
-                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Compute Efficiency</span>
-                       <span className="text-xl font-black text-gray-900">98.4%</span>
+                    <div className="bg-white p-5 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100 flex flex-col gap-1">
+                       <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Compute Efficiency</span>
+                       <span className="text-lg md:text-xl font-black text-gray-900">98.4%</span>
                     </div>
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-1">
-                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Risk Mitigation</span>
-                       <span className="text-xl font-black text-gray-900">Active</span>
+                    <div className="bg-white p-5 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100 flex flex-col gap-1">
+                       <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Risk Mitigation</span>
+                       <span className="text-lg md:text-xl font-black text-gray-900">Active</span>
                     </div>
                  </div>
               </div>
