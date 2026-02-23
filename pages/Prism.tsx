@@ -247,11 +247,34 @@ const GartnerPrism: React.FC = () => {
 
   }, [loading, items]);
 
-  const getGranularScore = (item: any, dim: string) => {
-    const val = item.aiAnalysis?.dimensions?.[dim] || 'low';
+  const dimensionMap: Record<string, string> = {
+    costOptimization: 'processVolume',
+    operationsImprovement: 'orchestrationComplexity',
+    riskTolerance: 'riskTolerance'
+  };
+
+  const normalize = (val?: string) => {
     if (val === 'high') return 5;
     if (val === 'medium') return 3;
+    if (val === 'low') return 1;
     return 1;
+  };
+
+  const getGranularScore = (item: any, dim: string) => {
+    const mappedDim = dimensionMap[dim] || dim;
+    const val = item.aiAnalysis?.dimensions?.[mappedDim];
+    return normalize(val);
+  };
+
+  const getFeasibilityParams = (item: any) => {
+    const dims = item.aiAnalysis?.dimensions || {};
+    return [
+      { label: 'Technical Feasibility', score: normalize(dims.dataStructure) },
+      { label: 'Process Simplicity', score: 6 - normalize(dims.orchestrationComplexity) },
+      { label: 'Exception Stability', score: 6 - normalize(dims.exceptionHandling) },
+      { label: 'Governance Risk', score: 6 - normalize(dims.complianceSensitivity) },
+      { label: 'Operational Risk', score: 6 - normalize(dims.businessCriticality) }
+    ];
   };
 
   if (loading) {
@@ -369,8 +392,8 @@ const GartnerPrism: React.FC = () => {
                       <div className="space-y-5">
                         {[
                           { label: 'Cost Optimization', score: getGranularScore(item, 'costOptimization') },
-                          { label: 'Ops Improvement', score: getGranularScore(item, 'operationsImprovement') || 3 },
-                          { label: 'Risk Improvement', score: getGranularScore(item, 'riskTolerance') === 5 ? 1 : 4 }
+                          { label: 'Ops Improvement', score: getGranularScore(item, 'operationsImprovement') },
+                          { label: 'Risk Improvement', score: getGranularScore(item, 'riskTolerance') }
                         ].map((param, i) => (
                           <div key={i} className="flex items-center justify-between">
                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">{param.label}</span>
@@ -399,11 +422,7 @@ const GartnerPrism: React.FC = () => {
                       </div>
                       
                       <div className="space-y-5">
-                        {[
-                          { label: 'Tech Maturity', score: getGranularScore(item, 'knowledgeIntensity') },
-                          { label: 'Internal Org', score: getGranularScore(item, 'orchestrationComplexity') },
-                          { label: 'External', score: getGranularScore(item, 'complianceSensitivity') }
-                        ].map((param, i) => (
+                        {getFeasibilityParams(item).map((param, i) => (
                           <div key={i} className="flex items-center justify-between">
                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tight">{param.label}</span>
                             <div className="flex gap-1.5">
