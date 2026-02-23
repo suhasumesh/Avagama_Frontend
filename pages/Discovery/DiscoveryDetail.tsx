@@ -251,7 +251,7 @@ const DiscoveryDetail: React.FC = () => {
                           <div className="flex items-center justify-between w-full sm:w-auto gap-4 md:gap-6">
                              <button 
                                onClick={() => openChat({
-                                 collection: discoveryType as any,
+                                 sourceType: discoveryType as any,
                                  documentId: data._id || data.id,
                                  usecaseId: uc._id || uc.id,
                                  title: uc.title

@@ -57,7 +57,7 @@ const CortexChatModal: React.FC = () => {
     setFetchingHistory(true);
     try {
       const res = await apiService.ai.getUsecaseChat(
-        activeChat.collection,
+        activeChat.sourceType,
         activeChat.documentId,
         activeChat.usecaseId
       );
@@ -83,7 +83,7 @@ const CortexChatModal: React.FC = () => {
     try {
       const res = await apiService.ai.askUsecase({
         question: userMessage.content,
-        collection: activeChat.collection,
+        sourceType: activeChat.sourceType,
         documentId: activeChat.documentId,
         usecaseId: activeChat.usecaseId
       });

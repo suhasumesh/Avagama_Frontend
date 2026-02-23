@@ -199,13 +199,19 @@ export const apiService = {
       });
       return handleResponse(response);
     },
-    getUsecaseChat: async (collection: string, documentId: string, usecaseId: string) => {
-      const response = await fetch(`${BASE_URL}/ai/usecase-chat/${collection}/${documentId}/${usecaseId}`, {
+    getUsecaseChat: async (sourceType: string, documentId: string, usecaseId: string) => {
+      const response = await fetch(`${BASE_URL}/ai/usecase-chat/${sourceType}/${documentId}/${usecaseId}`, {
         headers: getHeaders(),
       });
       return handleResponse(response);
     },
-    askUsecase: async (payload: { question: string, collection: string, documentId: string, usecaseId: string }) => {
+    getUsecaseDetails: async (sourceType: string, documentId: string, usecaseId: string) => {
+      const response = await fetch(`${BASE_URL}/ai/usecase-details/${sourceType}/${documentId}/${usecaseId}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    askUsecase: async (payload: { question: string, sourceType: string, documentId: string, usecaseId: string }) => {
       const response = await fetch(`${BASE_URL}/ai/ask-usecase`, {
         method: 'POST',
         headers: getHeaders(),

@@ -91,7 +91,7 @@ const Results: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
              <button 
                onClick={() => openChat({
-                 collection: 'evaluation',
+                 sourceType: 'evaluation',
                  documentId: id!,
                  usecaseId: 'global',
                  title: discovery.processName || 'Evaluation'

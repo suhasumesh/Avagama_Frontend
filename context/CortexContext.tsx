@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface ChatConfig {
-  collection: 'domain' | 'company' | 'evaluation';
+  sourceType: 'domain' | 'company' | 'evaluation';
   documentId: string;
   usecaseId: string;
   title?: string;
