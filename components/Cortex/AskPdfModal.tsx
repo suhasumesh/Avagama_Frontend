@@ -27,6 +27,7 @@ const AskPdfModal: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fetchingHistory, setFetchingHistory] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -143,13 +144,66 @@ const AskPdfModal: React.FC = () => {
       const res = await apiService.documents.ask(activeDocumentId, userMessage.content);
 
       if (res.success) {
-        setMessages(prev => [...prev, { role: 'assistant', content: res.answer, citations: res.citations }]);
+        // Fetch history to get the actual message IDs from the server
+        fetchHistory(activeDocumentId);
       }
     } catch (err: any) {
       console.error("Failed to send message", err);
       setMessages(prev => [...prev, { role: 'assistant', content: "I'm sorry, I encountered an error processing your request. Please try again." }]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!activeDocumentId) return;
+    
+    // Optimistically remove from UI
+    setMessages(prev => prev.filter(m => m._id !== messageId));
+    
+    try {
+      await apiService.documents.deleteMessage(activeDocumentId, messageId);
+    } catch (err) {
+      console.error("Failed to delete message", err);
+      // Re-fetch history if delete fails to restore state
+      fetchHistory(activeDocumentId);
+    }
+  };
+
+  const handleCopyMessage = async (messageId: string, fallbackContent: string) => {
+    if (!activeDocumentId) return;
+    try {
+      // Try to fetch the latest message content from the server
+      const res = await apiService.documents.getMessage(activeDocumentId, messageId);
+      if (res.success && res.message?.content) {
+        navigator.clipboard.writeText(res.message.content);
+      } else {
+        navigator.clipboard.writeText(fallbackContent);
+      }
+    } catch (err) {
+      console.error("Failed to fetch message for copying", err);
+      navigator.clipboard.writeText(fallbackContent);
+    }
+  };
+
+  const handleDeleteChat = async (documentId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    try {
+      // In a real app, you'd have an API endpoint to delete the document
+      // await apiService.documents.delete(documentId);
+      
+      const updatedDocs = documents.filter(d => d.documentId !== documentId);
+      setDocuments(updatedDocs);
+      localStorage.setItem('askPdfDocuments', JSON.stringify(updatedDocs));
+      
+      if (activeDocumentId === documentId) {
+        setActiveDocumentId(null);
+        setMessages([]);
+      }
+      setDocumentToDelete(null);
+    } catch (err) {
+      console.error("Failed to delete document", err);
     }
   };
 
@@ -235,20 +289,66 @@ const AskPdfModal: React.FC = () => {
                   <p className="text-xs text-gray-400 italic px-2">No documents uploaded yet.</p>
                 ) : (
                   documents.map(doc => (
-                    <button
-                      key={doc.documentId}
-                      onClick={() => setActiveDocumentId(doc.documentId)}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-colors flex items-center gap-3 ${
-                        activeDocumentId === doc.documentId 
-                          ? 'bg-white shadow-sm border border-gray-100 text-[#a26da8] font-bold' 
-                          : 'text-gray-600 hover:bg-gray-100 font-medium'
-                      }`}
-                    >
-                      <svg className="w-4 h-4 shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                      </svg>
-                      <span className="truncate">{doc.name}</span>
-                    </button>
+                    <div key={doc.documentId} className="relative group">
+                      {documentToDelete === doc.documentId ? (
+                        <div className="w-full px-4 py-3 rounded-xl text-sm bg-red-50 border border-red-100 flex items-center justify-between">
+                          <span className="text-red-600 font-bold truncate pr-2 text-xs">Delete {doc.name}?</span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDocumentToDelete(null);
+                              }}
+                              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 transition-colors"
+                              title="Cancel"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteChat(doc.documentId, e)}
+                              className="p-1.5 rounded-lg text-red-600 hover:bg-red-200 transition-colors"
+                              title="Confirm Delete"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => setActiveDocumentId(doc.documentId)}
+                            className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-colors flex items-center gap-3 pr-10 ${
+                              activeDocumentId === doc.documentId 
+                                ? 'bg-white shadow-sm border border-gray-100 text-[#a26da8] font-bold' 
+                                : 'text-gray-600 hover:bg-gray-100 font-medium'
+                            }`}
+                          >
+                            <svg className="w-4 h-4 shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            <span className="truncate">{doc.name}</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDocumentToDelete(doc.documentId);
+                            }}
+                            className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity ${
+                              activeDocumentId === doc.documentId ? 'opacity-100' : ''
+                            }`}
+                            title="Delete document"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </>
+                      )}
+                    </div>
                   ))
                 )}
               </div>
@@ -341,7 +441,7 @@ const AskPdfModal: React.FC = () => {
                           key={idx}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                          className={`flex gap-4 group ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                         >
                           <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
                             msg.role === 'user' 
@@ -354,11 +454,33 @@ const AskPdfModal: React.FC = () => {
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                             )}
                           </div>
-                          <div className={`max-w-[85%] rounded-2xl p-5 ${
+                          <div className={`max-w-[85%] rounded-2xl p-5 relative ${
                             msg.role === 'user' 
                               ? 'bg-gray-900 text-white rounded-tr-sm' 
                               : 'bg-white border border-gray-100 shadow-sm rounded-tl-sm'
                           }`}>
+                            {msg._id && (
+                              <div className={`absolute top-2 ${msg.role === 'user' ? 'left-2' : 'right-2'} flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity`}>
+                                <button
+                                  onClick={() => handleCopyMessage(msg._id!, msg.content)}
+                                  className={`p-1.5 rounded-lg text-gray-400 hover:text-[#a26da8] ${msg.role === 'user' ? 'hover:bg-white/10' : 'hover:bg-purple-50'}`}
+                                  title="Copy message"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteMessage(msg._id!)}
+                                  className={`p-1.5 rounded-lg text-gray-400 hover:text-red-500 ${msg.role === 'user' ? 'hover:bg-red-500/20' : 'hover:bg-red-50'}`}
+                                  title="Delete message"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            )}
                             {msg.role === 'user' ? (
                               <p className="text-sm leading-relaxed">{msg.content}</p>
                             ) : (

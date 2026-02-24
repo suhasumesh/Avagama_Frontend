@@ -247,6 +247,19 @@ export const apiService = {
         headers: getHeaders(),
       });
       return handleResponse(response);
+    },
+    getMessage: async (documentId: string, messageId: string) => {
+      const response = await fetch(`${BASE_URL}/documents/chat/${documentId}/message/${messageId}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    deleteMessage: async (documentId: string, messageId: string) => {
+      const response = await fetch(`${BASE_URL}/documents/chat/${documentId}/message/${messageId}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
     }
   },
 
