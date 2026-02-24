@@ -24,6 +24,7 @@ import Navigation from './components/Navigation';
 import { CortexProvider } from './context/CortexContext';
 import CortexChatModal from './components/Cortex/CortexChatModal';
 import GlobalCortexSearch from './components/Cortex/GlobalCortexSearch';
+import AskPdfModal from './components/Cortex/AskPdfModal';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -84,6 +85,7 @@ const App: React.FC = () => {
           <>
             <CortexChatModal />
             <GlobalCortexSearch />
+            <AskPdfModal />
           </>
         )}
       </Router>

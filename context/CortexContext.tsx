@@ -16,6 +16,9 @@ interface CortexContextType {
   isGlobalSearchOpen: boolean;
   openGlobalSearch: () => void;
   closeGlobalSearch: () => void;
+  isAskPdfOpen: boolean;
+  openAskPdf: () => void;
+  closeAskPdf: () => void;
 }
 
 const CortexContext = createContext<CortexContextType | undefined>(undefined);
@@ -24,11 +27,13 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChat, setActiveChat] = useState<ChatConfig | null>(null);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+  const [isAskPdfOpen, setIsAskPdfOpen] = useState(false);
 
   const openChat = (config: ChatConfig) => {
     setActiveChat(config);
     setIsChatOpen(true);
     setIsGlobalSearchOpen(false);
+    setIsAskPdfOpen(false);
   };
 
   const closeChat = () => {
@@ -40,10 +45,22 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setIsGlobalSearchOpen(true);
     setIsChatOpen(false);
     setActiveChat(null);
+    setIsAskPdfOpen(false);
   };
 
   const closeGlobalSearch = () => {
     setIsGlobalSearchOpen(false);
+  };
+
+  const openAskPdf = () => {
+    setIsAskPdfOpen(true);
+    setIsGlobalSearchOpen(false);
+    setIsChatOpen(false);
+    setActiveChat(null);
+  };
+
+  const closeAskPdf = () => {
+    setIsAskPdfOpen(false);
   };
 
   return (
@@ -54,7 +71,10 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       closeChat,
       isGlobalSearchOpen,
       openGlobalSearch,
-      closeGlobalSearch
+      closeGlobalSearch,
+      isAskPdfOpen,
+      openAskPdf,
+      closeAskPdf
     }}>
       {children}
     </CortexContext.Provider>

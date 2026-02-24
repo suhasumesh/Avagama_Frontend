@@ -221,6 +221,35 @@ export const apiService = {
     }
   },
 
+  documents: {
+    upload: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch(`${BASE_URL}/documents/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+      return handleResponse(response);
+    },
+    ask: async (documentId: string, question: string) => {
+      const response = await fetch(`${BASE_URL}/documents/ask`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ documentId, question }),
+      });
+      return handleResponse(response);
+    },
+    getChatHistory: async (documentId: string) => {
+      const response = await fetch(`${BASE_URL}/documents/chat/${documentId}`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    }
+  },
+
   admin: {
     getUsers: async () => {
       const response = await fetch(`${BASE_URL}/admin/users`, {
