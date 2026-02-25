@@ -8,6 +8,11 @@ const Evaluations: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [shortlistedIds, setShortlistedIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('shortlisted_evaluations');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [filter, setFilter] = useState<'all' | 'shortlisted'>('all');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
@@ -25,6 +30,10 @@ const Evaluations: React.FC = () => {
     };
     fetchEvals();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('shortlisted_evaluations', JSON.stringify(shortlistedIds));
+  }, [shortlistedIds]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => 
@@ -69,6 +78,14 @@ const Evaluations: React.FC = () => {
     }
   };
 
+  const toggleShortlist = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShortlistedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
   const getScoreColor = (score: number | null) => {
     if (score === null) return 'bg-gray-200';
     if (score >= 85) return 'bg-green-500';
@@ -76,11 +93,16 @@ const Evaluations: React.FC = () => {
     return 'bg-red-500';
   };
 
+  // Filter Logic
+  const filteredEvaluations = filter === 'all' 
+    ? evaluations 
+    : evaluations.filter(item => shortlistedIds.includes(item._id));
+
   // Pagination Logic
   const indexOfLastItem = currentPage * rowsPerPage;
   const indexOfFirstItem = indexOfLastItem - rowsPerPage;
-  const currentItems = evaluations.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(evaluations.length / rowsPerPage);
+  const currentItems = filteredEvaluations.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredEvaluations.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -101,7 +123,34 @@ const Evaluations: React.FC = () => {
   return (
     <div className="p-4 md:p-8 space-y-6 md:space-y-8 bg-[#fcfdff] min-h-screen">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-        <h1 className="text-xl md:text-2xl font-black text-gray-900">My Evaluations</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-8">
+          <h1 className="text-xl md:text-2xl font-black text-gray-900">My Evaluations</h1>
+          
+          {/* Filter Toggle */}
+          <div className="flex bg-white p-1 rounded-xl border border-gray-100 shadow-sm">
+            <button 
+              onClick={() => { setFilter('all'); setCurrentPage(1); }}
+              className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                filter === 'all' ? 'bg-gray-900 text-white shadow-md' : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              All
+            </button>
+            <button 
+              onClick={() => { setFilter('shortlisted'); setCurrentPage(1); }}
+              className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                filter === 'shortlisted' ? 'bg-[#9d7bb0] text-white shadow-md' : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              Shortlisted
+              {shortlistedIds.length > 0 && (
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] ${filter === 'shortlisted' ? 'bg-white text-[#9d7bb0]' : 'bg-gray-100 text-gray-400'}`}>
+                  {shortlistedIds.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
         <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full lg:w-auto">
           <button 
             onClick={handleCompare}
@@ -130,7 +179,7 @@ const Evaluations: React.FC = () => {
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <span className="hidden sm:inline">Gartner Prism</span>
+            <span className="hidden sm:inline">Strategic Prism</span>
             <span className="sm:hidden">Prism</span>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 1 ? 'bg-[#4db6ac] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
@@ -161,10 +210,10 @@ const Evaluations: React.FC = () => {
       <div className="space-y-4">
         {/* Table Header Styling - Hidden on Mobile */}
         <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
              <input type="checkbox" className="w-4 h-4 rounded border-gray-200" disabled />
           </div>
-          <div>Process name</div>
+          <div className="pl-8">Process name</div>
           <div>Created on</div>
           <div>Automation score</div>
           <div>Feasibility score</div>
@@ -187,6 +236,7 @@ const Evaluations: React.FC = () => {
           <div className="space-y-3">
             {currentItems.map((item) => {
               const isSelected = selectedIds.includes(item._id);
+              const isShortlisted = shortlistedIds.includes(item._id);
               const automation = item.aiAnalysis?.automationScore;
               const businessBenefit = item.aiAnalysis?.businessBenefitScore;
               
@@ -222,7 +272,15 @@ const Evaluations: React.FC = () => {
                         className="w-4 h-4 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
                       />
                     </div>
-                    <div>
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={(e) => toggleShortlist(item._id, e)}
+                        className={`shrink-0 transition-all ${isShortlisted ? 'text-amber-400 scale-110' : 'text-gray-200 hover:text-gray-300'}`}
+                      >
+                        <svg className="w-5 h-5" fill={isShortlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      </button>
                       <Link 
                         to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
                         className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate max-w-[280px]"
@@ -268,6 +326,14 @@ const Evaluations: React.FC = () => {
                           onChange={() => toggleSelect(item._id)}
                           className="w-5 h-5 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
                         />
+                        <button 
+                          onClick={(e) => toggleShortlist(item._id, e)}
+                          className={`shrink-0 transition-all ${isShortlisted ? 'text-amber-400' : 'text-gray-200'}`}
+                        >
+                          <svg className="w-5 h-5" fill={isShortlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                        </button>
                         <Link 
                           to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
                           className="font-black text-[#9d7bb0] text-base hover:underline line-clamp-2"
@@ -346,7 +412,7 @@ const Evaluations: React.FC = () => {
              </div>
            </div>
            <span className="md:ml-4">
-             {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, evaluations.length)} of {evaluations.length}
+             {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredEvaluations.length)} of {filteredEvaluations.length}
            </span>
         </div>
         

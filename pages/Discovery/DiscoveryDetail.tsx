@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { apiService } from '../../services/api';
 import { useCortex } from '../../context/CortexContext';
 
@@ -139,6 +140,18 @@ const DiscoveryDetail: React.FC = () => {
                    <span className={`w-1.5 h-1.5 rounded-full ${discoveryType === 'domain' ? 'bg-[#4db6ac]' : 'bg-[#9d7bb0]'}`}></span>
                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{data.industry || (discoveryType === 'domain' ? 'Industry Mapping' : 'Company Analysis')}</span>
                 </div>
+                {data.user_role && (
+                  <div className="px-3 py-1 md:px-4 md:py-1.5 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-2">
+                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Role:</span>
+                     <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{data.user_role}</span>
+                  </div>
+                )}
+                {data.objective && (
+                  <div className="px-3 py-1 md:px-4 md:py-1.5 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-2">
+                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Objective:</span>
+                     <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{data.objective}</span>
+                  </div>
+                )}
               </div>
            </div>
            
@@ -199,7 +212,17 @@ const DiscoveryDetail: React.FC = () => {
                           </div>
                           <div className="space-y-2 md:space-y-3">
                              <h4 className={`text-lg md:text-2xl font-black text-gray-900 leading-tight transition-colors ${discoveryType === 'domain' ? 'group-hover:text-[#4db6ac]' : 'group-hover:text-[#9d7bb0]'}`}>{uc.title}</h4>
-                             <p className="text-[11px] md:text-sm font-medium text-gray-500 leading-relaxed italic opacity-80">"{uc.description}"</p>
+                             <div className="text-[11px] md:text-sm font-medium text-gray-500 leading-relaxed italic opacity-80">
+                                <ReactMarkdown>{"\"" + uc.description + "\""}</ReactMarkdown>
+                             </div>
+                             {uc.why_relevant && (
+                               <div className="mt-4 p-4 bg-white/50 rounded-2xl border border-gray-100/50">
+                                  <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Strategic Relevance</p>
+                                  <div className="text-[11px] md:text-xs text-gray-600 leading-relaxed font-medium">
+                                     <ReactMarkdown>{uc.why_relevant}</ReactMarkdown>
+                                  </div>
+                               </div>
+                             )}
                           </div>
                        </div>
                        
@@ -228,13 +251,20 @@ const DiscoveryDetail: React.FC = () => {
                                      <p className="text-[10px] md:text-xs font-black text-gray-800 uppercase tracking-tight">{param.parameter}</p>
                                      <p className="text-[9px] md:text-[11px] font-medium text-gray-500 leading-snug">{param.justification}</p>
                                   </div>
-                                  <div className="text-right shrink-0">
-                                     <span className="text-sm md:text-lg font-black text-[#4db6ac]">{param.score}</span>
-                                     <span className="text-[8px] md:text-[10px] font-bold text-gray-300">/10</span>
+                                  <div className="text-right shrink-0 flex flex-col items-end">
+                                     <div className="flex items-baseline gap-1">
+                                        <span className={`text-sm md:text-lg font-black ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>{param.score}</span>
+                                        <span className="text-[8px] md:text-[10px] font-bold text-gray-300">/10</span>
+                                     </div>
+                                     {param.weight && (
+                                       <div className="text-[7px] md:text-[8px] font-black text-gray-400 uppercase tracking-tighter">
+                                          Weight: {param.weight}
+                                       </div>
+                                     )}
                                   </div>
                                </div>
                                <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
-                                  <div className="h-full bg-[#4db6ac] transition-all duration-1000 ease-out" style={{width: `${param.score * 10}%`}}></div>
+                                  <div className={`h-full transition-all duration-1000 ease-out ${discoveryType === 'domain' ? 'bg-[#4db6ac]' : 'bg-[#9d7bb0]'}`} style={{width: `${param.score * 10}%`}}></div>
                                </div>
                             </div>
                           ))}
@@ -271,8 +301,52 @@ const DiscoveryDetail: React.FC = () => {
                           </div>
                        </div>
                     </div>
-
                   </div>
+
+                  {/* Functional Steps Section - Full Width at Bottom */}
+                  {uc.functional_steps && uc.functional_steps.length > 0 && (
+                    <div className="border-t border-gray-100 bg-white p-6 md:p-14">
+                       <div className="flex items-center gap-4 mb-10">
+                          <h5 className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Functional Execution Roadmap</h5>
+                          <div className="h-px flex-1 bg-gray-50"></div>
+                       </div>
+                       
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10 relative">
+                          {uc.functional_steps.map((step: string, sIdx: number) => {
+                            // Extract step number and content if possible for better styling
+                            const stepMatch = step.match(/Step (\d+):/i);
+                            const stepNum = stepMatch ? stepMatch[1] : (sIdx + 1).toString();
+                            const stepContent = step.replace(/Step \d+:/i, '').trim();
+                            
+                            // Format subpoints (•, (1), (a), etc.) to appear on new lines
+                            const formattedText = stepContent
+                              .replace(/(•|\(\d+\)|\([a-z]\))/g, '\n\n$1')
+                              .trim();
+                            
+                            return (
+                              <div key={sIdx} className="relative group/step">
+                                 <div className="flex gap-5">
+                                    <div className="flex flex-col items-center shrink-0">
+                                       <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black shadow-sm border transition-all ${
+                                         discoveryType === 'domain' 
+                                           ? 'bg-[#4db6ac]/5 border-[#4db6ac]/20 text-[#4db6ac] group-hover/step:bg-[#4db6ac] group-hover/step:text-white' 
+                                           : 'bg-[#9d7bb0]/5 border-[#9d7bb0]/20 text-[#9d7bb0] group-hover/step:bg-[#9d7bb0] group-hover/step:text-white'
+                                       }`}>
+                                          {stepNum}
+                                       </div>
+                                    </div>
+                                    <div className="space-y-2 pt-1">
+                                       <div className="prose prose-sm max-w-none text-[11px] md:text-xs text-gray-600 font-medium leading-relaxed">
+                                          <ReactMarkdown>{formattedText}</ReactMarkdown>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                            );
+                          })}
+                       </div>
+                    </div>
+                  )}
                 </div>
               ))}
            </div>

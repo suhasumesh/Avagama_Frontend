@@ -90,15 +90,16 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
 
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  const Logo = () => (
+ const Logo = () => (
     <div className="flex items-center">
-      <span className="text-2xl md:text-3xl font-semibold tracking-tight inline-flex items-start">
-        <span className="text-[#a26da8]">Avagama</span>
-        <span className="bg-gradient-to-r from-[#a26da8] via-[#a26da8] to-[#6fcbbd] bg-clip-text text-transparent ml-[1px]">
-          .AI
-        </span>
-        <span className="text-[10px] font-medium text-gray-400 ml-[1px] -mt-1">TM</span>
-      </span>
+      <img
+        src="/Avagama.AI_Logo.png"
+        alt="Avagama AI"
+        className="h-10 object-contain"
+      />
+      <span className="text-[8px] text-gray-400 relative -top-3 ml-[2px]">
+                    TM
+                  </span>
     </div>
   );
 
@@ -117,9 +118,8 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
             {!isAuthenticated ? (
               <>
                 <Link to="/about" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">About</Link>
-                <Link to="/ceo" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">CEO</Link>
                 <Link to="/pricing" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Pricing</Link>
-                <Link to="/contact" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Contact Us</Link>
+                <Link to="/support" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Help & Support</Link>
               </>
             ) : (
               <>
@@ -162,6 +162,8 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
 
                 <Link to="/evaluations" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/evaluations' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>MY EVALUATIONS</Link>
                 
+                <Link to="/support" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/support' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>SUPPORT</Link>
+
                 {isAdmin && (
                   <Link to="/admin" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/admin' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>ADMIN</Link>
                 )}
@@ -174,7 +176,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
         <div className="flex items-center gap-3 md:gap-6 shrink-0 relative z-[120]">
           {isAuthPage ? (
             <button 
-              onClick={() => navigate('/contact')}
+              onClick={() => navigate('/support')}
               className="hidden md:flex items-center gap-2 text-[#a26da8] font-bold text-sm cursor-pointer hover:opacity-80 transition-opacity"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -262,7 +264,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                   {!isAuthenticated ? (
                     <>
                       <div className="flex flex-col gap-6">
-                        {['About', 'CEO', 'Pricing', 'Contact'].map((item) => (
+                        {['About', 'Pricing', 'Support'].map((item) => (
                           <motion.div
                             key={item}
                             variants={{
@@ -275,7 +277,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                               className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
-                              {item}
+                              {item === 'Support' ? 'Help & Support' : item}
                             </Link>
                           </motion.div>
                         ))}
@@ -323,6 +325,10 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
 
                         <motion.div variants={{ open: { opacity: 1, x: 0 }, closed: { opacity: 0, x: 20 } }}>
                           <Link to="/evaluations" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors">Evaluations</Link>
+                        </motion.div>
+
+                        <motion.div variants={{ open: { opacity: 1, x: 0 }, closed: { opacity: 0, x: 20 } }}>
+                          <Link to="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors">Support</Link>
                         </motion.div>
 
                         {isAdmin && (

@@ -13,6 +13,9 @@ import Results from './pages/Results';
 import Compare from './pages/Compare';
 import Prism from './pages/Prism';
 import About from './pages/About';
+import Support from './pages/Support';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import CEO from './pages/CEO';
 import Pricing from './pages/Pricing';
 import CompanyDiscovery from './pages/Discovery/CompanyDiscovery';
@@ -38,9 +41,12 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              <Route path="/ceo" element={<CEO />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              // <Route path="/ceo" element={<CEO />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/contact" element={<div className="flex items-center justify-center min-h-[60vh] text-gray-400 font-bold uppercase tracking-widest">Contact Support: support@avagama.ai</div>} />
+              <Route path="/contact" element={<Support />} />
               <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -67,16 +73,21 @@ const App: React.FC = () => {
           <footer className="bg-white border-t border-gray-100 py-10">
             <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center">
-                <span className="text-xl font-bold tracking-tight">
-                  <span className="text-[#a26da8]">Avagama</span>
-                  <span className="bg-gradient-to-r from-[#a26da8] via-[#a26da8] to-[#6fcbbd] bg-clip-text text-transparent ml-[1px]">.AI</span>
-                  <span className="text-[8px] align-top text-gray-400 ml-0.5">TM</span>
-                </span>
+                <div className="flex items-start">
+                  <img
+                    src="/Avagama.AI_Logo.png"
+                    alt="Avagama AI"
+                    className="h-6 object-contain"
+                  />
+                  <span className="text-[8px] text-gray-400 relative -top-1 ml-[2px]">
+                    TM
+                  </span>
+                </div>
               </div>
               <p className="text-sm text-gray-400 font-medium">© 2026 Avagama.ai Powered by Avaali. All Rights Reserved.</p>
               <div className="flex gap-8">
-                <a href="#" className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Privacy Policy</a>
-                <a href="#" className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Terms of Service</a>
+                <Link to="/privacy" className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Privacy Policy</Link>
+                <Link to="/terms" className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors">Terms of Service</Link>
               </div>
             </div>
           </footer>

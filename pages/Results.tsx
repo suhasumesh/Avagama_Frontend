@@ -142,7 +142,7 @@ const Results: React.FC = () => {
                     <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60">Architectural Fitment Type</p>
                  </div>
                  <p className="text-[11px] md:text-sm font-medium leading-relaxed pt-2 border-t border-white/10 italic">
-                   "{analysis.recommendations?.notes?.substring(0, 120)}..."
+                   "{analysis.recommendations?.notes}"
                  </p>
               </div>
               <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/10 rounded-full -br-24 -bb-24 blur-3xl"></div>

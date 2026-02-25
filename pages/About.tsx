@@ -8,12 +8,11 @@ const About: React.FC = () => {
       {/* Hero Section */}
       <section className="bg-avagama-gradient py-24 px-6 border-b border-gray-100">
         <div className="max-w-5xl mx-auto text-center space-y-8">
-          <div className="inline-block bg-[#9d7bb0]/10 text-[#9d7bb0] px-4 py-1 rounded-full text-xs font-black tracking-widest uppercase">The Methodology</div>
           <h1 className="text-6xl font-black text-gray-900 leading-tight">
-            Scientific Process <span className="text-[#4db6ac]">Discovery</span> & Evaluation
+            The Future Of <span className="text-[#4db6ac]">Enterprise Automation</span> & Evaluation
           </h1>
           <p className="text-xl text-gray-500 max-w-3xl mx-auto leading-relaxed">
-            Avagama AI is the industry's first enterprise platform dedicated to the "Upper Mid and Large" segment for scientific evaluation of process automation potential using Agentic AI.
+            Unlock unmatched agentic intelligence to discover, evaluate, and scale high-impact automation workflows across your entire organization.
           </p>
         </div>
       </section>
@@ -52,13 +51,12 @@ const About: React.FC = () => {
           <div className="bg-gray-50 p-12 rounded-[60px] relative overflow-hidden">
              <div className="relative z-10 space-y-6">
                 <div className="bg-white p-8 rounded-3xl shadow-xl space-y-4">
-                   <div className="w-12 h-12 bg-teal-50 text-[#4db6ac] rounded-2xl flex items-center justify-center font-black">AI</div>
-                   <h3 className="text-xl font-bold">Agentic Discovery</h3>
-                   <p className="text-gray-500 text-sm leading-relaxed">Our Mistral-powered agents don't just "calculate"; they reason through your process descriptions and SOPs to uncover hidden automation risks.</p>
+                   <div className="w-12 h-12 bg-teal-50 text-[#4db6ac] rounded-2xl flex items-center justify-center font-black">Agentic Dicovery</div>
+                   <p className="text-gray-500 text-sm leading-relaxed">Our AI-powered agents don't just "calculate"; they reason through your process descriptions and SOPs to uncover hidden automation risks.</p>
                 </div>
                 <div className="bg-white p-8 rounded-3xl shadow-xl space-y-4 translate-x-12">
-                   <div className="w-12 h-12 bg-purple-50 text-[#9d7bb0] rounded-2xl flex items-center justify-center font-black">ROI</div>
-                   <h3 className="text-xl font-bold">Fitment Scoring</h3>
+                   <div className="w-12 h-12 bg-purple-50 text-[#9d7bb0] rounded-2xl flex items-center justify-center font-black">Fitment Scoring</div>
+                  
                    <p className="text-gray-500 text-sm leading-relaxed">Quantify whether a process is better suited for RPA, Agentic AI, or Augmented AI based on the 10-dimension assessment.</p>
                 </div>
              </div>
@@ -90,7 +88,7 @@ const About: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
              {[
                { title: 'Ingest', desc: 'Upload SOPs and process metadata.' },
-               { title: 'Discover', desc: 'Mistral Agents map the workflow.' },
+               { title: 'Discover', desc: 'AI Powered Agents map the workflow.' },
                { title: 'Score', desc: 'Dimensions are quantified and weighted.' },
                { title: 'Decide', desc: 'Strategy team receives prioritized roadmap.' }
              ].map((step, i) => (

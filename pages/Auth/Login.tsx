@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../../services/api';
+import { useCortex } from '../../context/CortexContext';
 
 interface LoginProps {
   onLogin: () => void;
@@ -13,6 +14,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { refreshCredits } = useCortex();
 
   const navigate = useNavigate();
 
@@ -53,6 +55,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           
           localStorage.setItem("user", JSON.stringify(userInfo));
 
+          await refreshCredits();
           onLogin();
           navigate("/dashboard");
         }

@@ -2,29 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../services/api';
+import { useCortex } from '../../context/CortexContext';
 
 const DomainDiscovery: React.FC = () => {
   const [domainName, setDomainName] = useState('');
   const [userRole, setUserRole] = useState('');
   const [objective, setObjective] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [fetchingHistory, setFetchingHistory] = useState(true);
-  const [credits, setCredits] = useState<number>(0);
+  const { credits, refreshCredits } = useCortex();
   const [errorModal, setErrorModal] = useState<{ show: boolean; title: string; message: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.credits !== undefined) setCredits(user.credits);
-      } catch (e) {
-        console.error("Error parsing user data", e);
-      }
-    }
-
     const fetchHistory = async () => {
       try {
         const res = await apiService.useCases.listDomain();
@@ -40,7 +32,35 @@ const DomainDiscovery: React.FC = () => {
       }
     };
     fetchHistory();
+    refreshCredits();
   }, []);
+
+  const handleExport = async () => {
+    if (history.length === 0) {
+      alert("No data available to export.");
+      return;
+    }
+    
+    setIsExporting(true);
+    try {
+      const blob = await apiService.useCases.exportDomain();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Domain_Discovery_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
+    } catch (err: any) {
+      console.error("Export error:", err);
+      alert(`Export Error: ${err.message || "Failed to generate export file."}`);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +78,11 @@ const DomainDiscovery: React.FC = () => {
       const result = res.data || res;
       const id = result._id || result.id;
       
+      // Refresh credits in real-time with a small delay to ensure backend consistency
+      setTimeout(() => {
+        refreshCredits();
+      }, 1500);
+
       if (id) {
         navigate(`/discovery/detail/${id}?type=domain`);
       } else {
@@ -161,9 +186,23 @@ const DomainDiscovery: React.FC = () => {
 
       {/* History Grid */}
       <div className="max-w-7xl mx-auto space-y-6 px-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-4 gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-4 gap-4">
           <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">Industry Mapping Portfolio</h3>
-          <span className="text-[10px] font-bold text-gray-300">{history.length} Records</span>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleExport}
+              disabled={isExporting || history.length === 0}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-[#4db6ac] hover:border-[#4db6ac]/30 transition-all disabled:opacity-50"
+            >
+              {isExporting ? (
+                <div className="w-3 h-3 border-2 border-teal-100 border-t-teal-500 rounded-full animate-spin"></div>
+              ) : (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              )}
+              {isExporting ? 'Exporting...' : 'Export to Excel'}
+            </button>
+            <span className="text-[10px] font-bold text-gray-300">{history.length} Records</span>
+          </div>
         </div>
 
         {fetchingHistory ? (

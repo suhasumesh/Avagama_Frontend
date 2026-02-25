@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { PricingPlan } from '../types';
 
-const CONVERSION_RATE = 83;
+const CONVERSION_RATE = 93;
 
 const plans = [
   {
@@ -96,7 +96,7 @@ const Pricing: React.FC = () => {
           Scale with <span className="text-[#4db6ac]">Confidence.</span>
         </h1>
         <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-          Avagama AI provides upper mid and large enterprises with the scientific rigor needed to prioritize automation investments.
+         Avagama AI provides access to enterprise-grade agentic intelligence tailored to your scale - flexible plans designed to help you discover, evaluate, and operationalize high-impact automation workflows with measurable ROI.
         </p>
       </div>
 
@@ -170,7 +170,7 @@ const Pricing: React.FC = () => {
                   {plan.footerNote}
                </div>
                <button className={`w-full py-5 rounded-[25px] font-black text-xs uppercase tracking-[0.2em] transition-all ${i === 1 ? 'bg-[#9d7bb0] text-white hover:bg-[#8b6aa1] shadow-2xl shadow-purple-200' : 'bg-gray-900 text-white hover:bg-black'}`}>
-                 Select {plan.name.split(' ')[0]}
+                {plan.name.split(' ')[0]}
                </button>
             </div>
           </div>

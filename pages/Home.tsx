@@ -9,7 +9,7 @@ const Home: React.FC = () => {
         <div className="space-y-6 md:space-y-8 text-center lg:text-left">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.1] text-gray-900 tracking-tighter">
             <span className="text-[#a26da8]">Avagama</span><span className="bg-gradient-to-r from-[#a26da8] via-[#a26da8] to-[#6fcbbd] bg-clip-text text-transparent ml-[2px]">.AI</span><br />
-            <span className="text-gray-400">Scientific</span> Process<br />
+            <span className="text-gray-400">Agentic</span> Process<br />
             Evaluation.
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
@@ -38,7 +38,7 @@ const Home: React.FC = () => {
         
         <div className="relative mt-12 lg:mt-0">
           <div className="bg-white p-10 rounded-[60px] shadow-2xl border border-white relative z-10">
-            <img src="https://picsum.photos/seed/avagama2026/1000/800" alt="Avagama UI Preview" className="rounded-[40px] shadow-sm" />
+            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1000&auto=format&fit=crop" alt="Agentic AI Visualization" className="rounded-[40px] shadow-sm w-full h-auto object-cover aspect-[5/4]" referrerPolicy="no-referrer" />
           </div>
           <div className="absolute -top-12 -right-12 w-80 h-80 bg-teal-100/40 rounded-full blur-3xl opacity-50 -z-0"></div>
           <div className="absolute -bottom-12 -left-12 w-80 h-80 bg-purple-100/40 rounded-full blur-3xl opacity-50 -z-0"></div>

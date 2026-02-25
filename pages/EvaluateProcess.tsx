@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiService } from "../services/api";
+import { useCortex } from "../context/CortexContext";
 
 const EvaluateProcess: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -12,7 +13,7 @@ const EvaluateProcess: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [evaluationId, setEvaluationId] = useState<string | null>(null);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [credits, setCredits] = useState<number>(0);
+  const { credits, refreshCredits } = useCortex();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -33,15 +34,7 @@ const EvaluateProcess: React.FC = () => {
 
   // Prefill if ID exists in URL
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.credits !== undefined) setCredits(user.credits);
-      } catch (e) {
-        console.error("Error parsing user data", e);
-      }
-    }
+    refreshCredits();
 
     if (idParam) {
       setEvaluationId(idParam);
@@ -167,6 +160,11 @@ const EvaluateProcess: React.FC = () => {
       });
 
       const runRes = await apiService.evaluations.runAgent(currentId);
+      
+      // Refresh credits in real-time after successful evaluation with a small delay
+      setTimeout(() => {
+        refreshCredits();
+      }, 1500);
       
       localStorage.setItem("latestEvaluationResult", JSON.stringify(runRes.data));
       navigate(`/results/${currentId}`);

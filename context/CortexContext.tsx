@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { apiService } from '../services/api';
 
 interface ChatConfig {
   sourceType: 'domain' | 'company' | 'evaluation';
@@ -19,6 +20,8 @@ interface CortexContextType {
   isAskPdfOpen: boolean;
   openAskPdf: () => void;
   closeAskPdf: () => void;
+  credits: number;
+  refreshCredits: () => Promise<void>;
 }
 
 const CortexContext = createContext<CortexContextType | undefined>(undefined);
@@ -28,6 +31,67 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [activeChat, setActiveChat] = useState<ChatConfig | null>(null);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
   const [isAskPdfOpen, setIsAskPdfOpen] = useState(false);
+  const [credits, setCredits] = useState<number>(0);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user.credits !== undefined) setCredits(user.credits);
+      } catch (e) {
+        console.error("Failed to parse user credits");
+      }
+    }
+    refreshCredits();
+  }, []);
+
+  const refreshCredits = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await apiService.auth.getCredits();
+      console.log("Credits refresh response:", res);
+      
+      // Handle various response structures: 
+      // 1. { credits: 50 }
+      // 2. { data: { credits: 50 } }
+      // 3. { success: true, credits: 50 }
+      let newCredits = undefined;
+      
+      if (typeof res === 'number') {
+        newCredits = res;
+      } else if (res.credits !== undefined) {
+        newCredits = res.credits;
+      } else if (res.data?.credits !== undefined) {
+        newCredits = res.data.credits;
+      } else if (res.data !== undefined && typeof res.data === 'number') {
+        newCredits = res.data;
+      } else if (res.user?.credits !== undefined) {
+        newCredits = res.user.credits;
+      } else if (res.data?.user?.credits !== undefined) {
+        newCredits = res.data.user.credits;
+      }
+      
+      if (newCredits !== undefined) {
+        const numericCredits = Number(newCredits);
+        setCredits(numericCredits);
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            user.credits = numericCredits;
+            localStorage.setItem('user', JSON.stringify(user));
+          } catch (e) {
+            console.error("Error updating user in localStorage", e);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to refresh credits", err);
+    }
+  };
 
   const openChat = (config: ChatConfig) => {
     setActiveChat(config);
@@ -74,7 +138,9 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       closeGlobalSearch,
       isAskPdfOpen,
       openAskPdf,
-      closeAskPdf
+      closeAskPdf,
+      credits,
+      refreshCredits
     }}>
       {children}
     </CortexContext.Provider>

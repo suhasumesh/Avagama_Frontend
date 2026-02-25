@@ -57,6 +57,18 @@ export const apiService = {
         body: JSON.stringify({ token, password }),
       });
       return handleResponse(response);
+    },
+    getProfile: async () => {
+      const response = await fetch(`${BASE_URL}/auth/profile`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    getCredits: async () => {
+      const response = await fetch(`${BASE_URL}/auth/credits`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
     }
   },
 
@@ -187,6 +199,46 @@ export const apiService = {
         headers: getHeaders(),
       });
       return handleResponse(response);
+    },
+    exportCompany: async () => {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BASE_URL}/export/company`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream'
+        },
+      });
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'No response body');
+        try {
+          const errorJson = JSON.parse(errorText);
+          throw new Error(errorJson.message || 'Export failed');
+        } catch (e: any) {
+          throw new Error(`Server error (${response.status})`);
+        }
+      }
+      return response.blob();
+    },
+    exportDomain: async () => {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BASE_URL}/export/domain`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream'
+        },
+      });
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'No response body');
+        try {
+          const errorJson = JSON.parse(errorText);
+          throw new Error(errorJson.message || 'Export failed');
+        } catch (e: any) {
+          throw new Error(`Server error (${response.status})`);
+        }
+      }
+      return response.blob();
     }
   },
 
