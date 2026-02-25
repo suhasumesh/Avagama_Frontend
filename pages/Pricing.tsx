@@ -64,6 +64,16 @@ const addons = [
   { label: '6 Month Ext.', priceINR: 1286063, runs: '+150 runs' }
 ];
 
+const runPacks = [
+  { volume: 50, priceINR: 25000 },
+  { volume: 75, priceINR: 36750 },
+  { volume: 100, priceINR: 48020 },
+  { volume: 125, priceINR: 58825 },
+  { volume: 150, priceINR: 69178 },
+  { volume: 175, priceINR: 79093 },
+  { volume: 200, priceINR: 88584 }
+];
+
 const Pricing: React.FC = () => {
   const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
 
@@ -198,6 +208,34 @@ const Pricing: React.FC = () => {
            <div className="text-center">
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Pricing subject to standard terms and conditions. Taxes additional as applicable.</p>
            </div>
+        </div>
+
+        {/* Discovery & Evaluation Run Packs */}
+        <div className="mt-16 bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-gray-200/40 overflow-hidden">
+          {/* Header */}
+          <div className="bg-[#1a1c2e] px-8 py-6 flex items-center gap-4">
+            <svg className="w-6 h-6 text-[#9d7bb0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <h3 className="text-white text-sm font-black uppercase tracking-[0.15em]">Discovery & Evaluation Run Packs</h3>
+          </div>
+          
+          {/* Table */}
+          <div className="px-8">
+            <div className="flex justify-between py-4 border-b border-gray-50">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Volume</span>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Price</span>
+            </div>
+            
+            <div className="flex flex-col">
+              {runPacks.map((pack, i) => (
+                <div key={i} className={`flex justify-between items-center py-5 ${i !== runPacks.length - 1 ? 'border-b border-gray-50' : ''}`}>
+                  <span className="text-sm font-medium text-gray-700">{pack.volume} Discovery & Evaluation Runs</span>
+                  <span className="text-sm font-black text-[#9d7bb0]">{formatPrice(pack.priceINR)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

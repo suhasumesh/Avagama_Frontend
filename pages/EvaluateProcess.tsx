@@ -250,8 +250,7 @@ const EvaluateProcess: React.FC = () => {
     { id: 1, label: "Discovery" },
     { id: 2, label: "SOP Upload" },
     { id: 3, label: "Operations" },
-    { id: 4, label: "AI Config" },
-    { id: 5, label: "Finalize" }
+    { id: 4, label: "Finalize" }
   ];
 
   return (
@@ -283,10 +282,10 @@ const EvaluateProcess: React.FC = () => {
             {isSavingDraft ? 'Saving...' : 'Save as draft'}
           </button>
           <button
-            onClick={() => (step === 5 ? setShowConfirm(true) : handleNext())}
+            onClick={() => (step === 4 ? setShowConfirm(true) : handleNext())}
             className="flex-1 lg:flex-none bg-[#9d7bb0] text-white px-6 md:px-8 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 text-xs md:text-sm"
           >
-            {step === 5 ? "Run AI Agent" : "Next step"}
+            {step === 4 ? "Run AI Agent" : "Next step"}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -320,7 +319,7 @@ const EvaluateProcess: React.FC = () => {
         <div className="flex-grow pt-4">
           {step === 1 && (
             <div className="space-y-8 animate-fadeIn">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 gap-8">
                 <div className="space-y-2">
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Process name</label>
                   <input
@@ -332,28 +331,15 @@ const EvaluateProcess: React.FC = () => {
                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-[#9d7bb0]/10 outline-none transition-all font-medium"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Target Agent</label>
-                  <select
-                    name="agentType"
-                    value={formData.agentType}
-                    onChange={handleInputChange}
-                    className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium"
-                  >
-                    <option>Process Discovery Agent</option>
-                    <option>ROI & Feasibility Agent</option>
-                    <option>Tech Fitment Advisor</option>
-                  </select>
-                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Strategic Context</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Business Objective</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
-                  placeholder="Provide context on why this process is a candidate for transformation..."
+                  placeholder="Provide the current Standard Operating Procedure (SOP) for this process... Or Upload a SOP Document in the next Step"
                   className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:ring-4 focus:ring-[#9d7bb0]/10 outline-none transition-all resize-none font-medium"
                 />
               </div>
@@ -480,38 +466,6 @@ const EvaluateProcess: React.FC = () => {
           )}
 
           {step === 4 && (
-            <div className="space-y-8 animate-fadeIn">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Base LLM Engine</label>
-                  <select
-                    name="model"
-                    value={formData.model}
-                    onChange={handleInputChange}
-                    className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-bold text-[#9d7bb0]"
-                  >
-                    <option value="mistral-large-latest">Advanced Reasoner</option>
-                    <option value="mistral-small-latest">Efficiency Engine</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Risk Stance</label>
-                  <select
-                    name="riskTolerance"
-                    value={formData.riskTolerance}
-                    onChange={handleInputChange}
-                    className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium"
-                  >
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 5 && (
             <div className="space-y-6 md:space-y-8 animate-fadeIn pb-10">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 {/* Identity Section */}
@@ -521,10 +475,6 @@ const EvaluateProcess: React.FC = () => {
                     <div className="flex flex-col">
                       <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Process Name</span>
                       <span className="text-sm md:text-base font-bold text-gray-900">{formData.processName || "Unnamed Process"}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Assigned Agent</span>
-                      <span className="text-xs md:text-sm font-bold text-[#9d7bb0]">{formData.agentType}</span>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Ingested Documentation</span>
@@ -571,7 +521,7 @@ const EvaluateProcess: React.FC = () => {
                       <div className="space-y-4">
                         <div className="flex flex-col">
                           <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Synthesizer Engine</span>
-                          <span className="text-xs md:text-sm font-bold text-[#9d7bb0]">{formData.model.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</span>
+                          <span className="text-xs md:text-sm font-bold text-[#9d7bb0]">Avagama Process Intelligence</span>
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Risk Appetite</span>
@@ -580,7 +530,7 @@ const EvaluateProcess: React.FC = () => {
                       </div>
                     </div>
                     <div className="space-y-6">
-                      <h3 className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-200 pb-4">Strategic Context</h3>
+                      <h3 className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-200 pb-4">Business Objective</h3>
                       <div className="flex flex-col">
                         <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Description</span>
                         <span className="text-[11px] md:text-xs font-medium text-gray-600 leading-relaxed italic">

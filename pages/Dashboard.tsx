@@ -79,6 +79,14 @@ const Dashboard: React.FC = () => {
     ]
   };
 
+  const chartData = dashboardData.companyTrends || dashboardData.domainTrends 
+    ? dashboardData.trends.map((t: any) => ({
+        ...t,
+        companyDiscovery: dashboardData.companyTrends?.find((ct: any) => ct.name === t.name)?.completed || 0,
+        domainDiscovery: dashboardData.domainTrends?.find((dt: any) => dt.name === t.name)?.completed || 0
+      }))
+    : dashboardData.trends;
+
   const discoverySourceData = [
     { name: 'By Company', value: dashboardData.companyUseCases || 1, color: '#9d7bb0' },
     { name: 'By Domain', value: dashboardData.domainUseCases || 1, color: '#4db6ac' }
@@ -178,7 +186,7 @@ const Dashboard: React.FC = () => {
           
           <div className="h-[300px] md:h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dashboardData.trends}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                 <XAxis 
                   dataKey="name" 
@@ -309,26 +317,30 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                 <div className="p-6 md:p-8 bg-purple-50/50 rounded-[32px] md:rounded-[40px] border border-purple-100/50 space-y-4">
+                  <div className="p-6 md:p-8 bg-purple-50/50 rounded-[32px] md:rounded-[40px] border border-purple-100/50 space-y-4">
                     <div className="flex items-center gap-4">
                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">🚀</div>
                        <h4 className="text-xs md:text-sm font-black text-gray-900 uppercase tracking-wide">Strategic Recommendation</h4>
                     </div>
                     <p className="text-xs md:text-sm text-gray-600 leading-relaxed font-medium">
-                      Based on your current "Agentic AI" focus ({dashboardData.technologyDistribution.find((t: any) => t.name === 'Agentic AI')?.value || 0}%), 
-                      the roadmap suggests prioritizing cross-functional discovery in <span className="text-[#9d7bb0] font-bold">Finance</span> and <span className="text-[#4db6ac] font-bold">Supply Chain</span> domains 
-                      for maximum compute yield.
+                      {dashboardData.strategicInsights?.recommendation || (
+                        <>
+                          Based on your current "Agentic AI" focus ({dashboardData.technologyDistribution.find((t: any) => t.name === 'Agentic AI')?.value || 0}%), 
+                          the roadmap suggests prioritizing cross-functional discovery in <span className="text-[#9d7bb0] font-bold">Finance</span> and <span className="text-[#4db6ac] font-bold">Supply Chain</span> domains 
+                          for maximum compute yield.
+                        </>
+                      )}
                     </p>
                  </div>
                  
                  <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-5 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100 flex flex-col gap-1">
                        <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Compute Efficiency</span>
-                       <span className="text-lg md:text-xl font-black text-gray-900">98.4%</span>
+                       <span className="text-lg md:text-xl font-black text-gray-900">{dashboardData.strategicInsights?.computeEfficiency || '98.4%'}</span>
                     </div>
                     <div className="bg-white p-5 md:p-6 rounded-2xl md:rounded-3xl border border-gray-100 flex flex-col gap-1">
                        <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Risk Mitigation</span>
-                       <span className="text-lg md:text-xl font-black text-gray-900">Active</span>
+                       <span className="text-lg md:text-xl font-black text-gray-900">{dashboardData.strategicInsights?.riskMitigation || 'Active'}</span>
                     </div>
                  </div>
               </div>
