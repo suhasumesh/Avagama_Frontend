@@ -15,6 +15,7 @@ import Prism from './pages/Prism';
 import About from './pages/About';
 import Support from './pages/Support';
 import Demo from './pages/Demo';
+import GuidedTour from './pages/GuidedTour';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CEO from './pages/CEO';
@@ -44,6 +45,7 @@ const App: React.FC = () => {
               <Route path="/about" element={<About />} />
               <Route path="/support" element={<Support />} />
               <Route path="/demo" element={<Demo />} />
+              <Route path="/guided-tour" element={<GuidedTour />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               // <Route path="/ceo" element={<CEO />} />

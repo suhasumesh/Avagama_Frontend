@@ -121,6 +121,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                 <Link to="/pricing" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Pricing</Link>
                 <Link to="/support" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Help & Support</Link>
                 <Link to="/demo" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Demo</Link>
+                <Link to="/guided-tour" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Guided Tour</Link>
               </>
             ) : (
               <>
@@ -267,7 +268,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                   {!isAuthenticated ? (
                     <>
                       <div className="flex flex-col gap-6">
-                        {['About', 'Pricing', 'Support', 'Demo'].map((item) => (
+                        {['About', 'Pricing', 'Support', 'Demo', 'Guided Tour'].map((item) => (
                           <motion.div
                             key={item}
                             variants={{
@@ -276,7 +277,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                             }}
                           >
                             <Link 
-                              to={`/${item.toLowerCase().replace(' ', '')}`} 
+                              to={`/${item.toLowerCase().replace(' ', '-').replace('&-', '')}`} 
                               className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
