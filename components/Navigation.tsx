@@ -164,10 +164,6 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
 
                 <Link to="/evaluations" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/evaluations' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>MY EVALUATIONS</Link>
                 
-                <Link to="/support" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/support' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>SUPPORT</Link>
-
-                <Link to="/demo" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/demo' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>DEMO</Link>
-
                 {isAdmin && (
                   <Link to="/admin" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/admin' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>ADMIN</Link>
                 )}
