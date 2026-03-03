@@ -12,19 +12,31 @@ const Support: React.FC = () => {
     },
     {
       question: "How does the AI Discovery process work?",
-      answer: "You can discover AI opportunities in two ways: by analyzing a specific company's public data and strategic goals, or by exploring industry-specific domains. Our AI agents crawl relevant data to suggest high-ROI use cases tailored to your context."
+      answer: "You can discover AI opportunities in two ways: Company Discovery (analyzing a specific organization's public data and strategic goals) or Domain Discovery (exploring industry-specific functional areas). Our AI agents crawl relevant data to suggest high-ROI use cases tailored to your context."
     },
     {
-      question: "What is the 'Strategic Prism'?",
-      answer: "The Strategic Prism is a visualization tool that plots your evaluated AI use cases on a matrix of Business Value vs. Implementation Feasibility. It helps you identify 'Quick Wins' (high value, high feasibility) and 'Strategic Bets' (high value, lower feasibility)."
+      question: "How do I interpret the 2x2 Strategic Prism?",
+      answer: "The Strategic Prism plots your evaluated use cases on a Gartner-style 2x2 matrix. Quick Wins (Top Left) are high value and high feasibility. Strategic Bets (Top Right) are high value but require more investment. Tactical Gains (Bottom Left) build momentum with lower effort, while Low Priority (Bottom Right) items should be deferred."
+    },
+    {
+      question: "What is the 'Avagama Enterprise LLM'?",
+      answer: "The Avagama Enterprise LLM is our specialized engine optimized for business process analysis. It balances reasoning depth with operational speed to provide precise diagnostic scores and implementation roadmaps for your enterprise use cases."
+    },
+    {
+      question: "How do I use the 'Ask Cortex' feature?",
+      answer: "Cortex is your interactive AI strategist. You can find the 'Ask Cortex' button on any evaluation result or discovery report. Use it to ask deep-dive questions about implementation steps, risk mitigation, or to brainstorm alternative scenarios based on the generated analysis."
     },
     {
       question: "Can I evaluate my own custom business processes?",
-      answer: "Yes! Use the 'New Evaluation' feature to describe any business process. Our AI will analyze it across multiple dimensions like volume, complexity, and risk to provide a detailed automation and feasibility score."
+      answer: "Yes! Use the 'New Evaluation' feature to describe any business process. Our AI will analyze it across 10 critical dimensions—including volume, complexity, and risk—to provide a detailed automation and feasibility score."
     },
     {
       question: "What kind of recommendations does the platform provide?",
-      answer: "For every use case, we provide a functional execution roadmap, recommended LLM types (e.g., Large LLM vs. SLM), fitment types (e.g., Agentic AI, RPA), and a detailed reasoning matrix explaining the benefit scores."
+      answer: "For every use case, we provide a functional execution roadmap, recommended LLM configurations, fitment types (e.g., Agentic AI, RPA), and a detailed reasoning matrix explaining the benefit scores across multiple business axes."
+    },
+    {
+      question: "How can I export my strategic analysis?",
+      answer: "You can export any strategic analysis or evaluation report by using the 'Print PDF' feature available on the Strategic Prism page. This generates a clean, board-ready document optimized for stakeholder presentations."
     },
     {
       question: "Is my data secure?",

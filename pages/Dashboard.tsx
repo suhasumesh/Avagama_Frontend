@@ -16,7 +16,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     // Get user info from storage
-    const storedUser = localStorage.getItem('user');
+    const storedUser = sessionStorage.getItem('user');
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
@@ -43,8 +43,8 @@ const Dashboard: React.FC = () => {
 
   const formatDisplayName = (userData: any) => {
     if (!userData) return 'Leader';
-    const rawName = [userData.firstName, userData.lastName].filter(Boolean).join(' ') || 'Leader';
-    return rawName.split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    const rawName = [userData.firstName, userData.lastName].filter(Boolean).join('.') || 'Leader';
+    return rawName.split(/\./).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('.');
   };
 
   const displayName = formatDisplayName(user);
@@ -65,6 +65,8 @@ const Dashboard: React.FC = () => {
     avgAutomationScore: 0,
     domainUseCases: 0,
     companyUseCases: 0,
+    totalUseCasesFound: 0,
+    totalIdentifiedAssets: 0,
     trends: [
       { name: 'Jan', completed: 12, companyDiscovery: 5, domainDiscovery: 8 },
       { name: 'Feb', completed: 19, companyDiscovery: 8, domainDiscovery: 12 },
@@ -98,7 +100,6 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
           <h1 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Intelligence Dashboard</h1>
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Command Center v2.4</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className={`px-4 py-2 rounded-xl border shadow-sm flex items-center gap-3 transition-all ${credits <= 5 ? 'bg-red-50 border-red-100 animate-pulse' : 'bg-white border-gray-100'}`}>
@@ -117,15 +118,23 @@ const Dashboard: React.FC = () => {
 
       {/* Hero Welcome */}
       <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 p-6 md:p-12 rounded-[32px] md:rounded-[48px] shadow-sm relative overflow-hidden">
-        <div className="relative z-10 space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">
-              Operational Clarity for <br className="hidden md:block" />
-              <span className="text-[#9d7bb0]">{displayName}</span>
-            </h2>
-            <p className="text-gray-500 font-medium max-w-xl text-sm md:text-lg leading-relaxed">
-              Your enterprise has identified <span className="text-gray-900 font-bold">{dashboardData.domainUseCases + dashboardData.companyUseCases} AI opportunities</span> across functional domains and organizational structures.
-            </p>
+        <div className="relative z-10 space-y-8">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">
+                Hi <span className="text-[#9d7bb0]">{displayName}</span>, <br className="hidden md:block" />
+                Welcome to Avagama
+              </h2>
+              <p className="text-gray-500 font-medium max-w-2xl text-sm md:text-lg leading-relaxed">
+                Discover automation opportunities, evaluate business processes, and unlock AI-powered automation for your enterprise.
+              </p>
+            </div>
+            <div className="pt-2">
+              <p className="text-gray-600 font-bold text-sm md:text-base flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#4db6ac]"></span>
+                Our diagnostic engine has successfully mapped <span className="text-[#9d7bb0] px-2 py-0.5 bg-purple-50 rounded-lg">{dashboardData.totalIdentifiedAssets || 0}</span> strategic AI assets across your functional domains and organizational structures.
+              </p>
+            </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/evaluate" className="bg-[#9d7bb0] text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-purple-100 hover:scale-105 transition-all text-center">

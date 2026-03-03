@@ -155,6 +155,7 @@ const DiscoveryDetail: React.FC = () => {
               </div>
            </div>
            
+           {/* 
            <div className="flex flex-row gap-3 md:gap-4 w-full lg:w-auto">
               <div className="flex-1 lg:flex-none p-3 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-gray-100 text-center min-w-[100px] md:min-w-[140px] shadow-sm">
                  <div className="text-[8px] md:text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Compute Yield</div>
@@ -165,6 +166,7 @@ const DiscoveryDetail: React.FC = () => {
                  <div className="text-lg md:text-2xl font-black text-white">{data.totalUseCases || data.use_cases?.length || 0}</div>
               </div>
            </div>
+           */}
         </div>
       </div>
 
@@ -213,13 +215,23 @@ const DiscoveryDetail: React.FC = () => {
                           <div className="space-y-2 md:space-y-3">
                              <h4 className={`text-lg md:text-2xl font-black text-gray-900 leading-tight transition-colors ${discoveryType === 'domain' ? 'group-hover:text-[#4db6ac]' : 'group-hover:text-[#9d7bb0]'}`}>{uc.title}</h4>
                              <div className="text-[11px] md:text-sm font-medium text-gray-500 leading-relaxed italic opacity-80">
-                                <ReactMarkdown>{"\"" + uc.description + "\""}</ReactMarkdown>
+                                <ReactMarkdown components={{
+                                  p: ({node, ...props}) => <p className="m-0 inline" {...props} />,
+                                  strong: ({node, ...props}) => <strong className="font-black text-gray-900" {...props} />
+                                }}>
+                                  {"\"" + uc.description + "\""}
+                                </ReactMarkdown>
                              </div>
                              {uc.why_relevant && (
                                <div className="mt-4 p-4 bg-white/50 rounded-2xl border border-gray-100/50">
                                   <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Strategic Relevance</p>
                                   <div className="text-[11px] md:text-xs text-gray-600 leading-relaxed font-medium">
-                                     <ReactMarkdown>{uc.why_relevant}</ReactMarkdown>
+                                     <ReactMarkdown components={{
+                                       p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                                       strong: ({node, ...props}) => <strong className="font-black text-gray-900" {...props} />
+                                     }}>
+                                       {uc.why_relevant}
+                                     </ReactMarkdown>
                                   </div>
                                </div>
                              )}
@@ -249,7 +261,14 @@ const DiscoveryDetail: React.FC = () => {
                                <div className="flex justify-between items-end gap-4">
                                   <div className="space-y-1 flex-1">
                                      <p className="text-[10px] md:text-xs font-black text-gray-800 uppercase tracking-tight">{param.parameter}</p>
-                                     <p className="text-[9px] md:text-[11px] font-medium text-gray-500 leading-snug">{param.justification}</p>
+                                     <div className="text-[9px] md:text-[11px] font-medium text-gray-500 leading-snug">
+                                         <ReactMarkdown components={{
+                                           p: ({node, ...props}) => <p className="m-0" {...props} />,
+                                           strong: ({node, ...props}) => <strong className="font-black text-gray-900" {...props} />
+                                         }}>
+                                           {param.justification}
+                                         </ReactMarkdown>
+                                      </div>
                                   </div>
                                   <div className="text-right shrink-0 flex flex-col items-end">
                                      <div className="flex items-baseline gap-1">
@@ -274,7 +293,7 @@ const DiscoveryDetail: React.FC = () => {
                           <div className="flex items-center gap-3">
                              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-xs md:text-sm shrink-0">🎯</div>
                              <div>
-                                <p className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Weighted Readiness</p>
+                                <p className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Weighted Alignment Index</p>
                                 <p className="text-[9px] md:text-[11px] font-bold text-gray-600">Calculated Strategy Alignment</p>
                              </div>
                           </div>
@@ -297,7 +316,9 @@ const DiscoveryDetail: React.FC = () => {
                                </svg>
                                Ask Cortex
                              </button>
-                             <span className="text-xl md:text-2xl font-black text-gray-900">{uc.totalWeightedScore || '-'}</span>
+                             <span className="text-xl md:text-2xl font-black text-gray-900">
+                                {uc.totalWeightedScore !== undefined && uc.totalWeightedScore !== null ? uc.totalWeightedScore : '-'}
+                             </span>
                           </div>
                        </div>
                     </div>
@@ -337,7 +358,12 @@ const DiscoveryDetail: React.FC = () => {
                                     </div>
                                     <div className="space-y-2 pt-1">
                                        <div className="prose prose-sm max-w-none text-[11px] md:text-xs text-gray-600 font-medium leading-relaxed">
-                                          <ReactMarkdown>{formattedText}</ReactMarkdown>
+                                          <ReactMarkdown components={{
+                                             p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                                             strong: ({node, ...props}) => <strong className="font-black text-gray-900" {...props} />
+                                           }}>
+                                             {formattedText}
+                                           </ReactMarkdown>
                                        </div>
                                     </div>
                                  </div>

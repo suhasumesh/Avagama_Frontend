@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
@@ -32,7 +32,7 @@ import GlobalCortexSearch from './components/Cortex/GlobalCortexSearch';
 import AskPdfModal from './components/Cortex/AskPdfModal';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem('token'));
 
   return (
     <CortexProvider>
@@ -42,15 +42,15 @@ const App: React.FC = () => {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/support" element={<Support />} />
+              <Route path="/about" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <About />} />
+              <Route path="/support" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Support />} />
               <Route path="/demo" element={<Demo />} />
               <Route path="/guided-tour" element={<GuidedTour />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               // <Route path="/ceo" element={<CEO />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/contact" element={<Support />} />
+              <Route path="/pricing" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Pricing />} />
+              <Route path="/contact" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Support />} />
               <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

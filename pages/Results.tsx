@@ -103,9 +103,6 @@ const Results: React.FC = () => {
                </svg>
                Ask Cortex
              </button>
-             <button onClick={() => window.print()} className="flex-1 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
-               Print PDF
-             </button>
           </div>
         </div>
       </div>
@@ -151,7 +148,7 @@ const Results: React.FC = () => {
            <div className="bg-white p-6 md:p-10 rounded-[32px] md:rounded-[48px] border border-gray-100 shadow-sm relative overflow-hidden group">
               <div className="relative z-10 space-y-4">
                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Benefit Index</span>
+                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Business Benefit</span>
                     <div className="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center text-[#4db6ac]">📈</div>
                  </div>
                  <div className="flex items-baseline gap-2">
@@ -189,7 +186,7 @@ const Results: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4 md:gap-6 pt-4 border-t border-gray-200">
                    <div className="space-y-1">
                       <span className="text-[9px] font-black text-gray-400 uppercase">Monthly Volume</span>
-                      <p className="text-sm md:text-base font-bold text-gray-900">{operations.monthlyVolume?.toLocaleString() || '-'}</p>
+                      <p className="text-sm md:text-base font-bold text-gray-900">{operations.monthlyVolume?.toLocaleString() || '0'} tx</p>
                    </div>
                    <div className="space-y-1">
                       <span className="text-[9px] font-black text-gray-400 uppercase">Cycle Frequency</span>
@@ -209,7 +206,7 @@ const Results: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <span className="text-[9px] font-black text-gray-400 uppercase">Chosen LLM Engine</span>
-                      <p className="text-[11px] md:text-xs font-bold text-[#9d7bb0]">{aiConfig.baseModel || '-'}</p>
+                      <p className="text-[11px] md:text-xs font-bold text-[#9d7bb0]">Avagama Enterprise LLM</p>
                     </div>
                     <div className="p-2 bg-purple-50 text-[#9d7bb0] rounded-lg">
                       <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -220,9 +217,7 @@ const Results: React.FC = () => {
             </div>
             
             <div className="p-6 md:p-8 bg-gradient-to-br from-[#9d7bb0]/10 to-[#6fcbbd]/10 rounded-[32px] md:rounded-[40px] border border-white space-y-3">
-              <h4 className="text-xs font-bold text-gray-800">Need more depth?</h4>
               <p className="text-[10px] md:text-[11px] text-gray-500 leading-relaxed">This evaluation used credits from your balance. You can re-run with different parameters to explore alternative fitment scenarios.</p>
-              <button onClick={() => navigate('/evaluate')} className="text-[9px] md:text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest hover:underline mt-2">Adjust Parameters</button>
             </div>
           </div>
 

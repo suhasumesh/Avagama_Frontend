@@ -35,7 +35,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
   useEffect(() => {
     const checkUser = () => {
       if (isAuthenticated) {
-        const storedUser = localStorage.getItem('user');
+        const storedUser = sessionStorage.getItem('user');
         if (storedUser) {
           try {
             const user = JSON.parse(storedUser);
@@ -70,8 +70,8 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     navigate('/');
   };
 
@@ -149,7 +149,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                           onClick={() => setShowDiscoveryMenu(false)}
                         >
                           <span className="w-2 h-2 rounded-full bg-[#a26da8]"></span>
-                          By Company Analysis
+                          Company Focus
                         </Link>
                         <Link 
                           to="/discovery/domain" 
@@ -157,7 +157,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                           onClick={() => setShowDiscoveryMenu(false)}
                         >
                           <span className="w-2 h-2 rounded-full bg-[#4db6ac]"></span>
-                          By Industry Domain
+                          Domain Focus
                         </Link>
                       </div>
                     </div>

@@ -7,7 +7,7 @@
 const BASE_URL = 'https://avagama-backend.onrender.com/api';
 
 const getHeaders = (isJson = true) => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   return {
     ...(isJson ? { 'Content-Type': 'application/json' } : {}),
     ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -82,7 +82,7 @@ export const apiService = {
       return handleResponse(response);
     },
     uploadSOP: async (id: string, file: File) => {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const formData = new FormData();
       // Key must be 'file' as per requirement
       formData.append('file', file);
@@ -138,7 +138,7 @@ export const apiService = {
       return handleResponse(response);
     },
     export: async () => {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const response = await fetch(`${BASE_URL}/export/evaluations`, {
         method: 'GET',
         headers: {
@@ -201,7 +201,7 @@ export const apiService = {
       return handleResponse(response);
     },
     exportCompany: async () => {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const response = await fetch(`${BASE_URL}/export/company`, {
         method: 'GET',
         headers: {
@@ -221,7 +221,7 @@ export const apiService = {
       return response.blob();
     },
     exportDomain: async () => {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const response = await fetch(`${BASE_URL}/export/domain`, {
         method: 'GET',
         headers: {
@@ -280,7 +280,7 @@ export const apiService = {
       const response = await fetch(`${BASE_URL}/documents/upload`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
         body: formData,
       });
