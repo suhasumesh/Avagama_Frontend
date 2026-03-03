@@ -84,7 +84,7 @@ const Demo: React.FC = () => {
             <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl shadow-sm">
               📊
             </div>
-            <h3 className="text-lg font-black text-gray-900 tracking-tight">Strategic Prism</h3>
+            <h3 className="text-lg font-black text-gray-900 tracking-tight">Strategic Quadrant</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">
               Generate comprehensive, board-ready reports and actionable roadmaps to guide your transformation journey.
             </p>

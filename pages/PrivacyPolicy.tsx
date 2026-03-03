@@ -40,7 +40,7 @@ const PrivacyPolicy: React.FC = () => {
             <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">3. How We Use Your Information</h2>
             <ul className="list-disc pl-6 text-gray-600 font-medium space-y-2">
               <li>To provide, maintain, and improve our AI discovery services.</li>
-              <li>To generate personalized AI implementation roadmaps and strategic prisms.</li>
+              <li>To generate personalized AI implementation roadmaps and strategic quadrants.</li>
               <li>To communicate with you about updates, security alerts, and support.</li>
               <li>To monitor and analyze usage trends to enhance user experience.</li>
             </ul>
