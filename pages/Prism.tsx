@@ -351,7 +351,7 @@ const StrategicPrism: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#fcfdff] flex flex-col items-center justify-center gap-6">
         <div className="w-16 h-16 border-8 border-[#9d7bb0]/20 border-t-[#9d7bb0] rounded-full animate-spin"></div>
-        <p className="text-gray-400 font-black uppercase tracking-widest text-sm">Generating Strategic Prism...</p>
+        <p className="text-gray-400 font-black uppercase tracking-widest text-sm">Generating Strategic Quadrant...</p>
       </div>
     );
   }
@@ -373,7 +373,7 @@ const StrategicPrism: React.FC = () => {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Strategic Prism</h1>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Strategic Quadrant</h1>
             <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">Multi-Process Fitment Visualization</p>
           </div>
         </div>
