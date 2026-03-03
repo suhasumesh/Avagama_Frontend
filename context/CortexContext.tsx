@@ -34,7 +34,7 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [credits, setCredits] = useState<number>(0);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = sessionStorage.getItem('user');
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser);
@@ -47,7 +47,7 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, []);
 
   const refreshCredits = async () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return;
 
     try {
@@ -77,14 +77,14 @@ export const CortexProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       if (newCredits !== undefined) {
         const numericCredits = Number(newCredits);
         setCredits(numericCredits);
-        const userStr = localStorage.getItem('user');
+        const userStr = sessionStorage.getItem('user');
         if (userStr) {
           try {
             const user = JSON.parse(userStr);
             user.credits = numericCredits;
-            localStorage.setItem('user', JSON.stringify(user));
+            sessionStorage.setItem('user', JSON.stringify(user));
           } catch (e) {
-            console.error("Error updating user in localStorage", e);
+            console.error("Error updating user in sessionStorage", e);
           }
         }
       }

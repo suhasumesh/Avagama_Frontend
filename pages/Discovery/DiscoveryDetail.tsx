@@ -155,6 +155,7 @@ const DiscoveryDetail: React.FC = () => {
               </div>
            </div>
            
+           {/* 
            <div className="flex flex-row gap-3 md:gap-4 w-full lg:w-auto">
               <div className="flex-1 lg:flex-none p-3 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-gray-100 text-center min-w-[100px] md:min-w-[140px] shadow-sm">
                  <div className="text-[8px] md:text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Compute Yield</div>
@@ -165,6 +166,7 @@ const DiscoveryDetail: React.FC = () => {
                  <div className="text-lg md:text-2xl font-black text-white">{data.totalUseCases || data.use_cases?.length || 0}</div>
               </div>
            </div>
+           */}
         </div>
       </div>
 
@@ -297,7 +299,9 @@ const DiscoveryDetail: React.FC = () => {
                                </svg>
                                Ask Cortex
                              </button>
-                             <span className="text-xl md:text-2xl font-black text-gray-900">{uc.totalWeightedScore || '-'}</span>
+                             <span className="text-xl md:text-2xl font-black text-gray-900">
+                                {uc.totalWeightedScore !== undefined && uc.totalWeightedScore !== null ? uc.totalWeightedScore : '-'}
+                             </span>
                           </div>
                        </div>
                     </div>

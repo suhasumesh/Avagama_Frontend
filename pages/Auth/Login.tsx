@@ -35,7 +35,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
         const token = response.token || response.data?.token;
         if (token) {
-          localStorage.setItem("token", token);
+          sessionStorage.setItem("token", token);
           
           // Capture user data from various possible structures
           const rawUser = response.user || response.data?.user || {};
@@ -53,7 +53,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             plan: plan
           };
           
-          localStorage.setItem("user", JSON.stringify(userInfo));
+          sessionStorage.setItem("user", JSON.stringify(userInfo));
 
           await refreshCredits();
           onLogin();
