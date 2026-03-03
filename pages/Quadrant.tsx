@@ -5,7 +5,7 @@ import { apiService } from '../services/api';
 import * as d3 from 'd3';
 import { motion } from 'motion/react';
 
-const StrategicPrism: React.FC = () => {
+const StrategicQuadrant: React.FC = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -218,16 +218,6 @@ const StrategicPrism: React.FC = () => {
       const dot = g.append("g")
         .attr("transform", `translate(${x}, ${y})`)
         .style("cursor", "pointer")
-        .on("mouseover", function() {
-          d3.select(this).select("circle").transition().duration(200).attr("r", 20).attr("stroke-width", 5);
-          d3.select(this).select(".label-bg").transition().duration(200).attr("opacity", 1);
-          d3.select(this).select(".label-text-hover").transition().duration(200).attr("opacity", 1);
-        })
-        .on("mouseout", function() {
-          d3.select(this).select("circle").transition().duration(200).attr("r", 14).attr("stroke-width", 2);
-          d3.select(this).select(".label-bg").transition().duration(200).attr("opacity", 0);
-          d3.select(this).select(".label-text-hover").transition().duration(200).attr("opacity", 0);
-        })
         .on("click", () => setSelectedItem(item));
 
       dot.append("circle")
@@ -252,7 +242,7 @@ const StrategicPrism: React.FC = () => {
       const labelX = isRight ? 22 : -22;
       const labelY = isBottom ? -18 : 22;
       
-      const labelText = item.discovery?.processName?.substring(0, 18) + (item.discovery?.processName?.length > 18 ? "..." : "");
+      const labelText = item.discovery?.processName || "Process";
 
       // Halo for readability
       dot.append("text")
@@ -278,32 +268,6 @@ const StrategicPrism: React.FC = () => {
         .attr("text-transform", "uppercase")
         .text(labelText);
 
-      // Hover Label (Detailed)
-      const labelGroup = dot.append("g")
-        .attr("class", "hover-label")
-        .attr("transform", "translate(0, -35)");
-
-      const fullLabelText = item.discovery?.processName || "Process";
-      const textWidth = fullLabelText.length * 7;
-
-      labelGroup.append("rect")
-        .attr("class", "label-bg")
-        .attr("x", -textWidth / 2 - 10)
-        .attr("y", -12)
-        .attr("width", textWidth + 20)
-        .attr("height", 24)
-        .attr("rx", 12)
-        .attr("fill", "#1e293b")
-        .attr("opacity", 0);
-
-      labelGroup.append("text")
-        .attr("class", "label-text-hover")
-        .attr("text-anchor", "middle")
-        .attr("fill", "white")
-        .attr("font-size", "10px")
-        .attr("font-weight", "800")
-        .attr("opacity", 0)
-        .text(fullLabelText);
     });
 
   }, [loading, items]);
@@ -351,7 +315,7 @@ const StrategicPrism: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#fcfdff] flex flex-col items-center justify-center gap-6">
         <div className="w-16 h-16 border-8 border-[#9d7bb0]/20 border-t-[#9d7bb0] rounded-full animate-spin"></div>
-        <p className="text-gray-400 font-black uppercase tracking-widest text-sm">Generating Strategic Prism...</p>
+        <p className="text-gray-400 font-black uppercase tracking-widest text-sm">Generating Strategic Quadrant...</p>
       </div>
     );
   }
@@ -373,7 +337,7 @@ const StrategicPrism: React.FC = () => {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Strategic Prism</h1>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Strategic Quadrant</h1>
             <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">Multi-Process Fitment Visualization</p>
           </div>
         </div>
@@ -396,7 +360,7 @@ const StrategicPrism: React.FC = () => {
       </div>
 
       <div className="space-y-10">
-        {/* Main Prism Visualization - Full Width */}
+        {/* Main Quadrant Visualization - Full Width */}
         <div className="bg-white rounded-[56px] border border-gray-100 shadow-xl p-12 flex flex-col items-center justify-center overflow-hidden relative">
           <svg ref={svgRef} width="800" height="650" viewBox="0 0 800 650" className="max-w-full h-auto"></svg>
           
@@ -484,7 +448,7 @@ const StrategicPrism: React.FC = () => {
                     onClick={() => setSelectedItem(null)}
                     className="bg-white border border-gray-200 text-gray-900 px-8 py-4 rounded-2xl text-xs font-black tracking-widest uppercase hover:bg-gray-50 transition-all"
                   >
-                    Back to Prism
+                    Back to Quadrant
                   </button>
                 </div>
               </div>
@@ -604,4 +568,4 @@ const StrategicPrism: React.FC = () => {
   );
 };
 
-export default StrategicPrism;
+export default StrategicQuadrant;

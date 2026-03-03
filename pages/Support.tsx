@@ -15,8 +15,8 @@ const Support: React.FC = () => {
       answer: "You can discover AI opportunities in two ways: Company Discovery (analyzing a specific organization's public data and strategic goals) or Domain Discovery (exploring industry-specific functional areas). Our AI agents crawl relevant data to suggest high-ROI use cases tailored to your context."
     },
     {
-      question: "How do I interpret the 2x2 Strategic Prism?",
-      answer: "The Strategic Prism plots your evaluated use cases on a Gartner-style 2x2 matrix. Quick Wins (Top Left) are high value and high feasibility. Strategic Bets (Top Right) are high value but require more investment. Tactical Gains (Bottom Left) build momentum with lower effort, while Low Priority (Bottom Right) items should be deferred."
+      question: "How do I interpret the 2x2 Strategic Quadrant?",
+      answer: "The Strategic Quadrant plots your evaluated use cases on a Gartner-style 2x2 matrix. Quick Wins (Top Left) are high value and high feasibility. Strategic Bets (Top Right) are high value but require more investment. Tactical Gains (Bottom Left) build momentum with lower effort, while Low Priority (Bottom Right) items should be deferred."
     },
     {
       question: "What is the 'Avagama Enterprise LLM'?",
@@ -36,7 +36,7 @@ const Support: React.FC = () => {
     },
     {
       question: "How can I export my strategic analysis?",
-      answer: "You can export any strategic analysis or evaluation report by using the 'Print PDF' feature available on the Strategic Prism page. This generates a clean, board-ready document optimized for stakeholder presentations."
+      answer: "You can export any strategic analysis or evaluation report by using the 'Print PDF' feature available on the Strategic Quadrant page. This generates a clean, board-ready document optimized for stakeholder presentations."
     },
     {
       question: "Is my data secure?",
@@ -56,7 +56,7 @@ const Support: React.FC = () => {
       desc: "Quantify the ROI of automating specific business processes with precision scoring."
     },
     {
-      title: "Strategic Prism",
+      title: "Strategic Quadrant",
       icon: "💎",
       desc: "Visualize your AI roadmap to prioritize implementation based on value and effort."
     },

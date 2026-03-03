@@ -46,9 +46,9 @@ const Evaluations: React.FC = () => {
     navigate(`/compare?ids=${selectedIds.join(',')}`);
   };
 
-  const handlePrism = () => {
+  const handleQuadrant = () => {
     if (selectedIds.length === 0) return;
-    navigate(`/prism?ids=${selectedIds.join(',')}`);
+    navigate(`/quadrant?ids=${selectedIds.join(',')}`);
   };
 
   const handleExport = async () => {
@@ -170,7 +170,7 @@ const Evaluations: React.FC = () => {
           </button>
 
           <button 
-            onClick={handlePrism}
+            onClick={handleQuadrant}
             disabled={selectedIds.length === 0}
             className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs md:text-sm border transition-all ${
               selectedIds.length >= 1 
@@ -179,8 +179,8 @@ const Evaluations: React.FC = () => {
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <span className="hidden sm:inline">Strategic Prism</span>
-            <span className="sm:hidden">Prism</span>
+            <span className="hidden sm:inline">Strategic Quadrant</span>
+            <span className="sm:hidden">Quadrant</span>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 1 ? 'bg-[#4db6ac] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
             </span>

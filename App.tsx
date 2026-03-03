@@ -11,10 +11,10 @@ import Evaluations from './pages/Evaluations';
 import EvaluateProcess from './pages/EvaluateProcess';
 import Results from './pages/Results';
 import Compare from './pages/Compare';
-import Prism from './pages/Prism';
+import Quadrant from './pages/Quadrant';
 import About from './pages/About';
 import Support from './pages/Support';
-import Demo from './pages/Demo';
+// import Demo from './pages/Demo';
 import GuidedTour from './pages/GuidedTour';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
@@ -44,7 +44,7 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <About />} />
               <Route path="/support" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Support />} />
-              <Route path="/demo" element={<Demo />} />
+{/* <Route path="/demo" element={<Demo />} /> */}
               <Route path="/guided-tour" element={<GuidedTour />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
@@ -62,7 +62,7 @@ const App: React.FC = () => {
               <Route path="/evaluate" element={<EvaluateProcess />} />
               <Route path="/results/:id" element={<Results />} />
               <Route path="/compare" element={<Compare />} />
-              <Route path="/prism" element={<Prism />} />
+              <Route path="/quadrant" element={<Quadrant />} />
               
               {/* New Discovery Routes */}
               <Route path="/discovery/company" element={<CompanyDiscovery />} />
