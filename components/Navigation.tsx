@@ -120,7 +120,9 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                 <Link to="/about" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">About</Link>
                 <Link to="/pricing" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Pricing</Link>
                 <Link to="/support" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Help & Support</Link>
-                <Link to="/demo" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Demo</Link>
+                {location.pathname !== '/' && (
+                  <Link to="/demo" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Demo</Link>
+                )}
                 <Link to="/guided-tour" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Guided Tour</Link>
               </>
             ) : (
@@ -164,10 +166,6 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
 
                 <Link to="/evaluations" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/evaluations' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>MY EVALUATIONS</Link>
                 
-                <Link to="/support" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/support' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>SUPPORT</Link>
-
-                <Link to="/demo" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/demo' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>DEMO</Link>
-
                 {isAdmin && (
                   <Link to="/admin" className={`text-sm font-bold tracking-wide transition-colors ${location.pathname === '/admin' ? 'text-[#a26da8]' : 'text-gray-500 hover:text-gray-900'}`}>ADMIN</Link>
                 )}
@@ -268,7 +266,9 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                   {!isAuthenticated ? (
                     <>
                       <div className="flex flex-col gap-6">
-                        {['About', 'Pricing', 'Support', 'Demo', 'Guided Tour'].map((item) => (
+                        {['About', 'Pricing', 'Support', 'Demo', 'Guided Tour']
+                          .filter(item => item !== 'Demo' || location.pathname !== '/')
+                          .map((item) => (
                           <motion.div
                             key={item}
                             variants={{
@@ -335,9 +335,11 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                           <Link to="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors">Support</Link>
                         </motion.div>
 
-                        <motion.div variants={{ open: { opacity: 1, x: 0 }, closed: { opacity: 0, x: 20 } }}>
-                          <Link to="/demo" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors">Demo</Link>
-                        </motion.div>
+                        {location.pathname !== '/' && (
+                          <motion.div variants={{ open: { opacity: 1, x: 0 }, closed: { opacity: 0, x: 20 } }}>
+                            <Link to="/demo" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-black text-gray-900 uppercase tracking-tighter hover:text-[#a26da8] transition-colors">Demo</Link>
+                          </motion.div>
+                        )}
 
                         {isAdmin && (
                           <motion.div variants={{ open: { opacity: 1, x: 0 }, closed: { opacity: 0, x: 20 } }}>
