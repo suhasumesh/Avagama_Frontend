@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
             <div className="pt-2">
               <p className="text-gray-600 font-bold text-sm md:text-base flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#4db6ac]"></span>
-                Our diagnostic engine has successfully mapped <span className="text-[#9d7bb0] px-2 py-0.5 bg-purple-50 rounded-lg">{dashboardData.totalIdentifiedAssets || 0}</span> strategic AI assets across your functional domains and organizational structures.
+                Our Automation Discovery engine has successfully mapped <span className="text-[#9d7bb0] px-2 py-0.5 bg-purple-50 rounded-lg">{dashboardData.totalIdentifiedAssets || 0}</span> strategic AI assets across your functional domains and organizational structures.
               </p>
             </div>
           </div>
@@ -233,10 +233,10 @@ const Dashboard: React.FC = () => {
                   name="Company Discovery" 
                   type="monotone" 
                   dataKey="companyDiscovery" 
-                  stroke="#f59e0b" 
+                  stroke="#f43f5e" 
                   strokeWidth={2} 
                   strokeDasharray="5 5" 
-                  dot={{ r: 3, fill: '#f59e0b', strokeWidth: 0 }} 
+                  dot={{ r: 3, fill: '#f43f5e', strokeWidth: 0 }} 
                 />
               </LineChart>
             </ResponsiveContainer>
