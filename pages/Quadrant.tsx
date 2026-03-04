@@ -47,7 +47,7 @@ const StrategicQuadrant: React.FC = () => {
 
     const width = 800;
     const height = 650;
-    const margin = { top: 60, right: 80, bottom: 80, left: 80 };
+    const margin = { top: 60, right: 80, bottom: 80, left: 120 };
 
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
@@ -120,7 +120,7 @@ const StrategicQuadrant: React.FC = () => {
 
     // Axis Titles
     // Value Axis (Vertical)
-    const valueAxisG = g.append("g").attr("transform", `translate(-75, ${innerHeight / 2}) rotate(-90)`);
+    const valueAxisG = g.append("g").attr("transform", `translate(-95, ${innerHeight / 2}) rotate(-90)`);
     valueAxisG.append("text")
       .attr("text-anchor", "middle")
       .attr("fill", "#0f172a")
