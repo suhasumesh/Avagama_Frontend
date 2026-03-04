@@ -57,10 +57,10 @@ const StrategicQuadrant: React.FC = () => {
 
     // Draw Quadrant Backgrounds
     const quadrants = [
-      { name: "Quick Wins", x: 0, y: 0, color: "#9d7bb0", opacity: 0.05, label: "High Value + High Feasibility" },
-      { name: "Strategic Bets", x: innerWidth / 2, y: 0, color: "#7b92af", opacity: 0.05, label: "High Value + Low Feasibility" },
-      { name: "Tactical Gains", x: 0, y: innerHeight / 2, color: "#4db6ac", opacity: 0.05, label: "Low Value + High Feasibility" },
-      { name: "Low Priority", x: innerWidth / 2, y: innerHeight / 2, color: "#94a3b8", opacity: 0.05, label: "Low Value + Low Feasibility" }
+      { name: "Quick Wins", x: 0, y: 0, color: "#8b5cf6", opacity: 0.1, label: "High Value + High Feasibility" },
+      { name: "Strategic Bets", x: innerWidth / 2, y: 0, color: "#f43f5e", opacity: 0.1, label: "High Value + Low Feasibility" },
+      { name: "Tactical Gains", x: 0, y: innerHeight / 2, color: "#10b981", opacity: 0.1, label: "Low Value + High Feasibility" },
+      { name: "Low Priority", x: innerWidth / 2, y: innerHeight / 2, color: "#64748b", opacity: 0.1, label: "Low Value + Low Feasibility" }
     ];
 
     quadrants.forEach(q => {
@@ -187,11 +187,52 @@ const StrategicQuadrant: React.FC = () => {
       }
       const f = (feasibilityScore || 0) / 100;
 
-      // Map scores to coordinates
-      // Y: High Value (1) -> y=0, Low Value (0) -> y=innerHeight
-      let y = padding + (innerHeight - 2 * padding) * (1 - bv);
-      // X: High Feasibility (1) -> x=0, Low Feasibility (0) -> x=innerWidth (Reversed as requested)
-      let x = padding + (innerWidth - 2 * padding) * (1 - f);
+      // Custom Plotting Logic
+      let x, y;
+      const availableWidth = innerWidth - 2 * padding;
+      const availableHeight = innerHeight - 2 * padding;
+
+      // Y-axis: Standard 50% split
+      if (bv > 0.5) {
+        // Top half: BV [50, 100] -> [0, 50%] height
+        const normalizedBV = (bv - 0.5) / 0.5;
+        y = padding + (availableHeight / 2) * (1 - normalizedBV);
+      } else {
+        // Bottom half: BV [0, 50] -> [50%, 100%] height
+        const normalizedBV = bv / 0.5;
+        y = padding + (availableHeight / 2) + (availableHeight / 2) * (1 - normalizedBV);
+      }
+
+      // X-axis: Context-aware split based on user rules
+      if (bv > 0.5) {
+        // Top half logic
+        if (f > 0.75) {
+          // Top-Left (Quick Wins): F [75, 100] -> [0, 50%] width
+          const normalizedF = (f - 0.75) / 0.25;
+          x = padding + (availableWidth / 2) * (1 - normalizedF);
+        } else {
+          // Top-Right (Strategic Bets): F [0, 75] -> [50%, 100%] width
+          // We map 50-75 to the right quadrant to match user request
+          if (f >= 0.5) {
+            const normalizedF = (f - 0.5) / 0.25;
+            x = padding + (availableWidth / 2) + (availableWidth / 4) * (1 - normalizedF);
+          } else {
+            const normalizedF = f / 0.5;
+            x = padding + (availableWidth / 2) + (availableWidth / 4) + (availableWidth / 4) * (1 - normalizedF);
+          }
+        }
+      } else {
+        // Bottom half logic (Standard 50% split)
+        if (f > 0.5) {
+          // Bottom-Left (Tactical Gains): F [50, 100] -> [0, 50%] width
+          const normalizedF = (f - 0.5) / 0.5;
+          x = padding + (availableWidth / 2) * (1 - normalizedF);
+        } else {
+          // Bottom-Right (Low Priority): F [0, 50] -> [50%, 100%] width
+          const normalizedF = f / 0.5;
+          x = padding + (availableWidth / 2) + (availableWidth / 2) * (1 - normalizedF);
+        }
+      }
 
       // Collision detection
       let attempts = 0;
@@ -213,7 +254,15 @@ const StrategicQuadrant: React.FC = () => {
       }
       plottedPoints.push({x, y});
 
-      const color = idx % 2 === 0 ? "#9d7bb0" : "#4db6ac";
+      // Categorization Logic
+      let dotColor = "#64748b"; // Default: Low Priority
+      if (bv > 0.75 && f > 0.75) {
+        dotColor = "#8b5cf6"; // Quick Wins
+      } else if (bv >= 0.5 && f >= 0.5) {
+        dotColor = "#f43f5e"; // Strategic Bets (High Value catch-all)
+      } else if (bv <= 0.5 && f > 0.5) {
+        dotColor = "#10b981"; // Tactical Gains
+      }
 
       const dot = g.append("g")
         .attr("transform", `translate(${x}, ${y})`)
@@ -222,7 +271,7 @@ const StrategicQuadrant: React.FC = () => {
 
       dot.append("circle")
         .attr("r", 14)
-        .attr("fill", color)
+        .attr("fill", dotColor)
         .attr("stroke", "white")
         .attr("stroke-width", 2)
         .attr("filter", "drop-shadow(0 4px 6px rgba(0,0,0,0.1))");
@@ -311,6 +360,20 @@ const StrategicQuadrant: React.FC = () => {
     return { label: 'Low', color: 'text-rose-500' };
   };
 
+  const getQuadrantColor = (item: any) => {
+    const bv = (item.aiAnalysis?.businessBenefitScore || 0) / 100;
+    let feasibilityScore = item.aiAnalysis?.feasibilityScore;
+    if (!feasibilityScore && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
+      feasibilityScore = Math.round((item.aiAnalysis.automationScore + item.aiAnalysis.businessBenefitScore) / 2);
+    }
+    const f = (feasibilityScore || 0) / 100;
+    
+    if (bv > 0.75 && f > 0.75) return "#8b5cf6"; // Quick Wins
+    if (bv >= 0.5 && f >= 0.5) return "#f43f5e"; // Strategic Bets
+    if (bv <= 0.5 && f > 0.5) return "#10b981"; // Tactical Gains
+    return "#64748b"; // Low Priority
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#fcfdff] flex flex-col items-center justify-center gap-6">
@@ -352,7 +415,7 @@ const StrategicQuadrant: React.FC = () => {
           </button>
           {items.map((item, idx) => (
             <div key={item._id} className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
-              <span className="w-3 h-3 rounded-full" style={{backgroundColor: d3.schemeCategory10[idx % 10]}}></span>
+              <span className="w-3 h-3 rounded-full" style={{backgroundColor: getQuadrantColor(item)}}></span>
               <span className="text-[10px] font-black text-gray-600 uppercase truncate max-w-[120px]">{item.discovery?.processName}</span>
             </div>
           ))}
@@ -368,31 +431,31 @@ const StrategicQuadrant: React.FC = () => {
           <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-5xl border-t border-gray-50 pt-10">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#9d7bb0]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Quick Wins</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value + High Feasibility. Immediate priorities for implementation.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value + High Feasibility (&gt; 75%). Immediate priorities for implementation.</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#7b92af]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#f43f5e]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Strategic Bets</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value + Low Feasibility. Significant investment or tech maturity required.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value (&ge; 50%) with lower feasibility (&ge; 50% but &lt; 75%). Requires strategic investment.</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#4db6ac]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Tactical Gains</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Value + High Feasibility. Good for building momentum and operational efficiency.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Value (&le; 50%) + High Feasibility (&gt; 50%). Good for operational efficiency.</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#94a3b8]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#64748b]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Low Priority</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Business Value + Low Feasibility. Should be deprioritized in the current roadmap.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Business Value (&le; 50%) + Low Feasibility (&le; 50%). Deprioritize in roadmap.</p>
             </div>
           </div>
 
@@ -410,20 +473,20 @@ const StrategicQuadrant: React.FC = () => {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
 
-              <div className="max-w-2xl space-y-8">
+               <div className="max-w-2xl space-y-8">
                 <div className="space-y-2">
-                  <span className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-[0.3em]">Process Insight</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em]" style={{color: getQuadrantColor(selectedItem)}}>Process Insight</span>
                   <h2 className="text-4xl font-black text-gray-900 tracking-tighter">{selectedItem.discovery?.processName}</h2>
                 </div>
 
                 <div className="grid grid-cols-3 gap-6">
                   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Business Value</p>
-                    <p className="text-2xl font-black text-[#9d7bb0]">{selectedItem.aiAnalysis?.businessBenefitScore}%</p>
+                    <p className="text-2xl font-black" style={{color: getQuadrantColor(selectedItem)}}>{selectedItem.aiAnalysis?.businessBenefitScore}%</p>
                   </div>
                   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Automation Score</p>
-                    <p className="text-2xl font-black text-[#4db6ac]">{selectedItem.aiAnalysis?.automationScore}%</p>
+                    <p className="text-2xl font-black" style={{color: getQuadrantColor(selectedItem)}}>{selectedItem.aiAnalysis?.automationScore}%</p>
                   </div>
                   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">ROI Potential</p>
@@ -468,7 +531,7 @@ const StrategicQuadrant: React.FC = () => {
               {items.map((item, idx) => (
                 <div key={item._id} className="w-[350px] space-y-8 bg-gray-50/50 p-8 rounded-[40px] border border-gray-100">
                   <div className="flex items-center gap-4 border-b border-gray-100 pb-6">
-                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm" style={{backgroundColor: d3.schemeCategory10[idx % 10]}}>
+                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm" style={{backgroundColor: getQuadrantColor(item)}}>
                       {idx + 1}
                     </div>
                     <div className="space-y-0.5">
@@ -481,11 +544,11 @@ const StrategicQuadrant: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                       <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Value Score</p>
-                      <p className="text-lg font-black text-[#9d7bb0]">{item.aiAnalysis?.businessBenefitScore}%</p>
+                      <p className="text-lg font-black" style={{color: getQuadrantColor(item)}}>{item.aiAnalysis?.businessBenefitScore}%</p>
                     </div>
                     <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                       <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Feasibility</p>
-                      <p className="text-lg font-black text-[#4db6ac]">
+                      <p className="text-lg font-black" style={{color: getQuadrantColor(item)}}>
                         {(() => {
                           let f = item.aiAnalysis?.feasibilityScore;
                           if (!f && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
