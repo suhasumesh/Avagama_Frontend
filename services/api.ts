@@ -131,6 +131,13 @@ export const apiService = {
       });
       return handleResponse(response);
     },
+    delete: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/evaluations/delete/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
     getDashboard: async () => {
       const response = await fetch(`${BASE_URL}/dashboard`, {
         headers: getHeaders(),

@@ -15,6 +15,8 @@ const Evaluations: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'shortlisted'>('all');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,6 +41,14 @@ const Evaluations: React.FC = () => {
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === currentItems.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(currentItems.map(item => item._id));
+    }
   };
 
   const handleCompare = () => {
@@ -84,6 +94,26 @@ const Evaluations: React.FC = () => {
     setShortlistedIds(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setIsDeleting(true);
+      const res = await apiService.evaluations.delete(id);
+      if (res.success) {
+        setEvaluations(prev => prev.filter(item => item._id !== id));
+        setSelectedIds(prev => prev.filter(i => i !== id));
+        setShortlistedIds(prev => prev.filter(i => i !== id));
+        setDeleteConfirm(null);
+      } else {
+        alert("Failed to delete evaluation.");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("An error occurred while deleting.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const getScoreColor = (score: number | null) => {
@@ -209,9 +239,14 @@ const Evaluations: React.FC = () => {
 
       <div className="space-y-4">
         {/* Table Header Styling - Hidden on Mobile */}
-        <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
+        <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr_50px] gap-4 px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
           <div className="flex items-center gap-2">
-             <input type="checkbox" className="w-4 h-4 rounded border-gray-200" disabled />
+             <input 
+               type="checkbox" 
+               className="w-4 h-4 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0] cursor-pointer" 
+               checked={currentItems.length > 0 && selectedIds.length === currentItems.length}
+               onChange={toggleSelectAll}
+             />
           </div>
           <div className="pl-8">Process name</div>
           <div>Created on</div>
@@ -220,6 +255,7 @@ const Evaluations: React.FC = () => {
           <div>Fitment type</div>
           <div>LLM type</div>
           <div className="text-right pr-4">Status</div>
+          <div></div>
         </div>
 
         {loading ? (
@@ -263,7 +299,7 @@ const Evaluations: React.FC = () => {
                   className={`bg-white rounded-2xl md:rounded-3xl border transition-all hover:shadow-md overflow-hidden ${isSelected ? 'border-[#9d7bb0] shadow-sm' : 'border-gray-100 shadow-sm'}`}
                 >
                   {/* Desktop View */}
-                  <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr] gap-4 px-6 py-5 items-center">
+                  <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr_50px] gap-4 px-6 py-5 items-center">
                     <div className="flex items-center">
                       <input 
                         type="checkbox" 
@@ -313,6 +349,20 @@ const Evaluations: React.FC = () => {
                       <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider ${status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
                         {status}
                       </span>
+                    </div>
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDeleteConfirm(item._id);
+                        }}
+                        className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
 
@@ -373,9 +423,23 @@ const Evaluations: React.FC = () => {
                     </div>
 
                     <div className="pt-3 border-t border-gray-50 flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-gray-300 uppercase">
-                        {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </span>
+                      <div className="flex items-center gap-4">
+                        <span className="text-[10px] font-bold text-gray-300 uppercase">
+                          {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </span>
+                        <button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setDeleteConfirm(item._id);
+                          }}
+                          className="text-red-400 hover:text-red-600 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                       <Link 
                         to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`}
                         className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest flex items-center gap-1"
@@ -449,6 +513,43 @@ const Evaluations: React.FC = () => {
            </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] flex items-center justify-center p-4 md:p-6">
+          <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-16 max-w-xl w-full shadow-2xl space-y-8 md:space-y-10 border border-white/20 animate-scaleUp">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-red-50 text-red-500 rounded-2xl md:rounded-[30px] flex items-center justify-center mx-auto border border-red-100 shadow-inner">
+              <svg className="w-8 h-8 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <div className="text-center space-y-3 md:space-y-4">
+              <h3 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Delete Evaluation?</h3>
+              <p className="text-gray-500 text-sm md:text-lg leading-relaxed">
+                This action is permanent and will remove all synthesized data for this process.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+              <button 
+                onClick={() => setDeleteConfirm(null)} 
+                disabled={isDeleting}
+                className="flex-1 py-4 md:py-5 border-2 border-gray-100 rounded-2xl md:rounded-3xl font-black text-gray-400 hover:bg-gray-50 transition-colors uppercase text-[10px] md:text-xs tracking-widest disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDelete(deleteConfirm)} 
+                disabled={isDeleting}
+                className="flex-1 py-4 md:py-5 bg-red-500 text-white rounded-2xl md:rounded-3xl font-black hover:bg-red-600 shadow-2xl shadow-red-200 transition-all uppercase text-[10px] md:text-xs tracking-widest flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

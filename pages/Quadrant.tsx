@@ -175,64 +175,31 @@ const StrategicQuadrant: React.FC = () => {
         .text(l.label);
     });
 
+    // Plotting Scales - Linear 0-100% for both axes to match "Medium" center labels
+    const xScale = d3.scaleLinear()
+      .domain([1.0, 0.0])
+      .range([0, innerWidth]);
+
+    const yScale = d3.scaleLinear()
+      .domain([1.0, 0.0])
+      .range([0, innerHeight]);
+
     // Plot Items
     const plottedPoints: {x: number, y: number}[] = [];
     const padding = 40;
     
     items.forEach((item, idx) => {
       const bv = (item.aiAnalysis?.businessBenefitScore || 0) / 100;
+      const as = (item.aiAnalysis?.automationScore || 0) / 100;
       let feasibilityScore = item.aiAnalysis?.feasibilityScore;
-      if (!feasibilityScore && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
-        feasibilityScore = Math.round((item.aiAnalysis.automationScore + item.aiAnalysis.businessBenefitScore) / 2);
+      if (!feasibilityScore) {
+        feasibilityScore = item.aiAnalysis?.automationScore || 0;
       }
       const f = (feasibilityScore || 0) / 100;
 
-      // Custom Plotting Logic
-      let x, y;
-      const availableWidth = innerWidth - 2 * padding;
-      const availableHeight = innerHeight - 2 * padding;
-
-      // Y-axis: Standard 50% split
-      if (bv > 0.5) {
-        // Top half: BV [50, 100] -> [0, 50%] height
-        const normalizedBV = (bv - 0.5) / 0.5;
-        y = padding + (availableHeight / 2) * (1 - normalizedBV);
-      } else {
-        // Bottom half: BV [0, 50] -> [50%, 100%] height
-        const normalizedBV = bv / 0.5;
-        y = padding + (availableHeight / 2) + (availableHeight / 2) * (1 - normalizedBV);
-      }
-
-      // X-axis: Context-aware split based on user rules
-      if (bv > 0.5) {
-        // Top half logic
-        if (f > 0.75) {
-          // Top-Left (Quick Wins): F [75, 100] -> [0, 50%] width
-          const normalizedF = (f - 0.75) / 0.25;
-          x = padding + (availableWidth / 2) * (1 - normalizedF);
-        } else {
-          // Top-Right (Strategic Bets): F [0, 75] -> [50%, 100%] width
-          // We map 50-75 to the right quadrant to match user request
-          if (f >= 0.5) {
-            const normalizedF = (f - 0.5) / 0.25;
-            x = padding + (availableWidth / 2) + (availableWidth / 4) * (1 - normalizedF);
-          } else {
-            const normalizedF = f / 0.5;
-            x = padding + (availableWidth / 2) + (availableWidth / 4) + (availableWidth / 4) * (1 - normalizedF);
-          }
-        }
-      } else {
-        // Bottom half logic (Standard 50% split)
-        if (f > 0.5) {
-          // Bottom-Left (Tactical Gains): F [50, 100] -> [0, 50%] width
-          const normalizedF = (f - 0.5) / 0.5;
-          x = padding + (availableWidth / 2) * (1 - normalizedF);
-        } else {
-          // Bottom-Right (Low Priority): F [0, 50] -> [50%, 100%] width
-          const normalizedF = f / 0.5;
-          x = padding + (availableWidth / 2) + (availableWidth / 2) * (1 - normalizedF);
-        }
-      }
+      // Use the scales for plotting
+      let x = xScale(f);
+      let y = yScale(bv);
 
       // Collision detection
       let attempts = 0;
@@ -240,28 +207,30 @@ const StrategicQuadrant: React.FC = () => {
         let collision = false;
         for (const p of plottedPoints) {
           const dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
-          if (dist < 40) {
+          if (dist < 35) {
             collision = true;
             break;
           }
         }
         if (!collision) break;
-        x += (Math.random() - 0.5) * 60;
-        y += (Math.random() - 0.5) * 60;
-        x = Math.max(padding, Math.min(innerWidth - padding, x));
-        y = Math.max(padding, Math.min(innerHeight - padding, y));
+        x += (Math.random() - 0.5) * 40;
+        y += (Math.random() - 0.5) * 40;
+        x = Math.max(20, Math.min(innerWidth - 20, x));
+        y = Math.max(20, Math.min(innerHeight - 20, y));
         attempts++;
       }
       plottedPoints.push({x, y});
 
-      // Categorization Logic
-      let dotColor = "#64748b"; // Default: Low Priority
-      if (bv > 0.75 && f > 0.75) {
-        dotColor = "#8b5cf6"; // Quick Wins
-      } else if (bv >= 0.5 && f >= 0.5) {
-        dotColor = "#f43f5e"; // Strategic Bets (High Value catch-all)
-      } else if (bv <= 0.5 && f > 0.5) {
-        dotColor = "#10b981"; // Tactical Gains
+      // Categorization Logic - Strictly matching the 50/50 visual quadrants
+      let dotColor = "#64748b"; 
+      if (bv >= 0.5 && f >= 0.5) {
+        dotColor = "#8b5cf6"; // Quick Wins (Top-Left)
+      } else if (bv >= 0.5 && f < 0.5) {
+        dotColor = "#f43f5e"; // Strategic Bets (Top-Right)
+      } else if (bv < 0.5 && f >= 0.5) {
+        dotColor = "#10b981"; // Tactical Gains (Bottom-Left)
+      } else {
+        dotColor = "#64748b"; // Low Priority (Bottom-Right)
       }
 
       const dot = g.append("g")
@@ -354,24 +323,46 @@ const StrategicQuadrant: React.FC = () => {
   const getROIPotential = (item: any) => {
     const bv = item.aiAnalysis?.businessBenefitScore || 0;
     const as = item.aiAnalysis?.automationScore || 0;
+    // ROI is a function of Value and Ease of Implementation
     const score = (bv * as) / 10000;
-    if (score > 0.5) return { label: 'High', color: 'text-emerald-500' };
-    if (score > 0.25) return { label: 'Medium', color: 'text-amber-500' };
+    if (score >= 0.45) return { label: 'High', color: 'text-emerald-500' };
+    if (score >= 0.20) return { label: 'Medium', color: 'text-amber-500' };
     return { label: 'Low', color: 'text-rose-500' };
   };
 
   const getQuadrantColor = (item: any) => {
     const bv = (item.aiAnalysis?.businessBenefitScore || 0) / 100;
     let feasibilityScore = item.aiAnalysis?.feasibilityScore;
-    if (!feasibilityScore && item.aiAnalysis?.automationScore && item.aiAnalysis?.businessBenefitScore) {
-      feasibilityScore = Math.round((item.aiAnalysis.automationScore + item.aiAnalysis.businessBenefitScore) / 2);
+    if (!feasibilityScore) {
+      feasibilityScore = item.aiAnalysis?.automationScore || 0;
     }
     const f = (feasibilityScore || 0) / 100;
     
-    if (bv > 0.75 && f > 0.75) return "#8b5cf6"; // Quick Wins
-    if (bv >= 0.5 && f >= 0.5) return "#f43f5e"; // Strategic Bets
-    if (bv <= 0.5 && f > 0.5) return "#10b981"; // Tactical Gains
+    if (bv >= 0.5 && f >= 0.5) return "#8b5cf6"; // Quick Wins
+    if (bv >= 0.5 && f < 0.5) return "#f43f5e"; // Strategic Bets
+    if (bv < 0.5 && f >= 0.5) return "#10b981"; // Tactical Gains
     return "#64748b"; // Low Priority
+  };
+
+  const getQuadrantComment = (item: any) => {
+    const bv = (item.aiAnalysis?.businessBenefitScore || 0) / 100;
+    let feasibilityScore = item.aiAnalysis?.feasibilityScore;
+    if (!feasibilityScore) {
+      feasibilityScore = item.aiAnalysis?.automationScore || 0;
+    }
+    const f = (feasibilityScore || 0) / 100;
+    const as = item.aiAnalysis?.automationScore || 0;
+    const roi = getROIPotential(item).label;
+
+    if (bv >= 0.5 && f >= 0.5) {
+      return `This process is a Quick Win, offering high Business Value (${Math.round(bv*100)}%) and high Feasibility (${Math.round(f*100)}%). With a ${roi} ROI potential, it should be prioritized for immediate deployment to deliver rapid organizational impact.`;
+    } else if (bv >= 0.5 && f < 0.5) {
+      return `Positioned as a Strategic Bet, this process delivers significant Business Value (${Math.round(bv*100)}%) but requires careful orchestration due to its lower feasibility (${Math.round(f*100)}%). The ${roi} ROI potential justifies the investment in handling its underlying challenges for long-term gains.`;
+    } else if (bv < 0.5 && f >= 0.5) {
+      return `This Tactical Gain process provides a reliable path to operational efficiency. While Business Value (${Math.round(bv*100)}%) is moderate, its high feasibility (${Math.round(f*100)}%) and ${roi} ROI potential make it an ideal candidate for steady, low-risk automation.`;
+    } else {
+      return `Classified as Low Priority, this process shows limited Business Value (${Math.round(bv*100)}%) and lower Feasibility (${Math.round(f*100)}%). Given the ${roi} ROI potential, it is recommended to focus resources on higher-impact quadrants at this stage.`;
+    }
   };
 
   if (loading) {
@@ -434,28 +425,28 @@ const StrategicQuadrant: React.FC = () => {
                 <div className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Quick Wins</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value + High Feasibility (&gt; 75%). Immediate priorities for implementation.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value (&ge; 50%) + High Feasibility (&ge; 50%). Immediate priorities for implementation.</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#f43f5e]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Strategic Bets</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value (&ge; 50%) with lower feasibility (&ge; 50% but &lt; 75%). Requires strategic investment.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">High Value (&ge; 50%) + Lower Feasibility (&lt; 50%). Requires strategic investment.</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Tactical Gains</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Value (&le; 50%) + High Feasibility (&gt; 50%). Good for operational efficiency.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Value (&lt; 50%) + High Feasibility (&ge; 50%). Good for operational efficiency.</p>
             </div>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#64748b]"></div>
                 <span className="text-[11px] font-black text-gray-900 uppercase tracking-wider">Low Priority</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Business Value (&le; 50%) + Low Feasibility (&le; 50%). Deprioritize in roadmap.</p>
+              <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Lower Business Value (&lt; 50%) + Low Feasibility (&lt; 50%). Deprioritize in roadmap.</p>
             </div>
           </div>
 
@@ -497,7 +488,7 @@ const StrategicQuadrant: React.FC = () => {
                 </div>
 
                 <p className="text-gray-600 font-medium leading-relaxed">
-                  {selectedItem.discovery?.description || "This process shows significant potential for AI-driven transformation with clear operational benefits and strategic alignment."}
+                  {getQuadrantComment(selectedItem)}
                 </p>
 
                 <div className="flex gap-4 justify-center pt-4">
