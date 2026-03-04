@@ -48,7 +48,7 @@ const App: React.FC = () => {
               <Route path="/guided-tour" element={<GuidedTour />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
-              // <Route path="/ceo" element={<CEO />} />
+              {/* // <Route path="/ceo" element={<CEO />} /> */}
               <Route path="/pricing" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Pricing />} />
               <Route path="/contact" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Support />} />
               <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
