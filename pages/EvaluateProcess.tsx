@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiService } from "../services/api";
@@ -22,7 +21,7 @@ const EvaluateProcess: React.FC = () => {
     model: "mistral-large-latest",
     agentType: "Process Discovery Agent",
     volume: "",
-    frequency: "Daily",
+    frequency: "-",
     complexity: 5,
     exceptionRate: 20,
     riskTolerance: "Medium",
@@ -43,17 +42,17 @@ const EvaluateProcess: React.FC = () => {
           const res = await apiService.evaluations.get(idParam);
           if (res.success) {
             const data = res.data;
-            setFormData({
-              processName: data.discovery?.processName || "",
-              description: data.discovery?.strategicContext || "",
-              model: data.aiConfig?.baseModel || "mistral-large-latest",
-              agentType: data.discovery?.targetAgent || "Process Discovery Agent",
-              volume: data.operations?.monthlyVolume?.toString() || "",
-              frequency: data.operations?.frequency || "Daily",
-              complexity: data.operations?.complexityScore || 5,
-              exceptionRate: data.operations?.exceptionRate || 20,
-              riskTolerance: data.operations?.riskTolerance || "Medium",
-            });
+              setFormData({
+                processName: data.discovery?.processName || "",
+                description: data.discovery?.strategicContext || "",
+                model: data.aiConfig?.baseModel || "mistral-large-latest",
+                agentType: data.discovery?.targetAgent || "Process Discovery Agent",
+                volume: data.operations?.monthlyVolume?.toString() || "",
+                frequency: data.operations?.frequency || "-",
+                complexity: data.operations?.complexityScore || 5,
+                exceptionRate: data.operations?.exceptionRate || 20,
+                riskTolerance: data.operations?.riskTolerance || "Medium",
+              });
           }
         } catch (err) {
           console.error("Error fetching draft:", err);
@@ -145,8 +144,8 @@ const EvaluateProcess: React.FC = () => {
       }
 
       await apiService.evaluations.updateOperations(currentId, {
-        monthlyVolume: Number(formData.volume),
-        frequency: formData.frequency,
+        monthlyVolume: formData.volume === "" ? "" : Number(formData.volume),
+        frequency: formData.frequency === "-" ? "" : formData.frequency,
         complexityScore: Number(formData.complexity),
         exceptionRate: Number(formData.exceptionRate),
         riskTolerance: formData.riskTolerance,
@@ -173,6 +172,17 @@ const EvaluateProcess: React.FC = () => {
       setIsEvaluating(false);
       
       const errorMessage = error.message || "";
+      const status = error.status;
+
+      if (status === 404 || status === 500) {
+        setErrorModal({
+          show: true,
+          title: "System Maintenance",
+          message: "The server is currently experiencing high load or is under maintenance. Please try again after some time."
+        });
+        return;
+      }
+
       if (errorMessage.toLowerCase().includes('insufficient credits') || errorMessage.toLowerCase().includes('credit')) {
         setErrorModal({
           show: true,
@@ -424,6 +434,7 @@ const EvaluateProcess: React.FC = () => {
                     onChange={handleInputChange}
                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-sm md:text-base"
                   >
+                    <option>-</option>
                     <option>Daily</option>
                     <option>Weekly</option>
                     <option>Batch Monthly</option>
@@ -496,7 +507,7 @@ const EvaluateProcess: React.FC = () => {
                   <div className="grid grid-cols-2 gap-x-4 md:gap-x-6 gap-y-4">
                     <div className="flex flex-col">
                       <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Monthly Volume</span>
-                      <span className="text-xs md:text-sm font-bold text-gray-900">{formData.volume || '0'} tx</span>
+                      <span className="text-xs md:text-sm font-bold text-gray-900">{formData.volume ? `${formData.volume} tx` : '-'}</span>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase">Frequency</span>
