@@ -8,10 +8,7 @@ const Evaluations: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [shortlistedIds, setShortlistedIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem('shortlisted_evaluations');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [shortlistedIds, setShortlistedIds] = useState<string[]>([]);
   const [filter, setFilter] = useState<'all' | 'shortlisted'>('all');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,23 +16,31 @@ const Evaluations: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchEvals = async () => {
-      try {
-        const res = await apiService.evaluations.list();
-        if (res.success) setEvaluations(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+  const fetchEvals = async () => {
+    setLoading(true);
+    try {
+      const res = filter === 'shortlisted' 
+        ? await apiService.evaluations.getShortlisted()
+        : await apiService.evaluations.list();
+        
+      if (res.success) {
+        setEvaluations(res.data);
+        // Sync shortlistedIds from the data
+        const ids = res.data
+          .filter((item: any) => item.shortlisted)
+          .map((item: any) => item._id);
+        setShortlistedIds(ids);
       }
-    };
-    fetchEvals();
-  }, []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem('shortlisted_evaluations', JSON.stringify(shortlistedIds));
-  }, [shortlistedIds]);
+    fetchEvals();
+  }, [filter]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => 
@@ -88,12 +93,23 @@ const Evaluations: React.FC = () => {
     }
   };
 
-  const toggleShortlist = (id: string, e: React.MouseEvent) => {
+  const toggleShortlist = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setShortlistedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+    try {
+      const res = await apiService.evaluations.toggleShortlist(id);
+      if (res.success) {
+        setShortlistedIds(prev => 
+          res.shortlisted ? [...prev, id] : prev.filter(i => i !== id)
+        );
+        // Update the local evaluations list to reflect the change
+        setEvaluations(prev => prev.map(item => 
+          item._id === id ? { ...item, shortlisted: res.shortlisted } : item
+        ));
+      }
+    } catch (err) {
+      console.error("Shortlist toggle error:", err);
+    }
   };
 
   const handleDelete = async (id: string) => {

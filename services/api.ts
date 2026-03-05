@@ -163,6 +163,19 @@ export const apiService = {
         }
       }
       return response.blob();
+    },
+    toggleShortlist: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/evaluations/${id}/shortlist`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    getShortlisted: async () => {
+      const response = await fetch(`${BASE_URL}/evaluations/shortlisted`, {
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
     }
   },
 
