@@ -21,6 +21,7 @@ export interface Evaluation {
   fitmentType: FitmentType;
   llmType: string;
   status: EvaluationStatus;
+  shortlisted?: boolean;
 }
 
 export interface PricingPlan {
