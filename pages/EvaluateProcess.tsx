@@ -7,7 +7,7 @@ const EvaluateProcess: React.FC = () => {
   const [step, setStep] = useState(1);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [errorModal, setErrorModal] = useState<{ show: boolean; title: string; message: string } | null>(null);
+  const [errorModal, setErrorModal] = useState<{ show: boolean; title: string; message: string; onAcknowledge?: () => void } | null>(null);
   const [activeDimension, setActiveDimension] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [evaluationId, setEvaluationId] = useState<string | null>(null);
@@ -178,7 +178,8 @@ const EvaluateProcess: React.FC = () => {
         setErrorModal({
           show: true,
           title: "System Maintenance",
-          message: "The server is currently experiencing high load or is under maintenance. Please try again after some time."
+          message: "The server is currently experiencing high load or is under maintenance. Please try again after some time.",
+          onAcknowledge: () => navigate('/dashboard')
         });
         return;
       }
@@ -187,18 +188,41 @@ const EvaluateProcess: React.FC = () => {
         setErrorModal({
           show: true,
           title: "Insufficient Credits",
-          message: "Your AI credit balance is too low to execute this evaluation. Please contact your administrator to allocate additional credits to your workspace."
+          message: "Your AI credit balance is too low to execute this evaluation. Please contact your administrator to allocate additional credits to your workspace.",
+          onAcknowledge: () => navigate('/dashboard')
         });
       } else if (errorMessage.toLowerCase().includes('invalid json')) {
         setErrorModal({
           show: true,
           title: "Intelligence Synthesis Error",
-          message: "The AI Agent encountered a formatting anomaly while generating your report. This can happen with highly complex inputs. Please try re-executing or switching the LLM Engine in Step 4."
+          message: "The AI Agent encountered a formatting anomaly while generating your report. This can happen with highly complex inputs. Please try re-executing or switching the LLM Engine in Step 4.",
+          onAcknowledge: () => navigate('/dashboard')
         });
       } else {
         alert("Pipeline disruption. Please verify inputs and re-execute.");
       }
     }
+  };
+
+  const validateForm = () => {
+    const errors = [];
+    if (!formData.processName.trim()) {
+      errors.push("Process Name is not provided");
+    }
+    if (formData.volume !== "" && Number(formData.volume) < 0) {
+      errors.push("Monthly Transaction Volume is not valid (must be non-negative)");
+    }
+
+    if (errors.length > 0) {
+      setErrorModal({
+        show: true,
+        title: "Strategic Input Validation",
+        message: `The following operational parameters require correction: ${errors.join(" and ")}. Please ensure all process identifiers and metrics are accurate to proceed with the assessment.`,
+        onAcknowledge: () => setErrorModal(null)
+      });
+      return false;
+    }
+    return true;
   };
 
   const dimensions = [
@@ -292,7 +316,15 @@ const EvaluateProcess: React.FC = () => {
             {isSavingDraft ? 'Saving...' : 'Save as draft'}
           </button>
           <button
-            onClick={() => (step === 4 ? setShowConfirm(true) : handleNext())}
+            onClick={() => {
+              if (step === 4) {
+                if (validateForm()) {
+                  setShowConfirm(true);
+                }
+              } else {
+                handleNext();
+              }
+            }}
             className="flex-1 lg:flex-none bg-[#9d7bb0] text-white px-6 md:px-8 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 text-xs md:text-sm"
           >
             {step === 4 ? "Run AI Agent" : "Next step"}
@@ -605,8 +637,12 @@ const EvaluateProcess: React.FC = () => {
             </div>
             <button 
               onClick={() => {
-                setErrorModal(null);
-                navigate('/dashboard');
+                if (errorModal?.onAcknowledge) {
+                  errorModal.onAcknowledge();
+                } else {
+                  setErrorModal(null);
+                  navigate('/dashboard');
+                }
               }} 
               className="w-full py-4 md:py-5 bg-gray-900 text-white rounded-2xl md:rounded-3xl font-black hover:bg-black transition-all uppercase text-[10px] md:text-xs tracking-widest shadow-xl shadow-gray-200"
             >
