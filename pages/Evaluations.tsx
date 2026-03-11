@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { apiService } from '../services/api';
 
 const Evaluations: React.FC = () => {
@@ -531,8 +532,8 @@ const Evaluations: React.FC = () => {
       </div>
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] flex items-center justify-center p-4 md:p-6">
+      {deleteConfirm && createPortal(
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6">
           <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-16 max-w-xl w-full shadow-2xl space-y-8 md:space-y-10 border border-white/20 animate-scaleUp">
             <div className="w-16 h-16 md:w-24 md:h-24 bg-red-50 text-red-500 rounded-2xl md:rounded-[30px] flex items-center justify-center mx-auto border border-red-100 shadow-inner">
               <svg className="w-8 h-8 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -564,7 +565,8 @@ const Evaluations: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
