@@ -14,6 +14,7 @@ const DomainDiscovery: React.FC = () => {
   const [fetchingHistory, setFetchingHistory] = useState(true);
   const { credits, refreshCredits } = useCortex();
   const [errorModal, setErrorModal] = useState<{ show: boolean; title: string; message: string } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +103,26 @@ const DomainDiscovery: React.FC = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setDeleteConfirm({ show: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+    const id = deleteConfirm.id;
+    
+    try {
+      await apiService.useCases.deleteDomain(id);
+      setHistory(prev => prev.filter(item => (item._id || item.id) !== id));
+      setDeleteConfirm(null);
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      alert(`Delete Error: ${err.message || "Failed to delete analysis."}`);
+      setDeleteConfirm(null);
     }
   };
 
@@ -223,8 +244,19 @@ const DomainDiscovery: React.FC = () => {
               >
                 <div className="flex justify-between items-start mb-6">
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-teal-50 text-[#4db6ac] flex items-center justify-center text-lg md:text-xl font-bold">🌐</div>
-                  <div className="px-2 py-0.5 md:px-3 md:py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-blue-100">
-                    {item.totalUseCases || item.use_cases?.length || 0} Opportunities
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="px-2 py-0.5 md:px-3 md:py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-blue-100">
+                      {item.totalUseCases || item.use_cases?.length || 0} Opportunities
+                    </div>
+                    <button
+                      onClick={(e) => handleDelete(e, item._id || item.id)}
+                      className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                      title="Delete Analysis"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
                 <h4 className="text-lg md:text-xl font-black text-gray-900 group-hover:text-[#4db6ac] transition-colors truncate">{item.domain || item.company_name}</h4>
@@ -265,6 +297,38 @@ const DomainDiscovery: React.FC = () => {
             >
               Acknowledge
             </button>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirm?.show && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4 md:p-6">
+          <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-12 max-w-lg w-full shadow-2xl space-y-8 border border-white/20 animate-scaleUp">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 text-red-500 rounded-[20px] md:rounded-[24px] flex items-center justify-center mx-auto border border-red-100">
+              <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <div className="text-center space-y-3">
+              <h3 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Confirm Deletion</h3>
+              <p className="text-sm md:text-base text-gray-500 font-medium leading-relaxed">
+                Are you sure you want to delete this analysis? This action is permanent and cannot be reversed.
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setDeleteConfirm(null)} 
+                className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black hover:bg-gray-200 transition-all uppercase text-xs tracking-widest"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete} 
+                className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black hover:bg-red-600 transition-all uppercase text-xs tracking-widest shadow-lg shadow-red-100"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

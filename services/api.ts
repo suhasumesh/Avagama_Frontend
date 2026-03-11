@@ -220,6 +220,20 @@ export const apiService = {
       });
       return handleResponse(response);
     },
+    deleteCompany: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/usecases/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
+    deleteDomain: async (id: string) => {
+      const response = await fetch(`${BASE_URL}/usecases-domain/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    },
     exportCompany: async () => {
       const token = sessionStorage.getItem('token');
       const response = await fetch(`${BASE_URL}/export/company`, {
