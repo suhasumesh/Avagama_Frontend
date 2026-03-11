@@ -538,7 +538,7 @@ const AdminPanel: React.FC = () => {
 
       {/* Plan Modal */}
       {showPlanModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[999] flex items-center justify-center p-6">
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -595,7 +595,7 @@ const AdminPanel: React.FC = () => {
 
       {/* Credit Modal */}
       {showCreditModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[999] flex items-center justify-center p-6">
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -627,7 +627,7 @@ const AdminPanel: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] flex items-center justify-center p-6">
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[999] flex items-center justify-center p-6">
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

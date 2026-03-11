@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { apiService } from "../services/api";
 import { useCortex } from "../context/CortexContext";
 
@@ -239,8 +240,8 @@ const EvaluateProcess: React.FC = () => {
   ];
 
   if (isEvaluating) {
-    return (
-      <div className="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
+    return createPortal(
+      <div className="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
         <div className="relative w-full max-w-[300px] md:max-w-[600px] aspect-square flex items-center justify-center">
           <div className="text-center z-10 animate-pulse">
              <h2 className="text-lg md:text-2xl font-black text-gray-800 tracking-tight">Evaluating</h2>
@@ -276,7 +277,8 @@ const EvaluateProcess: React.FC = () => {
           <div className="absolute inset-0 border border-gray-50 rounded-full scale-[0.85]"></div>
           <div className="absolute inset-0 border-2 border-dashed border-gray-100 rounded-full scale-[1.1] animate-[spin_60s_linear_infinite]"></div>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
@@ -448,7 +450,7 @@ const EvaluateProcess: React.FC = () => {
             <div className="space-y-8 md:space-y-10 animate-fadeIn">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div className="space-y-2">
-                  <label className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Volume (tx / Month)</label>
+                  <label className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Volume (tx)</label>
                   <input
                     name="volume"
                     value={formData.volume}
@@ -599,8 +601,8 @@ const EvaluateProcess: React.FC = () => {
         </div>
       </div>
 
-      {showConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] flex items-center justify-center p-4 md:p-6">
+      {showConfirm && createPortal(
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6">
           <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-16 max-w-xl w-full shadow-2xl space-y-8 md:space-y-10 border border-white/20 animate-scaleUp">
             <div className="w-16 h-16 md:w-24 md:h-24 bg-[#9d7bb0]/10 text-[#9d7bb0] rounded-2xl md:rounded-[30px] flex items-center justify-center mx-auto border border-[#9d7bb0]/20 shadow-inner">
               <svg className="w-8 h-8 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -618,11 +620,12 @@ const EvaluateProcess: React.FC = () => {
               <button onClick={handleFinalSubmit} className="flex-1 py-4 md:py-5 bg-[#9d7bb0] text-white rounded-2xl md:rounded-3xl font-black hover:bg-[#8b6aa1] shadow-2xl shadow-purple-200 transition-all uppercase text-[10px] md:text-xs tracking-widest">Execute Agent</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {errorModal?.show && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4 md:p-6">
+      {errorModal?.show && createPortal(
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6">
           <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-16 max-w-xl w-full shadow-2xl space-y-6 md:space-y-8 border border-white/20 animate-scaleUp">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 text-red-500 rounded-2xl md:rounded-[24px] flex items-center justify-center mx-auto border border-red-100">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -649,7 +652,8 @@ const EvaluateProcess: React.FC = () => {
               Acknowledge
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

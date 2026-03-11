@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { apiService } from '../../services/api';
 import { useCortex } from '../../context/CortexContext';
 
@@ -239,8 +240,8 @@ const CompanyDiscovery: React.FC = () => {
         )}
       </div>
 
-      {errorModal?.show && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4 md:p-6">
+      {errorModal?.show && createPortal(
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6">
           <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-16 max-w-xl w-full shadow-2xl space-y-6 md:space-y-8 border border-white/20">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 text-red-500 rounded-[20px] md:rounded-[24px] flex items-center justify-center mx-auto border border-red-100">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,11 +264,12 @@ const CompanyDiscovery: React.FC = () => {
               Acknowledge
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {deleteConfirm?.show && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4 md:p-6">
+      {deleteConfirm?.show && createPortal(
+        <div className="fixed inset-0 bg-white/40 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-6">
           <div className="bg-white rounded-[32px] md:rounded-[50px] p-8 md:p-12 max-w-lg w-full shadow-2xl space-y-8 border border-white/20 animate-scaleUp">
             <div className="w-16 h-16 md:w-20 md:h-20 bg-red-50 text-red-500 rounded-[20px] md:rounded-[24px] flex items-center justify-center mx-auto border border-red-100">
               <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,7 +297,8 @@ const CompanyDiscovery: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
