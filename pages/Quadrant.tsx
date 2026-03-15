@@ -45,9 +45,9 @@ const StrategicQuadrant: React.FC = () => {
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = 800;
+    const width = 1200;
     const height = 650;
-    const margin = { top: 60, right: 80, bottom: 80, left: 120 };
+    const margin = { top: 60, right: 220, bottom: 80, left: 280 };
 
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
@@ -57,10 +57,10 @@ const StrategicQuadrant: React.FC = () => {
 
     // Draw Quadrant Backgrounds
     const quadrants = [
-      { name: "Quick Wins", x: 0, y: 0, color: "#8b5cf6", opacity: 0.1, label: "High Value + High Feasibility" },
-      { name: "Strategic Bets", x: innerWidth / 2, y: 0, color: "#f43f5e", opacity: 0.1, label: "High Value + Low Feasibility" },
-      { name: "Tactical Gains", x: 0, y: innerHeight / 2, color: "#10b981", opacity: 0.1, label: "Low Value + High Feasibility" },
-      { name: "Low Priority", x: innerWidth / 2, y: innerHeight / 2, color: "#64748b", opacity: 0.1, label: "Low Value + Low Feasibility" }
+      { name: "Strategic Bets", x: 0, y: 0, color: "#f43f5e", opacity: 0.1, label: "High Value + Low Feasibility" },
+      { name: "Quick Wins", x: innerWidth / 2, y: 0, color: "#8b5cf6", opacity: 0.1, label: "High Value + High Feasibility" },
+      { name: "Low Priority", x: 0, y: innerHeight / 2, color: "#64748b", opacity: 0.1, label: "Low Value + Low Feasibility" },
+      { name: "Tactical Gains", x: innerWidth / 2, y: innerHeight / 2, color: "#10b981", opacity: 0.1, label: "Low Value + High Feasibility" }
     ];
 
     quadrants.forEach(q => {
@@ -160,9 +160,9 @@ const StrategicQuadrant: React.FC = () => {
     });
 
     const xLabels = [
-      { label: "High", x: 0 },
+      { label: "Low", x: 0 },
       { label: "Medium", x: innerWidth / 2 },
-      { label: "Low", x: innerWidth }
+      { label: "High", x: innerWidth }
     ];
     xLabels.forEach(l => {
       g.append("text")
@@ -177,7 +177,7 @@ const StrategicQuadrant: React.FC = () => {
 
     // Plotting Scales - Linear 0-100% for both axes to match "Medium" center labels
     const xScale = d3.scaleLinear()
-      .domain([1.0, 0.0])
+      .domain([0.0, 1.0])
       .range([0, innerWidth]);
 
     const yScale = d3.scaleLinear()
@@ -185,8 +185,8 @@ const StrategicQuadrant: React.FC = () => {
       .range([0, innerHeight]);
 
     // Plot Items
-    const plottedPoints: {x: number, y: number}[] = [];
-    const padding = 40;
+    const plottedPoints: {x: number, y: number, item: any, idx: number, color: string}[] = [];
+    const quadrantCounts = { qw: 0, sb: 0, tg: 0, lp: 0 };
     
     items.forEach((item, idx) => {
       const bv = (item.aiAnalysis?.businessBenefitScore || 0) / 100;
@@ -197,17 +197,23 @@ const StrategicQuadrant: React.FC = () => {
       }
       const f = (feasibilityScore || 0) / 100;
 
+      // Count per quadrant for callout logic
+      if (bv >= 0.5 && f >= 0.5) quadrantCounts.qw++;
+      else if (bv >= 0.5 && f < 0.5) quadrantCounts.sb++;
+      else if (bv < 0.5 && f >= 0.5) quadrantCounts.tg++;
+      else quadrantCounts.lp++;
+
       // Use the scales for plotting
       let x = xScale(f);
       let y = yScale(bv);
 
-      // Collision detection
+      // Collision detection - Increased distance to prevent overlapping
       let attempts = 0;
-      while (attempts < 50) {
+      while (attempts < 100) {
         let collision = false;
         for (const p of plottedPoints) {
           const dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
-          if (dist < 35) {
+          if (dist < 45) { // Slightly reduced from 55 to allow more natural grouping if needed
             collision = true;
             break;
           }
@@ -215,32 +221,37 @@ const StrategicQuadrant: React.FC = () => {
         if (!collision) break;
         x += (Math.random() - 0.5) * 40;
         y += (Math.random() - 0.5) * 40;
-        x = Math.max(20, Math.min(innerWidth - 20, x));
-        y = Math.max(20, Math.min(innerHeight - 20, y));
+        x = Math.max(30, Math.min(innerWidth - 30, x));
+        y = Math.max(30, Math.min(innerHeight - 30, y));
         attempts++;
       }
-      plottedPoints.push({x, y});
 
-      // Categorization Logic - Strictly matching the 50/50 visual quadrants
+      // Categorization Logic
       let dotColor = "#64748b"; 
       if (bv >= 0.5 && f >= 0.5) {
-        dotColor = "#8b5cf6"; // Quick Wins (Top-Left)
+        dotColor = "#8b5cf6"; // Quick Wins (Top-Right)
       } else if (bv >= 0.5 && f < 0.5) {
-        dotColor = "#f43f5e"; // Strategic Bets (Top-Right)
+        dotColor = "#f43f5e"; // Strategic Bets (Top-Left)
       } else if (bv < 0.5 && f >= 0.5) {
-        dotColor = "#10b981"; // Tactical Gains (Bottom-Left)
+        dotColor = "#10b981"; // Tactical Gains (Bottom-Right)
       } else {
-        dotColor = "#64748b"; // Low Priority (Bottom-Right)
+        dotColor = "#64748b"; // Low Priority (Bottom-Left)
       }
 
+      plottedPoints.push({x, y, item, idx, color: dotColor});
+    });
+
+    const isMany = Object.values(quadrantCounts).some(c => c > 7);
+
+    plottedPoints.forEach((p) => {
       const dot = g.append("g")
-        .attr("transform", `translate(${x}, ${y})`)
+        .attr("transform", `translate(${p.x}, ${p.y})`)
         .style("cursor", "pointer")
-        .on("click", () => setSelectedItem(item));
+        .on("click", () => setSelectedItem(p.item));
 
       dot.append("circle")
         .attr("r", 14)
-        .attr("fill", dotColor)
+        .attr("fill", p.color)
         .attr("stroke", "white")
         .attr("stroke-width", 2)
         .attr("filter", "drop-shadow(0 4px 6px rgba(0,0,0,0.1))");
@@ -252,41 +263,103 @@ const StrategicQuadrant: React.FC = () => {
         .attr("font-size", "11px")
         .attr("font-weight", "900")
         .style("pointer-events", "none")
-        .text(idx + 1);
+        .text(p.idx + 1);
 
-      // Static Label (Process Name)
-      const isRight = x > innerWidth / 2;
-      const isBottom = y > innerHeight / 2;
-      const labelX = isRight ? 22 : -22;
-      const labelY = isBottom ? -18 : 22;
-      
-      const labelText = item.discovery?.processName || "Process";
+      if (!isMany) {
+        // Individual Label Logic for few items
+        const isRightSide = p.x > innerWidth / 2;
+        const isBottomSide = p.y > innerHeight / 2;
+        const forceRight = p.x < 100;
+        const forceLeft = p.x > innerWidth - 100;
+        const effectiveIsRight = forceRight ? true : (forceLeft ? false : isRightSide);
+        const labelX = effectiveIsRight ? 18 : -18;
+        const labelY = isBottomSide ? -16 : 20;
+        const labelText = p.item.discovery?.processName || "Process";
 
-      // Halo for readability
-      dot.append("text")
-        .attr("x", labelX)
-        .attr("y", labelY)
-        .attr("text-anchor", isRight ? "start" : "end")
-        .attr("fill", "white")
-        .attr("stroke", "white")
-        .attr("stroke-width", 3)
-        .attr("font-size", "9px")
-        .attr("font-weight", "800")
-        .attr("text-transform", "uppercase")
-        .attr("opacity", 0.8)
-        .text(labelText);
+        dot.append("text")
+          .attr("x", labelX)
+          .attr("y", labelY)
+          .attr("text-anchor", effectiveIsRight ? "start" : "end")
+          .attr("fill", "white")
+          .attr("stroke", "white")
+          .attr("stroke-width", 3)
+          .attr("font-size", "9px")
+          .attr("font-weight", "800")
+          .attr("text-transform", "uppercase")
+          .attr("opacity", 0.8)
+          .text(labelText);
 
-      dot.append("text")
-        .attr("x", labelX)
-        .attr("y", labelY)
-        .attr("text-anchor", isRight ? "start" : "end")
-        .attr("fill", "#1e293b")
-        .attr("font-size", "9px")
-        .attr("font-weight", "800")
-        .attr("text-transform", "uppercase")
-        .text(labelText);
-
+        dot.append("text")
+          .attr("x", labelX)
+          .attr("y", labelY)
+          .attr("text-anchor", effectiveIsRight ? "start" : "end")
+          .attr("fill", "#1e293b")
+          .attr("font-size", "9px")
+          .attr("font-weight", "800")
+          .attr("text-transform", "uppercase")
+          .text(labelText);
+      }
     });
+
+    if (isMany) {
+      // Leader Line Callouts for many items
+      const leftItems = plottedPoints.filter(p => p.x < innerWidth / 2).sort((a, b) => a.y - b.y);
+      const rightItems = plottedPoints.filter(p => p.x >= innerWidth / 2).sort((a, b) => a.y - b.y);
+
+      const drawCallouts = (group: typeof plottedPoints, side: 'left' | 'right') => {
+        const count = group.length;
+        if (count === 0) return;
+
+        const totalHeight = innerHeight - 60;
+        const startY = 30;
+        const step = totalHeight / (count > 1 ? count - 1 : 1);
+
+        group.forEach((p, i) => {
+          const targetY = startY + (i * step);
+          const targetX = side === 'left' ? -270 : innerWidth + 10;
+          const labelText = p.item.discovery?.processName || "Process";
+
+          // Leader Line
+          const path = d3.path();
+          path.moveTo(p.x, p.y);
+          // Elbow
+          const midX = side === 'left' ? p.x - 20 : p.x + 20;
+          path.lineTo(midX, p.y);
+          path.lineTo(side === 'left' ? targetX + 260 : targetX - 10, targetY);
+          path.lineTo(targetX, targetY);
+
+          g.append("path")
+            .attr("d", path.toString())
+            .attr("fill", "none")
+            .attr("stroke", "#94a3b8")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", "2,2")
+            .attr("opacity", 0.5);
+
+          // Label
+          const label = g.append("text")
+            .attr("x", targetX)
+            .attr("y", targetY)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "start")
+            .attr("fill", "#1e293b")
+            .attr("font-size", "8px")
+            .attr("font-weight", "800")
+            .attr("text-transform", "uppercase");
+
+          label.append("tspan")
+            .attr("fill", p.color)
+            .text(`${p.idx + 1}. `);
+
+          label.append("tspan")
+            .text(labelText.length > 55 ? labelText.substring(0, 52) + "..." : labelText);
+        });
+      };
+
+      drawCallouts(leftItems, 'left');
+      drawCallouts(rightItems, 'right');
+    }
+
 
   }, [loading, items]);
 
@@ -396,27 +469,29 @@ const StrategicQuadrant: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex gap-4">
+        <div className="flex items-start gap-4">
           <button 
             onClick={handlePrint}
-            className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-xs font-black tracking-widest uppercase hover:bg-black transition-all shadow-xl shadow-gray-100 print:hidden"
+            className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-xs font-black tracking-widest uppercase hover:bg-black transition-all shadow-xl shadow-gray-100 print:hidden shrink-0"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
             Print PDF
           </button>
-          {items.map((item, idx) => (
-            <div key={item._id} className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
-              <span className="w-3 h-3 rounded-full" style={{backgroundColor: getQuadrantColor(item)}}></span>
-              <span className="text-[10px] font-black text-gray-600 uppercase truncate max-w-[120px]">{item.discovery?.processName}</span>
-            </div>
-          ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {items.map((item, idx) => (
+              <div key={item._id} className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-100 shadow-sm min-w-[140px]">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{backgroundColor: getQuadrantColor(item)}}></span>
+                <span className="text-[9px] font-black text-gray-600 uppercase truncate max-w-[100px]">{item.discovery?.processName}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="space-y-10">
         {/* Main Quadrant Visualization - Full Width */}
         <div className="bg-white rounded-[56px] border border-gray-100 shadow-xl p-12 flex flex-col items-center justify-center overflow-hidden relative">
-          <svg ref={svgRef} width="800" height="650" viewBox="0 0 800 650" className="max-w-full h-auto"></svg>
+          <svg ref={svgRef} width="1200" height="650" viewBox="0 0 1200 650" className="max-w-full h-auto"></svg>
           
           {/* How to Read Guide */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-5xl border-t border-gray-50 pt-10">
