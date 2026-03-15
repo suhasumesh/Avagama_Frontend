@@ -477,21 +477,20 @@ const Evaluations: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-4 pt-4 text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4">
            <span className="hidden sm:inline">Rows per page</span>
-           <div className="relative">
-             <select 
-               value={rowsPerPage} 
-               onChange={handleRowsPerPageChange}
-               className="appearance-none bg-white px-3 py-1.5 pr-8 rounded-lg border border-gray-100 text-gray-600 shadow-sm cursor-pointer outline-none focus:border-[#9d7bb0]"
-             >
-               <option value={10}>10</option>
-               <option value={20}>20</option>
-               <option value={25}>25</option>
-               <option value={30}>30</option>
-             </select>
-             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-             </div>
-           </div>
+            <div className="relative">
+              <select 
+                value={rowsPerPage} 
+                onChange={handleRowsPerPageChange}
+                className="appearance-none bg-white px-3 py-1.5 pr-8 rounded-lg border border-gray-100 text-gray-600 shadow-sm cursor-pointer outline-none focus:border-[#9d7bb0]"
+              >
+                {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75].map(val => (
+                  <option key={val} value={val}>{val}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+            </div>
            <span className="md:ml-4">
              {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredEvaluations.length)} of {filteredEvaluations.length}
            </span>
