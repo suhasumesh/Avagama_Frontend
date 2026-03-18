@@ -120,18 +120,19 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <div className="bg-white py-24 px-6 print:p-0 print:py-8">
+    <div className="bg-white py-24 px-6 print:p-0 print:py-4">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
-            margin: 10mm;
+            margin: 5mm;
             size: landscape;
           }
           body {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
             background-color: white !important;
-            font-size: 10pt;
+            font-size: 8pt;
+            width: 100%;
           }
           nav, footer, .print\\:hidden {
             display: none !important;
@@ -139,48 +140,56 @@ const Pricing: React.FC = () => {
           .pricing-grid {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr) !important;
-            gap: 1rem !important;
+            gap: 0.5rem !important;
             width: 100% !important;
+            margin-bottom: 1rem !important;
           }
           .pricing-card {
             break-inside: avoid !important;
             page-break-inside: avoid !important;
-            margin-bottom: 0 !important;
-            padding: 1.5rem !important;
-            border-radius: 24px !important;
-            scale: 1 !important;
-            height: auto !important;
+            padding: 1rem !important;
+            border-radius: 16px !important;
+            border-width: 1px !important;
           }
           .pricing-section {
             break-inside: avoid !important;
             page-break-inside: avoid !important;
-            margin-top: 2rem !important;
+            margin-top: 1rem !important;
           }
           h1 {
-            font-size: 2.5rem !important;
-            line-height: 1 !important;
-            margin-bottom: 0.5rem !important;
+            font-size: 2rem !important;
+            margin-bottom: 0.25rem !important;
           }
           .hero-section {
-            margin-bottom: 2rem !important;
-            page-break-after: avoid !important;
+            margin-bottom: 1rem !important;
           }
           .max-w-7xl, .max-w-5xl, .max-w-4xl {
             max-width: 100% !important;
             width: 100% !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
           }
-          /* Fix for absolute badge */
-          .pricing-card .absolute {
-            position: relative !important;
-            top: 0 !important;
-            left: 0 !important;
-            transform: none !important;
-            margin-bottom: 1rem !important;
-            display: inline-block !important;
+          .mt-40 {
+            margin-top: 1.5rem !important;
+          }
+          .mb-16 {
+            margin-bottom: 0.5rem !important;
+          }
+          .p-16 {
+            padding: 1.5rem !important;
+          }
+          .space-y-12 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 1rem !important;
+          }
+          /* Scale everything to fit on one page */
+          #pricing-root {
+            transform: scale(0.85);
+            transform-origin: top center;
           }
         }
       `}} />
-      <div className="max-w-5xl mx-auto text-center space-y-6 mb-16 hero-section">
+      <div id="pricing-root">
+        <div className="max-w-5xl mx-auto text-center space-y-6 mb-16 hero-section">
         <div className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
           Pricing Prospectus 2026
@@ -347,6 +356,7 @@ const Pricing: React.FC = () => {
               ))}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
