@@ -8,7 +8,10 @@ const plans = [
   {
     name: 'STARTER PACK',
     subtitle: 'Discovery Pilot',
-    priceINR: 750000,
+    price: {
+      INR: { original: 750000, discounted: 729999 },
+      USD: { original: 9499, discounted: 8999 }
+    },
     duration: '/ 3m',
     validity: '3 Months Validity',
     runs: '75 Evaluation Runs',
@@ -25,7 +28,10 @@ const plans = [
   {
     name: 'GROWTH PACK',
     subtitle: 'Strategic Expansion',
-    priceINR: 1350000,
+    price: {
+      INR: { original: 1350000, discounted: 1249999 },
+      USD: { original: 15999, discounted: 14999 }
+    },
     duration: '/ 6m',
     validity: '6 Months Validity',
     runs: '150 Evaluation Runs',
@@ -42,7 +48,10 @@ const plans = [
   {
     name: 'SCALE PACK',
     subtitle: 'Enterprise Transformation',
-    priceINR: 2376000,
+    price: {
+      INR: { original: 2376000, discounted: 2349999 },
+      USD: { original: 29999, discounted: 27999 }
+    },
     duration: '/ 12m',
     validity: '12 Months Validity',
     runs: '300 Evaluation Runs',
@@ -59,39 +68,55 @@ const plans = [
 ];
 
 const addons = [
-  { label: '1 Month Ext.', priceINR: 237500, runs: '+25 runs' },
-  { label: '3 Month Ext.', priceINR: 676875, runs: '+75 runs' },
-  { label: '6 Month Ext.', priceINR: 1286063, runs: '+150 runs' }
+  { 
+    label: '1 Month Ext.', 
+    price: {
+      INR: { original: 237500, discounted: 219999 },
+      USD: { original: 2599, discounted: 2399 }
+    },
+    runs: '+25 runs' 
+  },
+  { 
+    label: '3 Month Ext.', 
+    price: {
+      INR: { original: 676875, discounted: 629999 },
+      USD: { original: 7499, discounted: 6999 }
+    },
+    runs: '+75 runs' 
+  },
+  { 
+    label: '6 Month Ext.', 
+    price: {
+      INR: { original: 1286063, discounted: 1199999 },
+      USD: { original: 14499, discounted: 13499 }
+    },
+    runs: '+150 runs' 
+  }
 ];
 
 const runPacks = [
-  { volume: 50, priceINR: 25000 },
-  { volume: 75, priceINR: 36750 },
-  { volume: 100, priceINR: 48020 },
-  { volume: 125, priceINR: 58825 },
-  { volume: 150, priceINR: 69178 },
-  { volume: 175, priceINR: 79093 },
-  { volume: 200, priceINR: 88584 }
+  { volume: 50, price: { INR: { original: 25000, discounted: 23999 }, USD: { original: 299, discounted: 269 } } },
+  { volume: 75, price: { INR: { original: 36750, discounted: 34999 }, USD: { original: 449, discounted: 399 } } },
+  { volume: 100, price: { INR: { original: 48020, discounted: 45999 }, USD: { original: 599, discounted: 529 } } },
+  { volume: 125, price: { INR: { original: 58825, discounted: 55999 }, USD: { original: 749, discounted: 649 } } },
+  { volume: 150, price: { INR: { original: 69178, discounted: 65999 }, USD: { original: 899, discounted: 769 } } },
+  { volume: 175, price: { INR: { original: 79093, discounted: 74999 }, USD: { original: 1049, discounted: 869 } } },
+  { volume: 200, price: { INR: { original: 88584, discounted: 84999 }, USD: { original: 1199, discounted: 999 } } }
 ];
 
 const Pricing: React.FC = () => {
   const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
 
-  const formatPrice = (priceINR: number) => {
-    if (currency === 'INR') {
-      return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-      }).format(priceINR);
-    } else {
-      const priceUSD = priceINR / CONVERSION_RATE;
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(priceUSD);
-    }
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {
+      style: 'currency',
+      currency: currency,
+      maximumFractionDigits: 0,
+    }).format(price);
   };
 
   return (
@@ -110,8 +135,8 @@ const Pricing: React.FC = () => {
         </p>
       </div>
 
-      {/* Currency Toggle */}
-      <div className="flex justify-center mb-16">
+      {/* Currency Toggle & Print */}
+      <div className="flex flex-col items-center gap-6 mb-16">
         <div className="bg-white border border-gray-100 rounded-full p-1.5 shadow-sm flex items-center gap-1">
           <button 
             onClick={() => setCurrency('USD')}
@@ -126,6 +151,14 @@ const Pricing: React.FC = () => {
             INR
           </button>
         </div>
+        
+        <button 
+          onClick={handlePrint}
+          className="flex items-center gap-2 bg-gray-900 text-white px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase hover:bg-black transition-all shadow-xl shadow-gray-100 print:hidden"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+          Print Pricing PDF
+        </button>
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -142,9 +175,14 @@ const Pricing: React.FC = () => {
               <p className="text-2xl font-bold text-gray-900 leading-tight">{plan.subtitle}</p>
             </div>
 
-            <div className="mb-12">
+            <div className="mb-12 space-y-1">
+              <div className="text-sm font-bold text-gray-400 line-through opacity-60">
+                {formatPrice(plan.price[currency].original)}
+              </div>
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-black text-gray-900 tracking-tighter">{formatPrice(plan.priceINR)}</span>
+                <span className="text-5xl font-black text-gray-900 tracking-tighter">
+                  {formatPrice(plan.price[currency].discounted)}
+                </span>
                 <span className="text-gray-400 font-bold text-sm">{plan.duration}</span>
               </div>
             </div>
@@ -198,7 +236,14 @@ const Pricing: React.FC = () => {
               {addons.map((addon, i) => (
                 <div key={i} className="bg-white p-8 rounded-3xl border border-gray-200 text-center space-y-4 shadow-sm hover:shadow-lg transition-all">
                    <div className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest">{addon.label}</div>
-                   <div className="text-xl font-black text-gray-900">{formatPrice(addon.priceINR)}</div>
+                   <div className="space-y-1">
+                      <div className="text-[10px] font-bold text-gray-400 line-through opacity-60">
+                        {formatPrice(addon.price[currency].original)}
+                      </div>
+                      <div className="text-xl font-black text-gray-900">
+                        {formatPrice(addon.price[currency].discounted)}
+                      </div>
+                   </div>
                    <div className="text-[10px] font-bold text-[#4db6ac] uppercase">{addon.runs}</div>
                    <button className="w-full py-3 rounded-xl bg-gray-50 text-gray-800 text-[10px] font-black uppercase tracking-widest hover:bg-gray-100">Add to Pack</button>
                 </div>
@@ -231,7 +276,14 @@ const Pricing: React.FC = () => {
               {runPacks.map((pack, i) => (
                 <div key={i} className={`flex justify-between items-center py-5 ${i !== runPacks.length - 1 ? 'border-b border-gray-50' : ''}`}>
                   <span className="text-sm font-medium text-gray-700">{pack.volume} Discovery & Evaluation Runs</span>
-                  <span className="text-sm font-black text-[#9d7bb0]">{formatPrice(pack.priceINR)}</span>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-bold text-gray-400 line-through opacity-60">
+                      {formatPrice(pack.price[currency].original)}
+                    </span>
+                    <span className="text-sm font-black text-[#9d7bb0]">
+                      {formatPrice(pack.price[currency].discounted)}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
