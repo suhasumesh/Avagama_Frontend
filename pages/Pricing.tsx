@@ -120,8 +120,41 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <div className="bg-white py-24 px-6">
-      <div className="max-w-5xl mx-auto text-center space-y-6 mb-16">
+    <div className="bg-white py-24 px-6 print:p-0 print:py-10">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page {
+            margin: 20mm;
+            size: auto;
+          }
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+          nav, footer, .print\\:hidden {
+            display: none !important;
+          }
+          .pricing-card {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 2rem;
+          }
+          .pricing-section {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          h1 {
+            font-size: 3.5rem !important;
+            line-height: 1.1 !important;
+            margin-bottom: 1rem !important;
+          }
+          .hero-section {
+            margin-bottom: 3rem !important;
+            page-break-after: avoid;
+          }
+        }
+      `}} />
+      <div className="max-w-5xl mx-auto text-center space-y-6 mb-16 hero-section">
         <div className="inline-flex items-center gap-2 bg-black text-white px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
           Pricing Prospectus 2026
@@ -136,7 +169,7 @@ const Pricing: React.FC = () => {
       </div>
 
       {/* Currency Toggle & Print */}
-      <div className="flex flex-col items-center gap-6 mb-16">
+      <div className="flex flex-col items-center gap-6 mb-16 print:hidden">
         <div className="bg-white border border-gray-100 rounded-full p-1.5 shadow-sm flex items-center gap-1">
           <button 
             onClick={() => setCurrency('USD')}
@@ -163,7 +196,7 @@ const Pricing: React.FC = () => {
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
         {plans.map((plan, i) => (
-          <div key={i} className={`group relative p-12 rounded-[60px] border-2 transition-all duration-500 flex flex-col ${i === 1 ? 'border-[#9d7bb0] bg-gray-50/30 scale-105 shadow-2xl' : 'border-gray-100 hover:border-[#9d7bb0]/30 hover:shadow-xl'}`}>
+          <div key={i} className={`pricing-card group relative p-12 rounded-[60px] border-2 transition-all duration-500 flex flex-col ${i === 1 ? 'border-[#9d7bb0] bg-gray-50/30 scale-105 shadow-2xl' : 'border-gray-100 hover:border-[#9d7bb0]/30 hover:shadow-xl'}`}>
             {i === 1 && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#9d7bb0] text-white text-[10px] font-black px-6 py-2 rounded-full uppercase tracking-widest shadow-xl">
                 Strategic Choice
@@ -225,7 +258,7 @@ const Pricing: React.FC = () => {
         ))}
       </div>
 
-      <div className="max-w-4xl mx-auto mt-40">
+      <div className="max-w-4xl mx-auto mt-40 pricing-section">
         <div className="bg-gray-50 p-16 rounded-[60px] border border-gray-100 space-y-12">
            <div className="text-center space-y-2">
               <h3 className="text-3xl font-bold">Enterprise Add-ons</h3>
@@ -256,7 +289,7 @@ const Pricing: React.FC = () => {
         </div>
 
         {/* Discovery & Evaluation Run Packs */}
-        <div className="mt-16 bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-gray-200/40 overflow-hidden">
+        <div className="mt-16 bg-white rounded-[32px] border border-gray-100 shadow-xl shadow-gray-200/40 overflow-hidden pricing-section">
           {/* Header */}
           <div className="bg-[#1a1c2e] px-8 py-6 flex items-center gap-4">
             <svg className="w-6 h-6 text-[#9d7bb0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
