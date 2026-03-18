@@ -120,37 +120,63 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <div className="bg-white py-24 px-6 print:p-0 print:py-10">
+    <div className="bg-white py-24 px-6 print:p-0 print:py-8">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
-            margin: 20mm;
-            size: auto;
+            margin: 10mm;
+            size: landscape;
           }
           body {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
+            background-color: white !important;
+            font-size: 10pt;
           }
           nav, footer, .print\\:hidden {
             display: none !important;
           }
+          .pricing-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
+            width: 100% !important;
+          }
           .pricing-card {
-            break-inside: avoid;
-            page-break-inside: avoid;
-            margin-bottom: 2rem;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            margin-bottom: 0 !important;
+            padding: 1.5rem !important;
+            border-radius: 24px !important;
+            scale: 1 !important;
+            height: auto !important;
           }
           .pricing-section {
-            break-inside: avoid;
-            page-break-inside: avoid;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            margin-top: 2rem !important;
           }
           h1 {
-            font-size: 3.5rem !important;
-            line-height: 1.1 !important;
-            margin-bottom: 1rem !important;
+            font-size: 2.5rem !important;
+            line-height: 1 !important;
+            margin-bottom: 0.5rem !important;
           }
           .hero-section {
-            margin-bottom: 3rem !important;
-            page-break-after: avoid;
+            margin-bottom: 2rem !important;
+            page-break-after: avoid !important;
+          }
+          .max-w-7xl, .max-w-5xl, .max-w-4xl {
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+          /* Fix for absolute badge */
+          .pricing-card .absolute {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            margin-bottom: 1rem !important;
+            display: inline-block !important;
           }
         }
       `}} />
@@ -194,7 +220,7 @@ const Pricing: React.FC = () => {
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 pricing-grid">
         {plans.map((plan, i) => (
           <div key={i} className={`pricing-card group relative p-12 rounded-[60px] border-2 transition-all duration-500 flex flex-col ${i === 1 ? 'border-[#9d7bb0] bg-gray-50/30 scale-105 shadow-2xl' : 'border-gray-100 hover:border-[#9d7bb0]/30 hover:shadow-xl'}`}>
             {i === 1 && (
@@ -250,7 +276,7 @@ const Pricing: React.FC = () => {
                <div className="bg-gray-100 p-4 rounded-2xl text-[10px] text-center font-black text-gray-400 mb-8 uppercase tracking-widest">
                   {plan.footerNote}
                </div>
-               <button className={`w-full py-5 rounded-[25px] font-black text-xs uppercase tracking-[0.2em] transition-all ${i === 1 ? 'bg-[#9d7bb0] text-white hover:bg-[#8b6aa1] shadow-2xl shadow-purple-200' : 'bg-gray-900 text-white hover:bg-black'}`}>
+               <button className={`w-full py-5 rounded-[25px] font-black text-xs uppercase tracking-[0.2em] transition-all print:hidden ${i === 1 ? 'bg-[#9d7bb0] text-white hover:bg-[#8b6aa1] shadow-2xl shadow-purple-200' : 'bg-gray-900 text-white hover:bg-black'}`}>
                 {plan.name.split(' ')[0]}
                </button>
             </div>
@@ -278,7 +304,7 @@ const Pricing: React.FC = () => {
                       </div>
                    </div>
                    <div className="text-[10px] font-bold text-[#4db6ac] uppercase">{addon.runs}</div>
-                   <button className="w-full py-3 rounded-xl bg-gray-50 text-gray-800 text-[10px] font-black uppercase tracking-widest hover:bg-gray-100">Add to Pack</button>
+                   <button className="w-full py-3 rounded-xl bg-gray-50 text-gray-800 text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 print:hidden">Add to Pack</button>
                 </div>
               ))}
            </div>
