@@ -55,7 +55,7 @@ const Home: React.FC = () => {
             {[
               { title: 'Agentic Discovery', desc: 'Identify high-potential agentic use cases by domain or company structure.', icon: '🔍' },
               { title: 'Process Evaluation', desc: 'Rigorous assessment across 10 critical operational dimensions.', icon: '📊' },
-              { title: 'Fitment & Scoring', desc: 'Quantified fitment for RPA, Agentic AI, and Augmented AI workflows.', icon: '🎯' },
+              { title: 'Fit & Scoring', desc: 'Quantified fit for RPA, Agentic AI, and Augmented AI workflows.', icon: '🎯' },
               { title: 'Evaluation Dashboard', desc: 'Real-time visibility for strategic roadmap and decision-making.', icon: '🖥️' }
             ].map((item, idx) => (
               <div key={idx} className="p-8 border border-gray-50 rounded-[40px] hover:shadow-2xl hover:border-transparent transition-all group bg-gray-50/30 hover:bg-white">

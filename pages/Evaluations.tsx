@@ -269,7 +269,7 @@ const Evaluations: React.FC = () => {
           <div>Created on</div>
           <div>Automation score</div>
           <div>Feasibility score</div>
-          <div>Fitment type</div>
+          <div>Fit type</div>
           <div>LLM type</div>
           <div className="text-right pr-4">Status</div>
           <div></div>

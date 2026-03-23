@@ -95,7 +95,7 @@ const Compare: React.FC = () => {
                 </div>
 
                 <div className="space-y-4 pt-2 md:pt-4">
-                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">Fitment Verdict</h3>
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">Fit Verdict</h3>
                   <div className="bg-gray-900 text-white p-3 md:p-4 rounded-xl md:rounded-2xl text-center font-black text-[10px] md:text-sm uppercase tracking-widest">
                     {item.aiAnalysis?.fitmentType}
                   </div>

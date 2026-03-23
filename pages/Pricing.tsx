@@ -18,7 +18,7 @@ const plans = [
     users: '2 Enterprise Licenses',
     features: [
       'Evaluation over 10 dimensions',
-      'Agentic AI Fitment & Scoring',
+      'Agentic AI Fit & Scoring',
       'Domain Use Case Discovery',
       'Strategic Decisioning Dashboard',
       'Excel Export: Priority Roadmap'

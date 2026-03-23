@@ -465,7 +465,7 @@ const StrategicQuadrant: React.FC = () => {
           </button>
           <div>
             <h1 className="text-3xl font-black text-gray-900 tracking-tight">Strategic Quadrant</h1>
-            <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">Multi-Process Fitment Visualization</p>
+            <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">Multi-Process Fit Visualization</p>
           </div>
         </div>
         
@@ -588,7 +588,7 @@ const StrategicQuadrant: React.FC = () => {
         {/* Granular Parameters - Comparison Grid Below */}
         <div className="bg-white p-12 rounded-[56px] border border-gray-100 shadow-sm space-y-12">
           <div className="space-y-2">
-            <h3 className="text-xl font-black text-gray-900 tracking-tight">Fitment Insights Comparison</h3>
+            <h3 className="text-xl font-black text-gray-900 tracking-tight">Fit Insights Comparison</h3>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Detailed parameter cross-reference across selected processes</p>
           </div>
           

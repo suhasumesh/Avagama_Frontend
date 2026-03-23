@@ -5,7 +5,7 @@ export enum EvaluationStatus {
   IN_PROGRESS = 'In Progress'
 }
 
-export enum FitmentType {
+export enum FitType {
   AGENTIC_AI = 'Agentic AI',
   AUGMENT_AI = 'Augment AI',
   RPA = 'RPA',
@@ -18,7 +18,7 @@ export interface Evaluation {
   createdOn: string;
   automationScore: number | null;
   feasibilityScore: number | null;
-  fitmentType: FitmentType;
+  fitmentType: FitType;
   llmType: string;
   status: EvaluationStatus;
   shortlisted?: boolean;
