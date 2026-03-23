@@ -130,7 +130,7 @@ const CortexChatModal: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-gray-900 tracking-tight">Avagama Cortex</h3>
+                  <h3 className="text-lg font-black text-gray-900 tracking-tight">Ask Avagama</h3>
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate max-w-[200px]">
                     {activeChat?.title || 'Scoped Assistant'}
                   </p>
@@ -211,7 +211,7 @@ const CortexChatModal: React.FC = () => {
                 </button>
               </form>
               <p className="text-[9px] text-center text-gray-400 mt-4 font-bold uppercase tracking-widest">
-                Powered by Avagama Cortex AI
+                Powered by Avagama AI
               </p>
             </div>
           </motion.div>

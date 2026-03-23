@@ -23,8 +23,12 @@ const Support: React.FC = () => {
       answer: "The Avagama Enterprise LLM is our specialized engine optimized for business process analysis. It balances reasoning depth with operational speed to provide precise diagnostic scores and implementation roadmaps for your enterprise use cases."
     },
     {
-      question: "How do I use the 'Ask Cortex' feature?",
-      answer: "Cortex is your interactive AI strategist. You can find the 'Ask Cortex' button on any evaluation result or discovery report. Use it to ask deep-dive questions about implementation steps, risk mitigation, or to brainstorm alternative scenarios based on the generated analysis."
+      question: "How do I use the 'Ask Avagama' feature?",
+      answer: "Ask Avagama is your interactive AI strategist. You can find the 'Ask Avagama' button on any evaluation result or discovery report. Use it to ask deep-dive questions about implementation steps, risk mitigation, or to brainstorm alternative scenarios based on the generated analysis."
+    },
+    {
+      question: "What is the difference between ChatGPT and Avagama?",
+      answer: "While ChatGPT is a general-purpose conversational AI, Avagama is a specialized enterprise-grade strategic engine. Avagama doesn't just chat; it performs multi-dimensional process evaluations, maps strategic feasibility, and generates actionable implementation roadmaps. It is context-aware of enterprise constraints, ROI metrics, and specific industry domains, providing structured strategic output rather than just text responses."
     },
     {
       question: "Can I evaluate my own custom business processes?",
@@ -61,7 +65,7 @@ const Support: React.FC = () => {
       desc: "Visualize your AI roadmap to prioritize implementation based on value and effort."
     },
     {
-      title: "Cortex Chat",
+      title: "Avagama Chat",
       icon: "🧠",
       desc: "Interact with our specialized AI agent to dive deeper into any use case or roadmap."
     }

@@ -120,71 +120,103 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <div className="bg-white py-24 px-6 print:p-0 print:py-4">
+    <div className="bg-white py-24 px-6 print:p-0">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
-            margin: 5mm;
+            margin: 0;
             size: landscape;
           }
           body {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
             background-color: white !important;
-            font-size: 8pt;
+            margin: 0 !important;
+            padding: 0 !important;
             width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-size: 7pt;
           }
           nav, footer, .print\\:hidden {
             display: none !important;
           }
+          #pricing-root {
+            width: 2200px !important;
+            transform: scale(0.35);
+            transform-origin: top center;
+            padding: 5px !important;
+            margin: 0 auto !important;
+            display: block !important;
+          }
           .pricing-grid {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr) !important;
-            gap: 0.5rem !important;
-            width: 100% !important;
-            margin-bottom: 1rem !important;
+            gap: 8px !important;
+            margin-bottom: 8px !important;
           }
           .pricing-card {
             break-inside: avoid !important;
             page-break-inside: avoid !important;
-            padding: 1rem !important;
-            border-radius: 16px !important;
+            padding: 12px !important;
+            border-radius: 20px !important;
+            height: auto !important;
             border-width: 1px !important;
           }
           .pricing-section {
             break-inside: avoid !important;
             page-break-inside: avoid !important;
-            margin-top: 1rem !important;
-          }
-          h1 {
-            font-size: 2rem !important;
-            margin-bottom: 0.25rem !important;
+            margin-top: 8px !important;
           }
           .hero-section {
-            margin-bottom: 1rem !important;
+            margin-bottom: 8px !important;
           }
-          .max-w-7xl, .max-w-5xl, .max-w-4xl {
-            max-width: 100% !important;
-            width: 100% !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
+          h1 {
+            font-size: 2.5rem !important;
+            line-height: 1 !important;
           }
-          .mt-40 {
-            margin-top: 1.5rem !important;
+          .mt-40, .mt-16 {
+            margin-top: 5px !important;
           }
           .mb-16 {
-            margin-bottom: 0.5rem !important;
+            margin-bottom: 5px !important;
           }
-          .p-16 {
-            padding: 1.5rem !important;
+          .py-24 {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
           }
-          .space-y-12 > :not([hidden]) ~ :not([hidden]) {
-            margin-top: 1rem !important;
+          .p-16, .p-12, .p-8 {
+            padding: 8px !important;
           }
-          /* Scale everything to fit on one page */
-          #pricing-root {
-            transform: scale(0.85);
-            transform-origin: top center;
+          .space-y-6 > :not([hidden]) ~ :not([hidden]),
+          .space-y-12 > :not([hidden]) ~ :not([hidden]),
+          .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 4px !important;
+          }
+          /* Fix for absolute badge in print */
+          .pricing-card .absolute {
+            position: static !important;
+            display: block !important;
+            width: fit-content !important;
+            margin: 0 auto 8px auto !important;
+            transform: none !important;
+            font-size: 7px !important;
+            padding: 2px 8px !important;
+          }
+          /* Ensure text doesn't wrap awkwardly */
+          .text-7xl { font-size: 2.5rem !important; }
+          .text-5xl { font-size: 1.8rem !important; }
+          .text-xl { font-size: 0.7rem !important; }
+          .text-2xl { font-size: 1rem !important; }
+          .text-3xl { font-size: 1.2rem !important; }
+          .text-xs { font-size: 6px !important; }
+          .text-sm { font-size: 7px !important; }
+          
+          /* Force single page */
+          html, body {
+            height: 100%;
+            page-break-after: avoid;
+            page-break-before: avoid;
           }
         }
       `}} />

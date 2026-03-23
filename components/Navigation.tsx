@@ -118,7 +118,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
             {!isAuthenticated ? (
               <>
                 <Link to="/about" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">About</Link>
-                <Link to="/pricing" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Pricing</Link>
+                {/* <Link to="/pricing" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Pricing</Link> */}
                 <Link to="/support" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Help & Support</Link>
 {/* <Link to="/demo" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Demo</Link> */}
                 <Link to="/guided-tour" className="text-sm font-bold tracking-wide text-gray-500 hover:text-gray-900 transition-colors uppercase">Guided Tour</Link>
@@ -264,7 +264,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, setIsAuthentic
                   {!isAuthenticated ? (
                     <>
                       <div className="flex flex-col gap-6">
-                        {['About', 'Pricing', 'Support', /* 'Demo', */ 'Guided Tour']
+                        {['About', /* 'Pricing', */ 'Support', /* 'Demo', */ 'Guided Tour']
                           .map((item) => (
                           <motion.div
                             key={item}
