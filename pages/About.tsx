@@ -55,7 +55,7 @@ const About: React.FC = () => {
                    <p className="text-gray-500 text-sm leading-relaxed">Our AI-powered agents don't just "calculate"; they reason through your process descriptions and SOPs to uncover hidden automation risks.</p>
                 </div>
                 <div className="bg-white p-8 rounded-3xl shadow-xl space-y-4 translate-x-12">
-                   <div className="w-12 h-12 bg-purple-50 text-[#9d7bb0] rounded-2xl flex items-center justify-center font-black">Fitment Scoring</div>
+                   <div className="w-12 h-12 bg-purple-50 text-[#9d7bb0] rounded-2xl flex items-center justify-center font-black">Fit Scoring</div>
                   
                    <p className="text-gray-500 text-sm leading-relaxed">Quantify whether a process is better suited for RPA, Agentic AI, or Augmented AI based on the 10-dimension assessment.</p>
                 </div>

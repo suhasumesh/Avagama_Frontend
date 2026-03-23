@@ -131,12 +131,12 @@ const Results: React.FC = () => {
            <div className="bg-[#4db6ac] p-6 md:p-10 rounded-[32px] md:rounded-[48px] shadow-2xl relative overflow-hidden group">
               <div className="relative z-10 space-y-4 text-white">
                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] md:text-[10px] font-black opacity-60 uppercase tracking-[0.2em]">Primary Fitment</span>
+                    <span className="text-[9px] md:text-[10px] font-black opacity-60 uppercase tracking-[0.2em]">Primary Fit</span>
                     <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-xl">🎯</div>
                  </div>
                  <div className="space-y-1">
                     <h2 className="text-2xl md:text-4xl font-black leading-none">{analysis.fitmentType || 'In Review'}</h2>
-                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60">Architectural Fitment Type</p>
+                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-60">Architectural Fit Type</p>
                  </div>
                  <p className="text-[11px] md:text-sm font-medium leading-relaxed pt-2 border-t border-white/10 italic">
                    "{analysis.recommendations?.notes}"
