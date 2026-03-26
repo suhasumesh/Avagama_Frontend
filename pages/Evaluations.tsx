@@ -268,7 +268,7 @@ const Evaluations: React.FC = () => {
           <div className="pl-8">Process name</div>
           <div>Created on</div>
           <div>Automation score</div>
-          <div>Benefit score</div>
+          <div>Feasibility score</div>
           <div>Fit type</div>
           <div>LLM type</div>
           <div className="text-right pr-4">Status</div>
@@ -422,7 +422,7 @@ const Evaluations: React.FC = () => {
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Benefit Score</p>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Feasibility</p>
                         <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${getScoreColor(feasibility)}`}></div>
                           <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
