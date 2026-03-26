@@ -241,7 +241,7 @@ const DiscoveryDetail: React.FC = () => {
                        <div className="pt-6 md:pt-8 border-t border-gray-200 mt-6 md:mt-10">
                           <div className="flex justify-between items-center bg-white p-5 md:p-8 lg:p-10 rounded-[24px] md:rounded-[40px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                              <div className="space-y-1">
-                                <p className="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest">BENEFIT SCORE</p>
+                                <p className="text-[9px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest">FEASIBILITY SCORE</p>
                                 <div className="text-2xl md:text-4xl font-black text-gray-900 flex items-baseline gap-1">
                                   {uc.business_benefit_score?.score || 0}
                                   <span className="text-[10px] md:text-sm text-gray-300 font-bold">/100</span>
@@ -287,7 +287,7 @@ const DiscoveryDetail: React.FC = () => {
                                   <div className="text-right shrink-0 flex flex-col items-end">
                                      <div className="flex items-baseline gap-1">
                                         <span className={`text-sm md:text-lg font-black ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>{param.score}</span>
-                                        <span className="text-[8px] md:text-[10px] font-bold text-gray-300">/10</span>
+                                        <span className="text-[8px] md:text-[10px] font-bold text-gray-300">/{param.weight || 10}</span>
                                      </div>
                                      {param.weight && (
                                        <div className="text-[7px] md:text-[8px] font-black text-gray-400 uppercase tracking-tighter">
@@ -297,7 +297,7 @@ const DiscoveryDetail: React.FC = () => {
                                   </div>
                                </div>
                                <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
-                                  <div className={`h-full transition-all duration-1000 ease-out ${discoveryType === 'domain' ? 'bg-[#4db6ac]' : 'bg-[#9d7bb0]'}`} style={{width: `${param.score * 10}%`}}></div>
+                                  <div className={`h-full transition-all duration-1000 ease-out ${discoveryType === 'domain' ? 'bg-[#4db6ac]' : 'bg-[#9d7bb0]'}`} style={{width: `${(param.score / (param.weight || 10)) * 100}%`}}></div>
                                </div>
                             </div>
                           ))}
@@ -307,7 +307,7 @@ const DiscoveryDetail: React.FC = () => {
                           <div className="flex items-center gap-3">
                              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-xs md:text-sm shrink-0">🎯</div>
                              <div>
-                                <p className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Weighted Alignment Index</p>
+                                <p className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest ${discoveryType === 'domain' ? 'text-[#4db6ac]' : 'text-[#9d7bb0]'}`}>Benefit Score</p>
                                 <p className="text-[9px] md:text-[11px] font-bold text-gray-600">Calculated Strategy Alignment</p>
                              </div>
                           </div>
