@@ -212,7 +212,7 @@ const CompanyDiscovery: React.FC = () => {
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-purple-50 text-[#9d7bb0] flex items-center justify-center text-lg md:text-xl font-bold">🏢</div>
                   <div className="flex flex-col items-end gap-2">
                     <div className="px-2 py-0.5 md:px-3 md:py-1 bg-green-50 text-green-600 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider border border-green-100">
-                      {item.strongROICount || 0} ROI Scenarios
+                      {item.strongROICount || 0} Feasibility Scenarios
                     </div>
                     <button
                       onClick={(e) => handleDelete(e, item._id || item.id)}

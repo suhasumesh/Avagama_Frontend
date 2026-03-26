@@ -148,16 +148,16 @@ const Results: React.FC = () => {
            <div className="bg-white p-6 md:p-10 rounded-[32px] md:rounded-[48px] border border-gray-100 shadow-sm relative overflow-hidden group">
               <div className="relative z-10 space-y-4">
                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Business Benefit</span>
+                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Feasibility Score</span>
                     <div className="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center text-[#4db6ac]">📈</div>
                  </div>
                  <div className="flex items-baseline gap-2">
                     <span className="text-4xl md:text-6xl font-black text-gray-900">{analysis.businessBenefitScore || 0}</span>
-                    <span className="text-base md:text-xl font-bold text-gray-300">/ 100</span>
+                    <span className="text-base md:text-xl font-bold text-gray-300">/ {analysis.weight || 10}</span>
                  </div>
                  <div className="flex gap-1 pt-2">
                     {[1,2,3,4,5,6,7,8,9,10].map(i => (
-                      <div key={i} className={`flex-1 h-2.5 md:h-3 rounded-sm ${i <= (analysis.businessBenefitScore || 0)/10 ? 'bg-[#4db6ac]' : 'bg-gray-100'}`}></div>
+                      <div key={i} className={`flex-1 h-2.5 md:h-3 rounded-sm ${i <= (analysis.businessBenefitScore || 0)/(analysis.weight || 10) ? 'bg-[#4db6ac]' : 'bg-gray-100'}`}></div>
                     ))}
                  </div>
                  <p className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Expected Strategic Value</p>

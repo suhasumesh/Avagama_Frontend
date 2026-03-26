@@ -128,7 +128,7 @@ const StrategicQuadrant: React.FC = () => {
       .attr("font-weight", "900")
       .attr("text-transform", "uppercase")
       .attr("letter-spacing", "0.15em")
-      .text("Business Value");
+      .text("Feasibility Score");
     
     // Feasibility Axis (Horizontal)
     const feasibilityAxisG = g.append("g").attr("transform", `translate(${innerWidth / 2}, ${innerHeight + 55})`);
@@ -139,7 +139,7 @@ const StrategicQuadrant: React.FC = () => {
       .attr("font-weight", "900")
       .attr("text-transform", "uppercase")
       .attr("letter-spacing", "0.15em")
-      .text("Implementation Feasibility");
+      .text("Benefit Score");
 
     // Axis Labels
     const yLabels = [
@@ -547,7 +547,7 @@ const StrategicQuadrant: React.FC = () => {
 
                 <div className="grid grid-cols-3 gap-6">
                   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Business Value</p>
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Feasibility Score</p>
                     <p className="text-2xl font-black" style={{color: getQuadrantColor(selectedItem)}}>{selectedItem.aiAnalysis?.businessBenefitScore}%</p>
                   </div>
                   <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
@@ -609,11 +609,11 @@ const StrategicQuadrant: React.FC = () => {
                   {/* Summary Scores */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Value Score</p>
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Feasibility Score</p>
                       <p className="text-lg font-black" style={{color: getQuadrantColor(item)}}>{item.aiAnalysis?.businessBenefitScore}%</p>
                     </div>
                     <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Feasibility</p>
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Benefit Score</p>
                       <p className="text-lg font-black" style={{color: getQuadrantColor(item)}}>
                         {(() => {
                           let f = item.aiAnalysis?.feasibilityScore;
@@ -663,7 +663,7 @@ const StrategicQuadrant: React.FC = () => {
                     <div className="space-y-5">
                       <div className="flex items-center gap-3">
                         <div className="w-7 h-7 rounded-xl bg-teal-50 flex items-center justify-center text-[#4db6ac] text-xs shadow-sm">🛠️</div>
-                        <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Feasibility</h4>
+                        <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Benefit Score</h4>
                       </div>
                       
                       <div className="space-y-5">
