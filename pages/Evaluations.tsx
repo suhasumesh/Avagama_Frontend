@@ -1,8 +1,32 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { apiService } from '../services/api';
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  Trash2, 
+  ChevronRight, 
+  ChevronLeft, 
+  ChevronsRight, 
+  ChevronsLeft, 
+  Calendar, 
+  ArrowUpDown, 
+  ArrowUp, 
+  ArrowDown, 
+  Star,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  LayoutGrid,
+  ArrowRightLeft,
+  Download,
+  MoreVertical,
+  X
+} from 'lucide-react';
+import { format } from 'date-fns';
 
 const Evaluations: React.FC = () => {
   const [evaluations, setEvaluations] = useState<any[]>([]);
@@ -15,7 +39,27 @@ const Evaluations: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Sorting state
+  const [sortField, setSortField] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeSortMenu, setActiveSortMenu] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  
   const navigate = useNavigate();
+  const sortMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(event.target as Node)) {
+        setActiveSortMenu(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchEvals = async () => {
     setLoading(true);
@@ -140,21 +184,69 @@ const Evaluations: React.FC = () => {
     return 'bg-red-500';
   };
 
-  // Filter Logic
-  const filteredEvaluations = filter === 'all' 
-    ? evaluations 
-    : evaluations.filter(item => shortlistedIds.includes(item._id));
-
-  // Pagination Logic
-  const indexOfLastItem = currentPage * rowsPerPage;
-  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
-  const currentItems = filteredEvaluations.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredEvaluations.length / rowsPerPage);
-
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1); // Reset to first page when changing page size
   };
+
+  const handleSort = (field: string, order: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortOrder(order);
+    setActiveSortMenu(null);
+  };
+
+  // Filter, Search and Sort Logic
+  const processedEvaluations = [...evaluations]
+    .filter(item => {
+      // Search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const processName = (item.discovery?.processName || '').toLowerCase();
+        if (!processName.includes(query)) return false;
+      }
+      
+      // Shortlist filter
+      if (filter === 'shortlisted' && !shortlistedIds.includes(item._id)) return false;
+
+      // Date range filter
+      if (startDate || endDate) {
+        const itemDate = new Date(item.createdAt);
+        if (startDate) {
+          const start = new Date(startDate);
+          start.setHours(0, 0, 0, 0);
+          if (itemDate < start) return false;
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          if (itemDate > end) return false;
+        }
+      }
+      
+      return true;
+    })
+    .sort((a, b) => {
+      let valA: any = '';
+      let valB: any = '';
+
+      if (sortField === 'processName') {
+        valA = (a.discovery?.processName || '').toLowerCase();
+        valB = (b.discovery?.processName || '').toLowerCase();
+      } else if (sortField === 'createdAt') {
+        valA = new Date(a.createdAt).getTime();
+        valB = new Date(b.createdAt).getTime();
+      }
+
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+  // Pagination Logic
+  const indexOfLastItem = currentPage * rowsPerPage;
+  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
+  const currentItems = processedEvaluations.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(processedEvaluations.length / rowsPerPage);
 
   const goToNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
@@ -169,12 +261,13 @@ const Evaluations: React.FC = () => {
 
   return (
     <div className="p-4 md:p-8 space-y-6 md:space-y-8 bg-[#fcfdff] min-h-screen">
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-8">
-          <h1 className="text-xl md:text-2xl font-black text-gray-900">My Evaluations</h1>
+          <div>
+            <h1 className="text-xl md:text-2xl font-black text-gray-900">My Evaluations</h1>
+          </div>
           
-          {/* Filter Toggle */}
-          <div className="flex bg-white p-1 rounded-xl border border-gray-100 shadow-sm">
+          <div className="flex bg-white p-1 rounded-xl border border-gray-100 shadow-sm self-start">
             <button 
               onClick={() => { setFilter('all'); setCurrentPage(1); }}
               className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
@@ -197,20 +290,111 @@ const Evaluations: React.FC = () => {
               )}
             </button>
           </div>
+
+          {/* Mobile Sort Controls */}
+          <div className="lg:hidden flex items-center gap-2">
+            <button 
+              onClick={() => setActiveSortMenu(activeSortMenu === 'mobile-sort' ? null : 'mobile-sort')}
+              className={`p-2.5 rounded-xl border transition-all ${activeSortMenu === 'mobile-sort' ? 'bg-[#9d7bb0] border-[#9d7bb0] text-white shadow-md' : 'bg-white border-gray-100 text-gray-500'}`}
+              title="Sort and Filter"
+            >
+              <ArrowUpDown className="w-4 h-4" />
+            </button>
+            {activeSortMenu === 'mobile-sort' && (
+              <div ref={sortMenuRef} className="absolute top-full right-4 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">Sort Roadmap</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => handleSort('processName', 'asc')}
+                        className={`px-3 py-2 rounded-lg text-[10px] font-bold transition-all text-center ${sortField === 'processName' && sortOrder === 'asc' ? 'bg-[#9d7bb0] text-white' : 'bg-gray-50 text-gray-600'}`}
+                      >
+                        A-Z
+                      </button>
+                      <button 
+                        onClick={() => handleSort('processName', 'desc')}
+                        className={`px-3 py-2 rounded-lg text-[10px] font-bold transition-all text-center ${sortField === 'processName' && sortOrder === 'desc' ? 'bg-[#9d7bb0] text-white' : 'bg-gray-50 text-gray-600'}`}
+                      >
+                        Z-A
+                      </button>
+                      <button 
+                        onClick={() => handleSort('createdAt', 'desc')}
+                        className={`px-3 py-2 rounded-lg text-[10px] font-bold transition-all text-center ${sortField === 'createdAt' && sortOrder === 'desc' ? 'bg-[#9d7bb0] text-white' : 'bg-gray-50 text-gray-600'}`}
+                      >
+                        Newest
+                      </button>
+                      <button 
+                        onClick={() => handleSort('createdAt', 'asc')}
+                        className={`px-3 py-2 rounded-lg text-[10px] font-bold transition-all text-center ${sortField === 'createdAt' && sortOrder === 'asc' ? 'bg-[#9d7bb0] text-white' : 'bg-gray-50 text-gray-600'}`}
+                      >
+                        Oldest
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-gray-100"></div>
+
+                  <div className="space-y-3">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">Filter by date</p>
+                    <div className="space-y-2">
+                      <div className="space-y-1">
+                        <label className="text-[8px] font-bold text-gray-400 ml-1">START DATE</label>
+                        <input 
+                          type="date" 
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-bold text-gray-600 focus:outline-none focus:border-[#9d7bb0]"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[8px] font-bold text-gray-400 ml-1">END DATE</label>
+                        <input 
+                          type="date" 
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-bold text-gray-600 focus:outline-none focus:border-[#9d7bb0]"
+                        />
+                      </div>
+                    </div>
+                    {(startDate || endDate) && (
+                      <button 
+                        onClick={() => { setStartDate(''); setEndDate(''); }}
+                        className="w-full py-2.5 bg-gray-50 text-[10px] font-bold text-red-400 hover:text-red-600 rounded-xl transition-colors flex items-center justify-center gap-2"
+                      >
+                        <X className="w-3.5 h-3.5" /> Clear Dates
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
         <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 md:flex-none md:w-64 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#9d7bb0] transition-colors" />
+            <input 
+              type="text" 
+              placeholder="Search processes..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-100 rounded-xl text-xs font-bold shadow-sm focus:outline-none focus:border-[#9d7bb0] transition-all"
+            />
+          </div>
+
           <button 
             onClick={handleCompare}
             disabled={selectedIds.length < 2}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs md:text-sm border transition-all ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs border transition-all ${
               selectedIds.length >= 2 
                 ? 'bg-white border-[#9d7bb0] text-[#9d7bb0] hover:bg-purple-50 shadow-sm' 
                 : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
             }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <ArrowRightLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Compare</span>
-            <span className="sm:hidden">Comp</span>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 2 ? 'bg-[#9d7bb0] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
             </span>
@@ -219,15 +403,14 @@ const Evaluations: React.FC = () => {
           <button 
             onClick={handleQuadrant}
             disabled={selectedIds.length === 0}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs md:text-sm border transition-all ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold text-xs border transition-all ${
               selectedIds.length >= 1 
                 ? 'bg-white border-[#4db6ac] text-[#4db6ac] hover:bg-teal-50 shadow-sm' 
                 : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
             }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <span className="hidden sm:inline">Strategic Quadrant</span>
-            <span className="sm:hidden">Quadrant</span>
+            <LayoutGrid className="w-4 h-4" />
+            <span className="hidden sm:inline">Quadrant</span>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${selectedIds.length >= 1 ? 'bg-[#4db6ac] text-white' : 'bg-gray-200 text-white'}`}>
               {selectedIds.length}
             </span>
@@ -236,28 +419,27 @@ const Evaluations: React.FC = () => {
           <button 
             onClick={handleExport}
             disabled={isExporting || evaluations.length === 0}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 bg-white border border-gray-100 rounded-xl font-bold text-xs md:text-sm text-gray-600 hover:bg-gray-50 transition-all shadow-sm ${isExporting || evaluations.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 bg-white border border-gray-100 rounded-xl font-bold text-xs text-gray-600 hover:bg-gray-50 transition-all shadow-sm ${isExporting || evaluations.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isExporting ? (
               <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
             ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <Download className="w-4 h-4" />
             )}
             <span className="hidden sm:inline">{isExporting ? 'Exporting...' : 'Export'}</span>
-            <span className="sm:hidden">Exp</span>
           </button>
 
-          <Link to="/evaluate" className="w-full sm:w-auto bg-[#9d7bb0] text-white px-6 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 text-xs md:text-sm">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            New Evaluation
+          <Link to="/evaluate" className="w-full sm:w-auto bg-[#9d7bb0] text-white px-6 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#8b6aa1] transition-all shadow-lg shadow-purple-100 text-xs text-white">
+            <Plus className="w-4 h-4 text-white" />
+            <span className="text-white">New Evaluation</span>
           </Link>
         </div>
       </div>
 
       <div className="space-y-4">
-        {/* Table Header Styling - Hidden on Mobile */}
-        <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr_50px] gap-4 px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
-          <div className="flex items-center gap-2">
+        {/* Table Header */}
+        <div className="hidden lg:grid grid-cols-[48px_2.2fr_1.4fr_1.2fr_1.2fr_1.1fr_1.1fr_0.8fr_48px] gap-4 px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50">
+          <div className="flex items-center">
              <input 
                type="checkbox" 
                className="w-4 h-4 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0] cursor-pointer" 
@@ -265,13 +447,94 @@ const Evaluations: React.FC = () => {
                onChange={toggleSelectAll}
              />
           </div>
-          <div className="pl-8">Process name</div>
-          <div>Created on</div>
-          <div>Automation score</div>
-          <div>Feasibility score</div>
-          <div>Fit type</div>
-          <div>LLM type</div>
-          <div className="text-right pr-4">Status</div>
+          
+          {/* Process Name Header with Sort */}
+          <div className="relative group">
+            <button 
+              onClick={() => setActiveSortMenu(activeSortMenu === 'name' ? null : 'name')}
+              className="flex items-center gap-2 hover:text-gray-600 transition-colors whitespace-nowrap"
+            >
+              PROCESS NAME
+              <ArrowUpDown className={`w-3 h-3 ${sortField === 'processName' ? 'text-[#9d7bb0]' : ''}`} />
+            </button>
+            {activeSortMenu === 'name' && (
+              <div ref={sortMenuRef} className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 p-2 z-50">
+                <button onClick={() => handleSort('processName', 'asc')} className="w-full flex items-center gap-3 px-3 py-2 text-[10px] font-bold text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                  <ArrowUp className="w-3.5 h-3.5 text-gray-400" /> Sort Ascending
+                </button>
+                <button onClick={() => handleSort('processName', 'desc')} className="w-full flex items-center gap-3 px-3 py-2 text-[10px] font-bold text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                  <ArrowDown className="w-3.5 h-3.5 text-gray-400" /> Sort Descending
+                </button>
+                <div className="h-px bg-gray-100 my-2"></div>
+                <div className="relative p-2">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <input 
+                    type="text" 
+                    placeholder="Search.." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-bold placeholder:text-gray-300 focus:outline-none focus:border-[#9d7bb0] focus:bg-white"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="relative">
+            <button 
+              onClick={() => setActiveSortMenu(activeSortMenu === 'date' ? null : 'date')}
+              className={`flex items-center gap-2 hover:text-gray-600 transition-colors whitespace-nowrap ${(startDate || endDate) ? 'text-[#9d7bb0]' : ''}`}
+            >
+              CREATED ON
+              {(startDate || endDate) ? <Filter className="w-3 h-3" /> : <ArrowUpDown className={`w-3 h-3 ${sortField === 'createdAt' ? 'text-[#9d7bb0]' : ''}`} />}
+            </button>
+            {activeSortMenu === 'date' && (
+              <div ref={sortMenuRef} className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50">
+                <button onClick={() => handleSort('createdAt', 'asc')} className="w-full flex items-center gap-3 px-3 py-1.5 text-[10px] font-bold text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                  <ArrowUp className="w-3.5 h-3.5 text-gray-400" /> Sort Ascending
+                </button>
+                <button onClick={() => handleSort('createdAt', 'desc')} className="w-full flex items-center gap-3 px-3 py-1.5 text-[10px] font-bold text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                  <ArrowDown className="w-3.5 h-3.5 text-gray-400" /> Sort Descending
+                </button>
+                <div className="h-px bg-gray-100 my-3"></div>
+                <div className="space-y-3">
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">Filter by date</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[8px] font-bold text-gray-400 ml-1">START DATE</label>
+                      <input 
+                        type="date" 
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full px-2 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[9px] font-bold text-gray-600 focus:outline-none focus:border-[#9d7bb0]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[8px] font-bold text-gray-400 ml-1">END DATE</label>
+                      <input 
+                        type="date" 
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full px-2 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[9px] font-bold text-gray-600 focus:outline-none focus:border-[#9d7bb0]"
+                      />
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { setStartDate(''); setEndDate(''); }}
+                    className="w-full py-2 bg-gray-50 text-[9px] font-bold text-gray-400 hover:text-gray-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <X className="w-3 h-3" /> Reset Dates
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="whitespace-nowrap">AUTOMATION SCORE</div>
+          <div className="whitespace-nowrap">FEASIBILITY SCORE</div>
+          <div className="whitespace-nowrap">FIT TYPE</div>
+          <div className="whitespace-nowrap">LLM TYPE</div>
+          <div className="text-right whitespace-nowrap">STATUS</div>
           <div></div>
         </div>
 
@@ -315,8 +578,8 @@ const Evaluations: React.FC = () => {
                   key={item._id} 
                   className={`bg-white rounded-2xl md:rounded-3xl border transition-all hover:shadow-md overflow-hidden ${isSelected ? 'border-[#9d7bb0] shadow-sm' : 'border-gray-100 shadow-sm'}`}
                 >
-                  {/* Desktop View */}
-                  <div className="hidden lg:grid grid-cols-[40px_1.5fr_1fr_1fr_1fr_0.8fr_0.8fr_0.8fr_50px] gap-4 px-6 py-5 items-center">
+                  {/* Row content */}
+                  <div className="hidden lg:grid grid-cols-[48px_2.2fr_1.4fr_1.2fr_1.2fr_1.1fr_1.1fr_0.8fr_48px] gap-4 px-6 py-5 items-center">
                     <div className="flex items-center">
                       <input 
                         type="checkbox" 
@@ -325,7 +588,7 @@ const Evaluations: React.FC = () => {
                         className="w-4 h-4 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
                       />
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                       <button 
                         onClick={(e) => toggleShortlist(item._id, e)}
                         className={`shrink-0 transition-all ${isShortlisted ? 'text-amber-400 scale-110' : 'text-gray-200 hover:text-gray-300'}`}
@@ -336,37 +599,44 @@ const Evaluations: React.FC = () => {
                       </button>
                       <Link 
                         to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
-                        className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate max-w-[280px]"
+                        className="font-bold text-[#9d7bb0] text-sm hover:underline block truncate"
+                        title={item.discovery?.processName}
                       >
                         {item.discovery?.processName || 'Untitled Process'}
                       </Link>
                     </div>
-                    <div className="text-xs font-medium text-gray-500">
-                      {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}, {new Date(item.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                    <div className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed whitespace-nowrap">
+                      {format(new Date(item.createdAt), 'dd/MM/yyyy, hh:mm a')}
                     </div>
+                    
                     <div className="flex items-center gap-2">
-                      <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(automation)}`}></div>
-                      <span className="text-sm font-bold text-gray-700">{automation ? `${automation}%` : '-'}</span>
+                       <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(automation)}`}></div>
+                       <span className="text-sm font-bold text-gray-700">{automation ? `${automation}%` : '-'}</span>
                     </div>
+
                     <div className="flex items-center gap-2">
-                      <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(feasibility)}`}></div>
-                      <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
+                       <div className={`w-2.5 h-2.5 rounded-full ${getScoreColor(feasibility)}`}></div>
+                       <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
                     </div>
-                    <div>
-                      <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
+
+                    <div className="min-w-0">
+                      <span className="inline-block px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide truncate max-w-full">
                         {fitment || '-'}
                       </span>
                     </div>
-                    <div>
-                      <span className="px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
+                    
+                    <div className="min-w-0">
+                      <span className="inline-block px-3 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide truncate max-w-full">
                         {formattedLLMType}
                       </span>
                     </div>
-                    <div className="text-right pr-4">
+
+                    <div className="text-right">
                       <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider ${status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
                         {status}
                       </span>
                     </div>
+
                     <div className="flex justify-end">
                       <button 
                         onClick={(e) => {
@@ -376,14 +646,12 @@ const Evaluations: React.FC = () => {
                         }}
                         className="p-2 text-gray-300 hover:text-red-500 transition-colors"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Mobile View */}
+                  {/* Mobile View - Enhanced Card Format */}
                   <div className="lg:hidden p-5 space-y-4">
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-3">
@@ -391,15 +659,13 @@ const Evaluations: React.FC = () => {
                           type="checkbox" 
                           checked={isSelected}
                           onChange={() => toggleSelect(item._id)}
-                          className="w-5 h-5 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0]" 
+                          className="w-5 h-5 rounded border-gray-200 text-[#9d7bb0] focus:ring-[#9d7bb0] shadow-sm" 
                         />
                         <button 
                           onClick={(e) => toggleShortlist(item._id, e)}
                           className={`shrink-0 transition-all ${isShortlisted ? 'text-amber-400' : 'text-gray-200'}`}
                         >
-                          <svg className="w-5 h-5" fill={isShortlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                          </svg>
+                          <Star className="w-5 h-5" fill={isShortlisted ? "currentColor" : "none"} strokeWidth={isShortlisted ? 0 : 2} />
                         </button>
                         <Link 
                           to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`} 
@@ -408,7 +674,11 @@ const Evaluations: React.FC = () => {
                           {item.discovery?.processName || 'Untitled Process'}
                         </Link>
                       </div>
-                      <span className={`shrink-0 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${status.toLowerCase() === 'completed' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
+                      <span className={`shrink-0 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
+                        status.toLowerCase() === 'completed' 
+                          ? 'bg-emerald-50 text-emerald-600 border-emerald-100 shadow-sm' 
+                          : 'bg-amber-50 text-amber-600 border-amber-100 shadow-sm'
+                      }`}>
                         {status}
                       </span>
                     </div>
@@ -417,32 +687,32 @@ const Evaluations: React.FC = () => {
                       <div className="space-y-1">
                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Automation</p>
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${getScoreColor(automation)}`}></div>
-                          <span className="text-sm font-bold text-gray-700">{automation ? `${automation}%` : '-'}</span>
+                          <div className={`w-2 h-2 rounded-full shadow-sm ${getScoreColor(automation)}`}></div>
+                          <span className="text-sm font-bold text-gray-700 tabular-nums">{automation ? `${automation}%` : '-'}</span>
                         </div>
                       </div>
                       <div className="space-y-1">
                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Feasibility</p>
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${getScoreColor(feasibility)}`}></div>
-                          <span className="text-sm font-bold text-gray-700">{feasibility ? `${feasibility}%` : '-'}</span>
+                          <div className={`w-2 h-2 rounded-full shadow-sm ${getScoreColor(feasibility)}`}></div>
+                          <span className="text-sm font-bold text-gray-700 tabular-nums">{feasibility ? `${feasibility}%` : '-'}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2 pt-2">
-                      <span className="px-2 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-md text-[9px] font-bold uppercase tracking-wide">
-                        {fitment || 'N/A'}
+                      <span className="px-2 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
+                        {fitment || '-'}
                       </span>
-                      <span className="px-2 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-md text-[9px] font-bold uppercase tracking-wide">
+                      <span className="px-2 py-1 bg-gray-50 text-gray-400 border border-gray-100 rounded-lg text-[10px] font-bold uppercase tracking-wide">
                         {formattedLLMType}
                       </span>
                     </div>
 
-                    <div className="pt-3 border-t border-gray-50 flex justify-between items-center">
+                    <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
                       <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-bold text-gray-300 uppercase">
-                          {new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        <span className="text-[10px] font-bold text-gray-300 uppercase tracking-wider tabular-nums">
+                          {format(new Date(item.createdAt), 'dd MMM yyyy')}
                         </span>
                         <button 
                           onClick={(e) => {
@@ -450,19 +720,17 @@ const Evaluations: React.FC = () => {
                             e.stopPropagation();
                             setDeleteConfirm(item._id);
                           }}
-                          className="text-red-400 hover:text-red-600 transition-colors"
+                          className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                       <Link 
                         to={status.toLowerCase() === 'draft' ? `/evaluate?id=${item._id}` : `/results/${item._id}`}
-                        className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest flex items-center gap-1"
+                        className="text-[10px] font-black text-[#9d7bb0] uppercase tracking-widest flex items-center gap-1.5 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-100"
                       >
-                        View Details
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        Details
+                        <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
@@ -474,57 +742,75 @@ const Evaluations: React.FC = () => {
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-4 pt-4 text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">
-        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4">
-           <span className="hidden sm:inline">Rows per page</span>
-            <div className="relative">
-              <select 
-                value={rowsPerPage} 
-                onChange={handleRowsPerPageChange}
-                className="appearance-none bg-white px-3 py-1.5 pr-8 rounded-lg border border-gray-100 text-gray-600 shadow-sm cursor-pointer outline-none focus:border-[#9d7bb0]"
-              >
-                {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75].map(val => (
-                  <option key={val} value={val}>{val}</option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </div>
-            </div>
-           <span className="md:ml-4">
-             {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredEvaluations.length)} of {filteredEvaluations.length}
-           </span>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6 px-6 py-8 bg-white/50 backdrop-blur-sm rounded-[32px] border border-gray-100 mt-12">
+        <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-12 w-full md:w-auto">
+           <div className="flex items-center gap-4">
+             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">ROWS PER PAGE</span>
+             <div className="relative group">
+               <select 
+                 value={rowsPerPage} 
+                 onChange={handleRowsPerPageChange}
+                 className="appearance-none bg-white px-4 py-2 pr-10 rounded-xl border border-[#9d7bb0] text-sm font-bold text-gray-700 shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-[#9d7bb0]/20 transition-all min-w-[80px]"
+               >
+                 {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75].map(val => (
+                   <option key={val} value={val}>{val}</option>
+                 ))}
+               </select>
+               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#9d7bb0]">
+                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                 </svg>
+               </div>
+             </div>
+           </div>
+
+           <div className="flex-1 md:flex-none flex justify-center md:justify-start">
+             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest tabular-nums whitespace-nowrap">
+               {processedEvaluations.length === 0 ? '0-0' : `${indexOfFirstItem + 1}-${Math.min(indexOfLastItem, processedEvaluations.length)}`} OF {processedEvaluations.length}
+             </span>
+           </div>
         </div>
         
         <div className="flex items-center gap-2">
-           <div className="flex bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+           <div className="flex bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-1.5 gap-1">
              <button 
                onClick={goToFirstPage}
                disabled={currentPage === 1}
-               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
+               className="p-2 hover:bg-gray-50 text-gray-400 disabled:opacity-20 transition-colors rounded-lg"
+               title="First Page"
              >
-               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+               <ChevronsLeft className="w-4 h-4" />
              </button>
              <button 
                onClick={goToPrevPage}
                disabled={currentPage === 1}
-               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
+               className="p-2 hover:bg-gray-50 text-gray-400 disabled:opacity-20 transition-colors rounded-lg"
+               title="Previous Page"
              >
-               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+               <ChevronLeft className="w-4 h-4" />
              </button>
+             
+             <div className="flex items-center px-5 border-x border-gray-100">
+                <span className="text-xs font-bold text-gray-900 tabular-nums">{currentPage}</span>
+                <span className="text-gray-300 mx-2 text-xs">/</span>
+                <span className="text-xs font-bold text-gray-400 tabular-nums">{totalPages || 1}</span>
+             </div>
+
              <button 
                onClick={goToNextPage}
-               disabled={currentPage === totalPages}
-               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30 border-r border-gray-50"
+               disabled={currentPage === totalPages || totalPages === 0}
+               className="p-2 hover:bg-gray-50 text-gray-400 disabled:opacity-20 transition-colors rounded-lg"
+               title="Next Page"
              >
-               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+               <ChevronRight className="w-4 h-4" />
              </button>
              <button 
                onClick={goToLastPage}
-               disabled={currentPage === totalPages}
-               className="p-2 px-3 md:px-4 hover:bg-gray-50 text-gray-400 disabled:opacity-30"
+               disabled={currentPage === totalPages || totalPages === 0}
+               className="p-2 hover:bg-gray-50 text-gray-400 disabled:opacity-20 transition-colors rounded-lg"
+               title="Last Page"
              >
-               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 5l7 7-7 7m-8-14l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+               <ChevronsRight className="w-4 h-4" />
              </button>
            </div>
         </div>
