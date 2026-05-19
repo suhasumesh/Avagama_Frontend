@@ -344,7 +344,7 @@ const Pricing: React.FC = () => {
                         {formatPrice(addon.price[currency].discounted)}
                       </div>
                    </div>
-                   <div className="text-[10px] font-bold text-[#4db6ac] uppercase">{addon.runs}</div>
+                   
                    <button className="w-full py-3 rounded-xl bg-gray-50 text-gray-800 text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 print:hidden">Add to Pack</button>
                 </div>
               ))}
