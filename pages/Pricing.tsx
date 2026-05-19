@@ -136,7 +136,7 @@ const Pricing: React.FC = () => {
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
-            margin: 1.5cm;
+            margin: 0.8cm;
             size: A4 portrait;
           }
           body {
@@ -144,28 +144,73 @@ const Pricing: React.FC = () => {
             -webkit-print-color-adjust: exact;
             background-color: white !important;
           }
-          nav, footer, .print\\:hidden {
+          nav, footer, .print\\:hidden, .print\\:hidden * {
             display: none !important;
           }
           .pricing-grid {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr) !important;
-            gap: 15px !important;
+            gap: 12px !important;
+            margin: 0 !important;
+            width: 100% !important;
           }
           .pricing-card {
-            padding: 24px !important;
-            border-radius: 40px !important;
+            padding: 20px !important;
+            border-radius: 24px !important;
             border-width: 1px !important;
             break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            height: auto !important;
+            min-height: 0 !important;
           }
           .pricing-section {
             break-inside: avoid !important;
-            margin-top: 2rem !important;
+            page-break-inside: avoid !important;
+            margin-top: 1.5rem !important;
           }
-          .scale-105 { transform: none !important; }
-          .text-7xl { font-size: 3rem !important; }
-          .text-5xl { font-size: 2.2rem !important; }
-          .hero-section { margin-bottom: 2rem !important; }
+          .scale-105 { transform: none !important; transition: none !important; }
+          .hero-section { margin-bottom: 1.5rem !important; }
+          
+          /* Font size adjustments for print */
+          .text-7xl { font-size: 2.5rem !important; line-height: 1.1 !important; }
+          .text-5xl { font-size: 2rem !important; }
+          .text-2xl { font-size: 1.1rem !important; }
+          .text-xl { font-size: 0.9rem !important; }
+          .text-sm { font-size: 0.75rem !important; }
+          .text-xs { font-size: 0.65rem !important; }
+          .text-\[10px\] { font-size: 8px !important; }
+          
+          /* Handle Strategic Choice badge in cards */
+          .pricing-card .absolute {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            margin: 0 auto 12px auto !important;
+            display: block !important;
+            width: fit-content !important;
+            font-size: 8px !important;
+            padding: 2px 10px !important;
+          }
+
+          /* Force layout to fit */
+          .max-w-7xl, .max-w-5xl, .max-w-4xl {
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+          .mt-40 { margin-top: 1.5rem !important; }
+          .mt-16 { margin-top: 1rem !important; }
+          .mb-16 { margin-bottom: 1rem !important; }
+          .p-16 { padding: 1.5rem !important; }
+          .p-12 { padding: 1rem !important; }
+
+          /* Simplify rounded corners for print sustainability */
+          .rounded-\[60px\] { border-radius: 32px !important; }
+          .rounded-\[32px\] { border-radius: 16px !important; }
+          
+          /* Ensure purple blob and other large decorations don't break page */
+          .shadow-2xl, .shadow-xl { box-shadow: none !important; }
         }
       `}} />
       
