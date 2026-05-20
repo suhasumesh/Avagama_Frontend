@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PricingPlan } from '../types';
 
 const CONVERSION_RATE = 93;
@@ -104,8 +104,20 @@ const runPacks = [
   { volume: 200, price: { INR: { original: 88584, discounted: 84999 }, USD: { original: 1199, discounted: 999 } } }
 ];
 
-const Pricing: React.FC = () => {
-  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
+interface PricingProps {
+  defaultCurrency?: 'INR' | 'USD';
+}
+
+const Pricing: React.FC<PricingProps> = ({ defaultCurrency }) => {
+  const [currency, setCurrency] = useState<'INR' | 'USD'>(defaultCurrency || 'INR');
+
+  useEffect(() => {
+    if (defaultCurrency) {
+      setCurrency(defaultCurrency);
+    } else {
+      setCurrency('INR');
+    }
+  }, [defaultCurrency]);
 
   const [isPrintingBoth, setIsPrintingBoth] = useState(false);
 

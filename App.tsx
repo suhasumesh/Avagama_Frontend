@@ -50,6 +50,8 @@ const App: React.FC = () => {
               <Route path="/terms" element={<TermsOfService />} />
               // <Route path="/ceo" element={<CEO />} />
               <Route path="/pricing" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Pricing />} />
+              <Route path="/pricing/USD" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Pricing defaultCurrency="USD" />} />
+              <Route path="/pricing/usd" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Pricing defaultCurrency="USD" />} />
               <Route path="/contact" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Support />} />
               <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
               <Route path="/register" element={<Register />} />
