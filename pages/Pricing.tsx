@@ -136,8 +136,35 @@ const Pricing: React.FC = () => {
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
-            margin: 0.8cm;
+            margin-top: 1.4cm;
+            margin-bottom: 1.4cm;
+            margin-left: 0.8cm;
+            margin-right: 0.8cm;
             size: A4 portrait;
+          }
+          .print-header {
+            position: fixed !important;
+            top: -0.9cm !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 30px !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background-color: white !important;
+          }
+          .print-footer {
+            position: fixed !important;
+            bottom: -0.9cm !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 25px !important;
+            border-top: 1px solid #e5e7eb !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background-color: white !important;
           }
           body {
             print-color-adjust: exact;
@@ -230,6 +257,34 @@ const Pricing: React.FC = () => {
           .shadow-2xl, .shadow-xl { box-shadow: none !important; }
         }
       `}} />
+      
+      {/* Repeating print header (visible only on printed pages) */}
+      <div className="hidden print:flex print-header">
+        <div className="flex items-start">
+          <img
+            src="/Avagama.AI_Logo.png"
+            alt="Avagama AI"
+            className="h-5 object-contain"
+            referrerPolicy="no-referrer"
+          />
+          <span className="text-[6px] text-gray-400 relative -top-0.5 ml-[2px]">
+            TM
+          </span>
+        </div>
+        <div className="text-right text-[10px] font-black uppercase tracking-widest text-[#9d7bb0]">
+          Pricing Prospectus 2026
+        </div>
+      </div>
+
+      {/* Repeating print footer (visible only on printed pages) */}
+      <div className="hidden print:flex print-footer">
+        <div className="text-[8px] text-gray-400 font-medium">
+          © 2026 Avagama.ai. Powered by Avaali. All Rights Reserved.
+        </div>
+        <div className="text-[8px] text-gray-400 font-bold uppercase tracking-widest text-gray-400">
+          Confidential Proposal
+        </div>
+      </div>
       
       <div className="flex flex-col items-center gap-6 mb-16 print:hidden">
         <div className="bg-white border border-gray-100 rounded-full p-1.5 shadow-sm flex items-center gap-1">
