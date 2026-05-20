@@ -155,8 +155,8 @@ const Pricing: React.FC = () => {
             width: 100% !important;
           }
           .pricing-card {
-            padding: 20px !important;
-            border-radius: 24px !important;
+            padding: 16px !important;
+            border-radius: 20px !important;
             border-width: 1px !important;
             break-inside: avoid !important;
             page-break-inside: avoid !important;
@@ -169,29 +169,46 @@ const Pricing: React.FC = () => {
             margin-top: 1.5rem !important;
           }
           .scale-105 { transform: none !important; transition: none !important; }
-          .hero-section { margin-bottom: 1.5rem !important; }
+          
+          /* Hero Section adjustments */
+          .hero-section { margin-bottom: 1rem !important; }
+          .hero-section.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 10px !important;
+          }
+          .pricing-section .space-y-12 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 1.25rem !important;
+          }
           
           /* Font size adjustments for print */
-          .text-7xl { font-size: 2.5rem !important; line-height: 1.1 !important; }
-          .text-5xl { font-size: 2rem !important; }
+          .text-7xl { font-size: 2.2rem !important; line-height: 1.1 !important; }
+          .text-5xl { font-size: 1.8rem !important; }
           .text-2xl { font-size: 1.1rem !important; }
-          .text-xl { font-size: 0.9rem !important; }
+          .text-xl { font-size: 0.85rem !important; line-height: 1.3 !important; }
           .text-sm { font-size: 0.75rem !important; }
           .text-xs { font-size: 0.65rem !important; }
           .text-\[10px\] { font-size: 8px !important; }
           
-          /* Handle Strategic Choice badge in cards */
+          /* Handle Strategic Choice badge in cards - Keep absolute but clean and centered */
           .pricing-card .absolute {
-            position: relative !important;
-            top: 0 !important;
-            left: 0 !important;
-            transform: none !important;
-            margin: 0 auto 12px auto !important;
-            display: block !important;
-            width: fit-content !important;
+            position: absolute !important;
+            top: -10px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            margin: 0 !important;
             font-size: 8px !important;
             padding: 2px 10px !important;
+            width: auto !important;
+            display: inline-block !important;
+            box-shadow: none !important;
           }
+
+          /* Compress vertical spacing and margins inside pricing cards of main view */
+          .pricing-card .mb-10 { margin-bottom: 12px !important; }
+          .pricing-card .mb-12 { margin-bottom: 14px !important; }
+          .pricing-card .mt-12 { margin-top: 12px !important; }
+          .pricing-card .mb-8 { margin-bottom: 0px !important; }
+          .pricing-card .pt-8 { padding-top: 12px !important; }
+          .pricing-card .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 10px !important; }
 
           /* Force layout to fit */
           .max-w-7xl, .max-w-5xl, .max-w-4xl {
